@@ -40,7 +40,7 @@
     "format": "oxfmt src/ test/",
     "format:check": "oxfmt --check src/ test/",
     "prepare": "npm run build",
-    "registry": "node registry/builder.mjs && oxfmt src/countries/registry.ts",
+    "registry": "node registry/builder.mjs && oxfmt src/countries/specs.ts",
     "docs": "deno doc --html --name=ibanita --output=docs --sloppy-imports src/index.ts",
     "docs:lint": "deno doc --lint --sloppy-imports src/index.ts",
     "all": "npm run typecheck && npm run test && npm run lint && npm run format:check && npm run docs:lint && npm run docs"
