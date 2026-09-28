@@ -1,15 +1,13 @@
-import {
-  checkBelgianBBAN,
-  checkCroatianBBAN,
-  checkCzechAndSlovakBBAN,
-  checkEstonianBBAN,
-  checkFrenchBBAN,
-  checkHungarianBBAN,
-  checkMod9710BBAN,
-  checkNorwayBBAN,
-  checkPolandBBAN,
-  checkSpainBBAN,
-} from '../bban-validators';
+import { checkBelgianBBAN } from '../validators/be';
+import { checkCroatianBBAN } from '../validators/hr';
+import { checkCzechAndSlovakBBAN } from '../validators/cz-sk';
+import { checkEstonianBBAN } from '../validators/ee';
+import { checkFrenchBBAN } from '../validators/fr';
+import { checkHungarianBBAN } from '../validators/hu';
+import { checkMod9710BBAN } from '../validators/mod97-10';
+import { checkNorwayBBAN } from '../validators/no';
+import { checkPolandBBAN } from '../validators/pl';
+import { checkSpainBBAN } from '../validators/es';
 import { type CountryMap } from '../core/types';
 import { registrySpecs } from './registry';
 

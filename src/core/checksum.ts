@@ -58,3 +58,19 @@ export function weightedSum(digits: string, weights: readonly number[]): number 
   }
   return sum;
 }
+
+/** Control digit for a MOD 11 remainder, where remainders 0 and 1 map to themselves. */
+export function mod11CheckDigit(remainder: number): number {
+  return remainder <= 1 ? remainder : 11 - remainder;
+}
+
+/** ISO 7064 MOD 11-10 check: whether `control` is the control digit for `digits`. */
+export function checkMod1110(digits: string, control: number): boolean {
+  let product = 10;
+  for (const digit of digits) {
+    const sum = (product + Number(digit)) % 10;
+    product = ((sum === 0 ? 10 : sum) * 2) % 11;
+  }
+  const check = 11 - product;
+  return control === (check === 10 ? 0 : check);
+}
