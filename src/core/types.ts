@@ -23,8 +23,17 @@ export const ValidationErrorsIBAN = {
 /** One of the {@link ValidationErrorsIBAN} error codes. */
 export type ValidationErrorsIBAN = (typeof ValidationErrorsIBAN)[keyof typeof ValidationErrorsIBAN];
 
+/** Options for {@link isValidBBAN} and {@link composeIBAN}. */
+export interface BBANValidationOptions {
+  /**
+   * National checksum validators by country code. A validator given here replaces the built-in one
+   * for that country. Use it to plug in stricter checks, for example from `ibantools-germany`.
+   */
+  bbanValidators?: Readonly<Record<string, BBANValidator>>;
+}
+
 /** Options for {@link isValidIBAN} and {@link validateIBAN}. */
-export interface ValidateIBANOptions {
+export interface ValidateIBANOptions extends BBANValidationOptions {
   /** Whether Swiss and Liechtenstein QR-IBANs count as valid. Defaults to `true`. */
   allowQRIBAN?: boolean;
 }
@@ -108,25 +117,28 @@ export type IdentifierPosition = readonly [start: number, end: number];
 /** National checksum validation for a BBAN in electronic format. Returns whether the BBAN is valid. */
 export type BBANValidator = (bban: string) => boolean;
 
-/** Specification of one country, as stored in {@link countrySpecs}. All fields are unset for countries without IBAN. */
+/**
+ * Specification of one country, as stored in {@link countrySpecs}. All fields are unset for countries without IBAN.
+ * The data is frozen. Pass {@link BBANValidationOptions.bbanValidators} to change validation for a country.
+ */
 export interface CountrySpec {
   /** IBAN length. */
-  ibanLength?: number;
+  readonly ibanLength?: number;
   /** Regular expression source for the BBAN. */
-  bbanPattern?: string;
-  /** Extra national checksum validation for the BBAN. */
-  bbanValidator?: BBANValidator;
+  readonly bbanPattern?: string;
+  /** Built-in national checksum validation for the BBAN. */
+  readonly bbanValidator?: BBANValidator;
   /** Whether the country is listed in the SWIFT IBAN Registry. */
-  ibanRegistry?: boolean;
+  readonly ibanRegistry?: boolean;
   /** Whether the country takes part in SEPA. */
-  sepa?: boolean;
+  readonly sepa?: boolean;
   /** Position of the bank identifier within the BBAN. */
-  bankPosition?: IdentifierPosition;
+  readonly bankPosition?: IdentifierPosition;
   /** Position of the branch identifier within the BBAN. */
-  branchPosition?: IdentifierPosition;
+  readonly branchPosition?: IdentifierPosition;
   /** Position of the account number within the IBAN. */
-  accountPosition?: IdentifierPosition;
+  readonly accountPosition?: IdentifierPosition;
 }
 
 /** Country specifications by ISO 3166-1 alpha-2 country code. */
-export type CountryMap = Record<string, CountrySpec>;
+export type CountryMap = Readonly<Record<string, CountrySpec>>;

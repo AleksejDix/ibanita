@@ -8,6 +8,7 @@
 // Re-export all public types
 export { ValidationErrorsBIC, ValidationErrorsIBAN } from './core/types';
 export type {
+  BBANValidationOptions,
   BBANValidator,
   ComposeIBANParams,
   CountryMap,
@@ -33,5 +34,5 @@ export { extractBIC, isValidBIC, validateBIC } from './bic';
 export { isValidBBAN } from './bban';
 
 // Re-export country utilities and specs
-export { getCountrySpecifications, isSEPACountry, setCountryBBANValidation } from './countries/sepa';
+export { getCountrySpecifications, isSEPACountry } from './countries/sepa';
 export { countrySpecs } from './countries/all';

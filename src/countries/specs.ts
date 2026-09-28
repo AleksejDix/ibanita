@@ -138,8 +138,10 @@ const overrides: CountryMap = {
 /**
  * IBAN format rules, BBAN validation, and SEPA membership for countries that use IBAN.
  */
-export const ibanSpecs: CountryMap = Object.fromEntries(
-  [...new Set([...Object.keys(registrySpecs), ...Object.keys(overrides)])]
-    .sort()
-    .map((code) => [code, { ...registrySpecs[code], ...overrides[code] }]),
+export const ibanSpecs: CountryMap = Object.freeze(
+  Object.fromEntries(
+    [...new Set([...Object.keys(registrySpecs), ...Object.keys(overrides)])]
+      .sort()
+      .map((code) => [code, Object.freeze({ ...registrySpecs[code], ...overrides[code] })]),
+  ),
 );

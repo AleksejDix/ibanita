@@ -78,15 +78,16 @@ if (!result.valid) {
 
 ### Extension
 
-Country specifications can be extended with national BBAN validations by calling `setCountryBBANValidation`.
+National BBAN validation can be replaced per country by passing `bbanValidators` to `isValidIBAN`, `validateIBAN`, `isValidBBAN` or `composeIBAN`. The country data itself is frozen.
 
-For example, to fully syntactically check German IBAN, you can install [IBANTools-Germany](https://github.com/baumerdev/ibantools-germany):
+For example, to fully syntactically check German IBANs, you can install [IBANTools-Germany](https://github.com/baumerdev/ibantools-germany):
 
 ```js
-import { setCountryBBANValidation } from '@aleksejdix/ibanita';
+import { isValidIBAN } from '@aleksejdix/ibanita';
 import { isValidBBAN } from 'ibantools-germany';
 
-setCountryBBANValidation('DE', isValidBBAN);
+const options = { bbanValidators: { DE: isValidBBAN } };
+isValidIBAN(germanIban, options);
 ```
 
 ## Contributing

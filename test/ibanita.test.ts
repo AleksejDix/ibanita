@@ -1026,14 +1026,11 @@ describe('IBANTools', () => {
     });
   });
 
-  describe('Adding country specification allows us to use it', () => {
-    it('Adds and uses country code XX', () => {
-      iban.countrySpecs['XX'] = { ibanLength: 24, bbanPattern: '^[0-9]{8}[A-Z0-9]{12}$', ibanRegistry: true };
-      const ext = iban.getCountrySpecifications();
-      expect(ext['XX']?.ibanLength).toBe(24);
-      expect(ext['XX']?.bbanPattern).toBe('^[0-9]{8}[A-Z0-9]{12}$');
-      expect(ext['XX']?.ibanRegistry).toBe(true);
-      expect(ext['XX']?.sepa).toBeUndefined();
+  describe('countrySpecs', () => {
+    it('is frozen', () => {
+      expect(Object.isFrozen(iban.countrySpecs)).toBe(true);
+      expect(Object.isFrozen(iban.countrySpecs['NL'])).toBe(true);
+      expect(Object.isFrozen(iban.countrySpecs['AF'])).toBe(true);
     });
   });
 
@@ -1068,21 +1065,29 @@ describe('IBANTools', () => {
     });
   });
 
-  describe('Adding custom BBAN validation function', () => {
-    it('with valid DE IBAN should return true', () => {
-      iban.setCountryBBANValidation('DE', () => false);
-
-      // This IBAN has been tested valid (see above).
-      // After we changed the method, it should now be false
-      expect(iban.isValidIBAN('DE89370400440532013000')).toBe(false);
+  describe('Custom BBAN validators', () => {
+    const valid = 'DE89370400440532013000';
+    const rejectDE = { bbanValidators: { DE: () => false } };
+    it('isValidIBAN uses the validator from the options', () => {
+      expect(iban.isValidIBAN(valid)).toBe(true);
+      expect(iban.isValidIBAN(valid, rejectDE)).toBe(false);
     });
-    it('Unknown country returns false', () => {
-      expect(iban.setCountryBBANValidation('XY', () => true)).toBe(false);
+    it('validateIBAN reports the national checksum error', () => {
+      expect(iban.validateIBAN(valid, rejectDE)).toEqual({
+        valid: false,
+        errorCodes: [iban.ValidationErrorsIBAN.WrongAccountBankBranchChecksum],
+      });
     });
-    it('Unknown country cannot be modified', () => {
-      iban.setCountryBBANValidation('XY', () => true);
-      const ext = iban.getCountrySpecifications();
-      expect(ext['XY']).toBeUndefined();
+    it('isValidBBAN uses the validator from the options', () => {
+      expect(iban.isValidBBAN(valid.slice(4), 'DE')).toBe(true);
+      expect(iban.isValidBBAN(valid.slice(4), 'DE', rejectDE)).toBe(false);
+    });
+    it('composeIBAN returns null when the validator rejects the BBAN', () => {
+      expect(iban.composeIBAN({ countryCode: 'DE', bban: valid.slice(4) })).toBe(valid);
+      expect(iban.composeIBAN({ countryCode: 'DE', bban: valid.slice(4) }, rejectDE)).toBeNull();
+    });
+    it('a validator for another country has no effect', () => {
+      expect(iban.isValidIBAN(valid, { bbanValidators: { AT: () => false } })).toBe(true);
     });
   });
 

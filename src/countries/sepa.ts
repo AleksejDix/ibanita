@@ -1,4 +1,4 @@
-import { type BBANValidator, type CountryMap } from '../core/types';
+import { type CountryMap } from '../core/types';
 import { countrySpecs } from './all';
 import { ibanSpecs } from './specs';
 
@@ -37,18 +37,3 @@ export function isSEPACountry(countryCode?: string | null): boolean {
 export function getCountrySpecifications(): CountryMap {
   return countrySpecs;
 }
-
-/**
- * Set custom BBAN validation function for country.
- *
- * If `bbanValidator` already exists for the corresponding country,
- * it will be overwritten.
- */
-export const setCountryBBANValidation = (country: string, func: BBANValidator): boolean => {
-  if (typeof countrySpecs[country] === 'undefined') {
-    return false;
-  }
-
-  countrySpecs[country].bbanValidator = func;
-  return true;
-};

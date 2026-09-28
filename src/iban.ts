@@ -3,6 +3,7 @@
  * @module iban
  */
 import {
+  type BBANValidationOptions,
   type ComposeIBANParams,
   type ExtractIBANResult,
   type IdentifierPosition,
@@ -12,6 +13,7 @@ import {
 } from './core/types';
 import { checkFormatBBAN, isValidIBANChecksum, mod9710Iban } from './core/checksum';
 import { MOD_97_REMAINDER } from './core/constants';
+import { bbanValidatorFor } from './bban';
 import { electronicFormatIBAN } from './format';
 import { ibanSpecs } from './countries/specs';
 
@@ -89,7 +91,8 @@ export function validateIBAN(
       result.valid = false;
       result.errorCodes.push(ValidationErrorsIBAN.WrongBBANFormat);
     }
-    if (result.valid && spec.bbanValidator && !spec.bbanValidator(iban.slice(4))) {
+    const validator = bbanValidatorFor(iban.slice(0, 2), validationOptions);
+    if (result.valid && validator && !validator(iban.slice(4))) {
       result.valid = false;
       result.errorCodes.push(ValidationErrorsIBAN.WrongAccountBankBranchChecksum);
     }
@@ -143,7 +146,10 @@ export function isQRIBAN(iban?: string | null): boolean {
  * ibanita.composeIBAN({ countryCode: "NL", bban: "ABNA0417164300" });
  * ```
  */
-export function composeIBAN(params: Readonly<ComposeIBANParams>): string | null {
+export function composeIBAN(
+  params: Readonly<ComposeIBANParams>,
+  options: Readonly<BBANValidationOptions> = {},
+): string | null {
   const formattedBban: string = electronicFormatIBAN(params.bban ?? undefined) ?? '';
   if (params.countryCode === null || params.countryCode === undefined) {
     return null;
@@ -158,7 +164,7 @@ export function composeIBAN(params: Readonly<ComposeIBANParams>): string | null 
     spec.bbanPattern &&
     spec.bbanPattern !== null &&
     checkFormatBBAN(formattedBban, spec.bbanPattern) &&
-    (!spec.bbanValidator || spec.bbanValidator(formattedBban))
+    (bbanValidatorFor(params.countryCode, options)?.(formattedBban) ?? true)
   ) {
     const checkDigits = mod9710Iban(`${params.countryCode}00${formattedBban}`);
     return `${params.countryCode}${`0${MOD_97_REMAINDER - checkDigits}`.slice(-2)}${formattedBban}`;
