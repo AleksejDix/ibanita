@@ -216,7 +216,7 @@ function generateOutput(specs, registryFile) {
   specs.forEach((spec) => {
     output += `  ${spec.code}: Object.freeze<IBANCountrySpec>({\n`;
     output += `    ibanLength: ${spec.ibanLength},\n`;
-    output += `    bbanPattern: '${spec.bbanPattern}',\n`;
+    output += `    bbanRegExp: /${spec.bbanPattern}/u,\n`;
     output += `    ibanRegistry: ${spec.ibanRegistry},\n`;
     output += `    sepa: ${spec.sepa},\n`;
     if (spec.bankPosition) output += `    bankPosition: ${position(spec.bankPosition)},\n`;

@@ -10,7 +10,7 @@ describe('countries', () => {
       expect(specs[code]?.ibanRegistry).toBe(true);
     });
     it.each(['EG', 'VA'])('%s BBAN regexp should reject extra characters', (code) => {
-      expect(new RegExp(specs[code]?.bbanPattern ?? '', 'u').test('0'.repeat(30))).toBe(false);
+      expect(specs[code]?.bbanRegExp?.test('0'.repeat(30))).toBe(false);
     });
   });
 
@@ -67,11 +67,11 @@ describe('countries', () => {
     it('Country with code AF should return ibanLength undefined', () => {
       expect(ext['AF']?.ibanLength).toBeUndefined();
     });
-    it('Country with code AL should return bbanPattern ^[0-9]{8}[A-Z0-9]{16}$', () => {
-      expect(ext['AL']?.bbanPattern).toBe('^[0-9]{8}[A-Z0-9]{16}$');
+    it('Country with code AL should return bbanRegExp /^[0-9]{8}[A-Z0-9]{16}$/u', () => {
+      expect(ext['AL']?.bbanRegExp).toEqual(/^[0-9]{8}[A-Z0-9]{16}$/u);
     });
-    it('Country with code AF should return bbanPattern undefined', () => {
-      expect(ext['AF']?.bbanPattern).toBeUndefined();
+    it('Country with code AF should return bbanRegExp undefined', () => {
+      expect(ext['AF']?.bbanRegExp).toBeUndefined();
     });
     it('Country with code BA should return ibanRegistry true', () => {
       expect(ext['BA']?.ibanRegistry).toBe(true);

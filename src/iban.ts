@@ -12,7 +12,7 @@ import {
   ValidationErrorsIBAN,
 } from './core/types';
 import { bbanValidatorFor, isValidBBAN } from './bban';
-import { checkFormatBBAN, ibanCheckDigits } from './core/checksum';
+import { ibanCheckDigits } from './core/checksum';
 import { electronicFormatIBAN } from './format';
 import { ibanSpecs } from './countries/specs';
 
@@ -91,7 +91,7 @@ export function validateIBAN(
   if (spec.ibanLength !== iban.length) {
     errorCodes.push(ValidationErrorsIBAN.WrongIBANLength);
   }
-  const wrongFormat = !checkFormatBBAN(bban, spec.bbanPattern);
+  const wrongFormat = !spec.bbanRegExp.test(bban);
   if (wrongFormat) {
     errorCodes.push(ValidationErrorsIBAN.WrongBBANFormat);
   }

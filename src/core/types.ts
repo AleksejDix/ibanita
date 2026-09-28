@@ -136,8 +136,8 @@ export type BBANValidator = (bban: string) => boolean;
 export interface IBANCountrySpec {
   /** IBAN length. */
   readonly ibanLength: number;
-  /** Regular expression source for the BBAN. */
-  readonly bbanPattern: string;
+  /** Regular expression the BBAN must match. */
+  readonly bbanRegExp: RegExp;
   /** Whether the country is listed in the SWIFT IBAN Registry. */
   readonly ibanRegistry: boolean;
   /** Whether the country takes part in SEPA. */

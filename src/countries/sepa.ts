@@ -30,7 +30,7 @@ export function isSEPACountry(countryCode?: string | null): boolean {
  * const specs = ibanita.getCountrySpecifications();
  * const nlSpec = specs['NL'];
  * console.log(nlSpec.ibanLength); // 18
- * console.log(nlSpec.bbanPattern); // '^[A-Z]{4}[0-9]{10}$'
+ * console.log(nlSpec.bbanRegExp); // /^[A-Z]{4}[0-9]{10}$/u
  * console.log(nlSpec.sepa); // true
  * ```
  */

@@ -98,7 +98,7 @@ describe('SWIFT IBAN Registry examples', () => {
   });
 
   it.each(formats)('%s should match the registry BBAN structure', (code, pattern) => {
-    expect(expandPattern(specs[code]?.bbanPattern ?? '')).toBe(pattern);
+    expect(expandPattern(specs[code]?.bbanRegExp?.source ?? '')).toBe(pattern);
   });
 
   it.each(formats)('%s should match the registry IBAN length', (code, _pattern, length) => {

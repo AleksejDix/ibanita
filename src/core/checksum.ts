@@ -1,6 +1,5 @@
 import { MOD_97, MOD_97_REMAINDER } from './constants';
 
-const bbanRegexCache = new Map<string, RegExp>();
 const WHITESPACE_REGEX = /[\s.]+/gu;
 // 'A'.charCodeAt(0) - 10, so A is 10, B is 11, ... Z is 35
 const LETTER_OFFSET = 55;
@@ -8,16 +7,6 @@ const LETTER_OFFSET = 55;
 /** Removes whitespace and periods, which some countries use to group BBAN digits. */
 export function stripSpacesAndPeriods(value: string): string {
   return value.replace(WHITESPACE_REGEX, '');
-}
-
-/** Tests a BBAN against a country's pattern source. Compiled patterns are cached. */
-export function checkFormatBBAN(bban: string, pattern: string): boolean {
-  let regExp = bbanRegexCache.get(pattern);
-  if (!regExp) {
-    regExp = new RegExp(pattern, 'u');
-    bbanRegexCache.set(pattern, regExp);
-  }
-  return regExp.test(bban);
 }
 
 /** Replaces every uppercase letter with its ISO 7064 number: A is 10, B is 11, ... Z is 35. */

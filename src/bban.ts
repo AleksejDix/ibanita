@@ -4,7 +4,7 @@
  */
 
 import { type BBANValidationOptions, type BBANValidator } from './core/types';
-import { checkFormatBBAN, stripSpacesAndPeriods } from './core/checksum';
+import { stripSpacesAndPeriods } from './core/checksum';
 import { ibanSpecs } from './countries/specs';
 
 /** The validator for a country: the one passed in the options, or the built-in one. */
@@ -36,7 +36,7 @@ export function isValidBBAN(
     return false;
   }
   const spec = ibanSpecs[countryCode];
-  if (spec === undefined || spec.ibanLength - 4 !== bban.length || !checkFormatBBAN(bban, spec.bbanPattern)) {
+  if (spec === undefined || spec.ibanLength - 4 !== bban.length || !spec.bbanRegExp.test(bban)) {
     return false;
   }
   const validator = bbanValidatorFor(countryCode, options);

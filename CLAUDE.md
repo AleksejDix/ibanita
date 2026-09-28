@@ -62,7 +62,7 @@ src/
 ├── core/
 │   ├── constants.ts         # MOD_97, MOD_97_REMAINDER
 │   ├── types.ts             # All public types, options, results and error codes
-│   └── checksum.ts          # Shared arithmetic (mod9710, weightedSum, mod11CheckDigit, checkMod1110, checkFormatBBAN)
+│   └── checksum.ts          # Shared arithmetic (mod9710, weightedSum, mod11CheckDigit, checkMod1110)
 ├── validators/              # One national BBAN checksum per file, named by country code
 │   ├── be.ts, no.ts, pl.ts, es.ts, hr.ts, ee.ts, hu.ts, fr.ts (FR and MC), cz-sk.ts (CZ and SK)
 │   └── mod97-10.ts          # BA, ME, MK, PT, RS, SI
@@ -104,7 +104,7 @@ The data is split so bundlers only include what a function needs:
 Each `CountrySpec` (all fields camelCase, all optional, all `readonly`):
 
 - `ibanLength`: IBAN length
-- `bbanPattern`: Regex source for BBAN validation
+- `bbanRegExp`: Compiled regular expression the BBAN must match (emitted by the builder)
 - `bbanValidator`: Built-in national checksum function
 - `ibanRegistry`: Whether country is in official SWIFT IBAN Registry
 - `sepa`: Whether country participates in SEPA
