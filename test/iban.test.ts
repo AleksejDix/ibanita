@@ -367,7 +367,7 @@ describe('iban', () => {
       expect(iban.validateIBAN('SI94BARC102')).toEqual({
         valid: false,
         errorCodes: [
-          iban.ValidationErrorsIBAN.WrongBBANLength,
+          iban.ValidationErrorsIBAN.WrongIBANLength,
           iban.ValidationErrorsIBAN.WrongBBANFormat,
           iban.ValidationErrorsIBAN.WrongIBANChecksum,
         ],
@@ -399,9 +399,9 @@ describe('iban', () => {
       expect(iban.validateIBAN('NL')).toEqual({
         valid: false,
         errorCodes: [
-          iban.ValidationErrorsIBAN.WrongBBANLength,
+          iban.ValidationErrorsIBAN.WrongIBANLength,
           iban.ValidationErrorsIBAN.WrongBBANFormat,
-          iban.ValidationErrorsIBAN.ChecksumNotNumber,
+          iban.ValidationErrorsIBAN.CheckDigitsNotNumeric,
           iban.ValidationErrorsIBAN.WrongIBANChecksum,
         ],
       });
@@ -411,9 +411,9 @@ describe('iban', () => {
       expect(iban.validateIBAN('NL9ZA8NA057164300')).toEqual({
         valid: false,
         errorCodes: [
-          iban.ValidationErrorsIBAN.WrongBBANLength,
+          iban.ValidationErrorsIBAN.WrongIBANLength,
           iban.ValidationErrorsIBAN.WrongBBANFormat,
-          iban.ValidationErrorsIBAN.ChecksumNotNumber,
+          iban.ValidationErrorsIBAN.CheckDigitsNotNumeric,
           iban.ValidationErrorsIBAN.WrongIBANChecksum,
         ],
       });

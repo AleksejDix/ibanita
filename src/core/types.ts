@@ -7,11 +7,11 @@ export const ValidationErrorsIBAN = {
   /** The first two characters are not the code of a country that uses IBAN. */
   NoIBANCountry: 'NO_IBAN_COUNTRY',
   /** The IBAN does not have the length defined for its country. */
-  WrongBBANLength: 'WRONG_BBAN_LENGTH',
+  WrongIBANLength: 'WRONG_IBAN_LENGTH',
   /** The BBAN does not match the format defined for its country. */
   WrongBBANFormat: 'WRONG_BBAN_FORMAT',
   /** The check digits (characters 3 and 4) are not two digits. */
-  ChecksumNotNumber: 'CHECKSUM_NOT_NUMBER',
+  CheckDigitsNotNumeric: 'CHECK_DIGITS_NOT_NUMERIC',
   /** The MOD 97-10 check digits of the IBAN are wrong. */
   WrongIBANChecksum: 'WRONG_IBAN_CHECKSUM',
   /** The national check digits of the bank, branch or account number are wrong. */

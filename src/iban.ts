@@ -89,7 +89,7 @@ export function validateIBAN(
   }
 
   if (spec.ibanLength !== iban.length) {
-    errorCodes.push(ValidationErrorsIBAN.WrongBBANLength);
+    errorCodes.push(ValidationErrorsIBAN.WrongIBANLength);
   }
   const wrongFormat = !checkFormatBBAN(bban, spec.bbanPattern);
   if (wrongFormat) {
@@ -101,7 +101,7 @@ export function validateIBAN(
     errorCodes.push(ValidationErrorsIBAN.WrongAccountBankBranchChecksum);
   }
   if (!CHECK_DIGITS_REGEX.test(checkDigits)) {
-    errorCodes.push(ValidationErrorsIBAN.ChecksumNotNumber);
+    errorCodes.push(ValidationErrorsIBAN.CheckDigitsNotNumeric);
   }
   if (wrongFormat || checkDigits !== ibanCheckDigits(countryCode, bban)) {
     errorCodes.push(ValidationErrorsIBAN.WrongIBANChecksum);
