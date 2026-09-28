@@ -10,7 +10,6 @@ export { ValidationErrorsBIC, ValidationErrorsIBAN } from './core/types';
 export type {
   BBANValidationOptions,
   BBANValidator,
-  ComposeIBANParams,
   CountryMap,
   CountrySpec,
   ExtractBICResult,

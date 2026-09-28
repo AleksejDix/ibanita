@@ -4,7 +4,6 @@
  */
 import {
   type BBANValidationOptions,
-  type ComposeIBANParams,
   type ExtractIBANResult,
   type IdentifierPosition,
   type ValidateIBANOptions,
@@ -136,19 +135,19 @@ export function isQRIBAN(input?: string | null): boolean {
  *
  * ```
  * // returns NL91ABNA0417164300
- * ibanita.composeIBAN({ countryCode: "NL", bban: "ABNA0417164300" });
+ * ibanita.composeIBAN("NL", "ABNA0417164300");
  * ```
  */
 export function composeIBAN(
-  params: Readonly<ComposeIBANParams>,
+  countryCode: string | null | undefined,
+  bban: string | null | undefined,
   options: Readonly<BBANValidationOptions> = {},
 ): string | null {
-  const { countryCode } = params;
-  const bban = electronicFormatIBAN(params.bban) ?? '';
-  if (countryCode === undefined || countryCode === null || !isValidBBAN(bban, countryCode, options)) {
+  const electronicBban = electronicFormatIBAN(bban) ?? '';
+  if (countryCode === undefined || countryCode === null || !isValidBBAN(electronicBban, countryCode, options)) {
     return null;
   }
-  return `${countryCode}${ibanCheckDigits(countryCode, bban)}${bban}`;
+  return `${countryCode}${ibanCheckDigits(countryCode, electronicBban)}${electronicBban}`;
 }
 
 /**

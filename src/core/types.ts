@@ -46,14 +46,6 @@ export interface ValidateIBANResult {
   valid: boolean;
 }
 
-/** Parameters for {@link composeIBAN}. */
-export interface ComposeIBANParams {
-  /** ISO 3166-1 alpha-2 country code, such as `NL`. */
-  countryCode?: string | null;
-  /** Domestic account number (BBAN). Spaces and dashes are removed. */
-  bban?: string | null;
-}
-
 /** Result of {@link extractIBAN}. Only `iban` and `valid` are set when the IBAN is invalid. */
 export interface ExtractIBANResult {
   /** The IBAN in electronic format, without spaces or dashes. */

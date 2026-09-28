@@ -14,6 +14,7 @@ ibanita started as a fork of [ibantools](https://github.com/Simplify/ibantools) 
 | Function | Before | Now | What to do |
 |---|---|---|---|
 | `composeIBAN` | Returned an IBAN even when the BBAN failed its national checksum, for example in Norway or Belgium | Returns `null` | Handle `null` as "invalid BBAN" |
+| `composeIBAN` | Took `{ countryCode, bban }` | Takes `composeIBAN(countryCode, bban, options?)` | Pass the two arguments. `ComposeIBANParams` is gone |
 | `isValidIBAN`, `validateIBAN` | Accepted Czech and Slovak IBANs whose check digit was 1 for weighted-sum remainder 1 | Rejects them, following the official mod-11 rule | Nothing. These IBANs were invalid |
 | `validateIBAN` | Added `WrongAccountBankBranchChecksum` (6) when the length or format was already wrong | Only reports length, format and checksum errors | Don't rely on code 6 for malformed input |
 | `validateBIC` | Reported `NoBICCountry` for malformed input such as `AB` | Reports `WrongBICFormat` | Check for code 2 for malformed input |

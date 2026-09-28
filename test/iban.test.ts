@@ -465,37 +465,37 @@ describe('iban', () => {
 
   describe('When calling composeIBAN()', () => {
     it('with valid country code and valid BBAN should return NL91ABNA0417164300', () => {
-      expect(iban.composeIBAN({ countryCode: 'NL', bban: 'ABNA0417164300' })).toBe('NL91ABNA0417164300');
+      expect(iban.composeIBAN('NL', 'ABNA0417164300')).toBe('NL91ABNA0417164300');
     });
     it('with invalid country code and valid BBAN should return null', () => {
-      expect(iban.composeIBAN({ countryCode: 'ZZ', bban: 'ABNA0417164300' })).toBeNull();
+      expect(iban.composeIBAN('ZZ', 'ABNA0417164300')).toBeNull();
     });
     it('with valid country code and invalid BBAN (non-alpha character) should return null', () => {
-      expect(iban.composeIBAN({ countryCode: 'NL', bban: 'A7NA0417164300' })).toBeNull();
+      expect(iban.composeIBAN('NL', 'A7NA0417164300')).toBeNull();
     });
     it('with valid country code and invalid BBAN (non-numeric character) should return null', () => {
-      expect(iban.composeIBAN({ countryCode: 'NL', bban: 'ABNA04171Z4300' })).toBeNull();
+      expect(iban.composeIBAN('NL', 'ABNA04171Z4300')).toBeNull();
     });
     it('with valid country code and invalid BBAN (character count wrong) should return null', () => {
-      expect(iban.composeIBAN({ countryCode: 'NL', bban: 'ABNA04171643000' })).toBeNull();
+      expect(iban.composeIBAN('NL', 'ABNA04171643000')).toBeNull();
     });
     it('without country codeshould return null', () => {
-      expect(iban.composeIBAN({ bban: 'ABNA04171643000' })).toBeNull();
+      expect(iban.composeIBAN(undefined, 'ABNA04171643000')).toBeNull();
     });
     it('with BBAN failing country checksum should return null', () => {
-      expect(iban.composeIBAN({ countryCode: 'NO', bban: '86011117948' })).toBeNull();
+      expect(iban.composeIBAN('NO', '86011117948')).toBeNull();
     });
     it('with BBAN passing country checksum should return IBAN', () => {
-      expect(iban.composeIBAN({ countryCode: 'NO', bban: '86011117947' })).toBe('NO9386011117947');
+      expect(iban.composeIBAN('NO', '86011117947')).toBe('NO9386011117947');
     });
     it('with BY BBAN with digit in bank code should return IBAN', () => {
-      expect(iban.composeIBAN({ countryCode: 'BY', bban: '1BRB3600900000002Z00AB00' })).not.toBeNull();
+      expect(iban.composeIBAN('BY', '1BRB3600900000002Z00AB00')).not.toBeNull();
     });
     it('with IE BBAN with digit in bank code should return null', () => {
-      expect(iban.composeIBAN({ countryCode: 'IE', bban: 'AIB193115212345678' })).toBeNull();
+      expect(iban.composeIBAN('IE', 'AIB193115212345678')).toBeNull();
     });
     it('with valid country code and no BBAN should return null', () => {
-      expect(iban.composeIBAN({ countryCode: 'NL', bban: null })).toBeNull();
+      expect(iban.composeIBAN('NL', null)).toBeNull();
     });
   });
 
@@ -707,7 +707,7 @@ describe('iban', () => {
 
   describe('When calling extractIBAN() with Icelandic IBAN', () => {
     it('should extract bank, branch and account', () => {
-      const ext = iban.extractIBAN(iban.composeIBAN({ countryCode: 'IS', bban: '0159260076545510730339' }) ?? '');
+      const ext = iban.extractIBAN(iban.composeIBAN('IS', '0159260076545510730339') ?? '');
       expect(ext.bankIdentifier).toBe('01');
       expect(ext.branchIdentifier).toBe('59');
       expect(ext.accountNumber).toBe('260076545510730339');
@@ -751,8 +751,8 @@ describe('iban', () => {
       expect(iban.isValidBBAN(valid.slice(4), 'DE', rejectDE)).toBe(false);
     });
     it('composeIBAN returns null when the validator rejects the BBAN', () => {
-      expect(iban.composeIBAN({ countryCode: 'DE', bban: valid.slice(4) })).toBe(valid);
-      expect(iban.composeIBAN({ countryCode: 'DE', bban: valid.slice(4) }, rejectDE)).toBeNull();
+      expect(iban.composeIBAN('DE', valid.slice(4))).toBe(valid);
+      expect(iban.composeIBAN('DE', valid.slice(4), rejectDE)).toBeNull();
     });
     it('a validator for another country has no effect', () => {
       expect(iban.isValidIBAN(valid, { bbanValidators: { AT: () => false } })).toBe(true);
