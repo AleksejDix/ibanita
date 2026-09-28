@@ -27,17 +27,17 @@ export function isValidBBAN(bban: string | null | undefined, countryCode: string
   if (
     spec === undefined ||
     spec === null ||
-    spec.bban_regexp === undefined ||
-    spec.bban_regexp === null ||
-    spec.chars === undefined ||
-    spec.chars === null
+    spec.bbanPattern === undefined ||
+    spec.bbanPattern === null ||
+    spec.ibanLength === undefined ||
+    spec.ibanLength === null
   ) {
     return false;
   }
 
-  if (spec.chars - 4 === bban.length && checkFormatBBAN(bban, spec.bban_regexp)) {
-    if (spec.bban_validation_func) {
-      return spec.bban_validation_func(stripSpacesAndPeriods(bban));
+  if (spec.ibanLength - 4 === bban.length && checkFormatBBAN(bban, spec.bbanPattern)) {
+    if (spec.bbanValidator) {
+      return spec.bbanValidator(stripSpacesAndPeriods(bban));
     }
     return true;
   }

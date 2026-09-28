@@ -76,20 +76,20 @@ export function validateIBAN(
   const iban = electronicFormatIBAN(input);
   if (iban !== null && iban !== '') {
     const spec = ibanSpecs[iban.slice(0, 2)];
-    if (!spec || !(spec.bban_regexp || spec.chars)) {
+    if (!spec || !(spec.bbanPattern || spec.ibanLength)) {
       result.valid = false;
       result.errorCodes.push(ValidationErrorsIBAN.NoIBANCountry);
       return result;
     }
-    if (spec && spec.chars && spec.chars !== iban.length) {
+    if (spec && spec.ibanLength && spec.ibanLength !== iban.length) {
       result.valid = false;
       result.errorCodes.push(ValidationErrorsIBAN.WrongBBANLength);
     }
-    if (spec && spec.bban_regexp && !checkFormatBBAN(iban.slice(4), spec.bban_regexp)) {
+    if (spec && spec.bbanPattern && !checkFormatBBAN(iban.slice(4), spec.bbanPattern)) {
       result.valid = false;
       result.errorCodes.push(ValidationErrorsIBAN.WrongBBANFormat);
     }
-    if (result.valid && spec.bban_validation_func && !spec.bban_validation_func(iban.slice(4))) {
+    if (result.valid && spec.bbanValidator && !spec.bbanValidator(iban.slice(4))) {
       result.valid = false;
       result.errorCodes.push(ValidationErrorsIBAN.WrongAccountBankBranchChecksum);
     }
@@ -144,24 +144,24 @@ export function isQRIBAN(iban?: string | null): boolean {
  * ```
  */
 export function composeIBAN(params: Readonly<ComposeIBANParams>): string | null {
-  const formated_bban: string = electronicFormatIBAN(params.bban ?? undefined) ?? '';
+  const formattedBban: string = electronicFormatIBAN(params.bban ?? undefined) ?? '';
   if (params.countryCode === null || params.countryCode === undefined) {
     return null;
   }
   const spec = ibanSpecs[params.countryCode];
   if (
-    formated_bban !== '' &&
+    formattedBban !== '' &&
     spec !== undefined &&
-    spec.chars &&
-    spec.chars !== null &&
-    spec.chars === formated_bban.length + 4 &&
-    spec.bban_regexp &&
-    spec.bban_regexp !== null &&
-    checkFormatBBAN(formated_bban, spec.bban_regexp) &&
-    (!spec.bban_validation_func || spec.bban_validation_func(formated_bban))
+    spec.ibanLength &&
+    spec.ibanLength !== null &&
+    spec.ibanLength === formattedBban.length + 4 &&
+    spec.bbanPattern &&
+    spec.bbanPattern !== null &&
+    checkFormatBBAN(formattedBban, spec.bbanPattern) &&
+    (!spec.bbanValidator || spec.bbanValidator(formattedBban))
   ) {
-    const checksom = mod9710Iban(`${params.countryCode}00${formated_bban}`);
-    return `${params.countryCode}${`0${MOD_97_REMAINDER - checksom}`.slice(-2)}${formated_bban}`;
+    const checkDigits = mod9710Iban(`${params.countryCode}00${formattedBban}`);
+    return `${params.countryCode}${`0${MOD_97_REMAINDER - checkDigits}`.slice(-2)}${formattedBban}`;
   }
   return null;
 }
@@ -184,14 +184,14 @@ export function extractIBAN(iban?: string | null): ExtractIBANResult {
     result.countryCode = eFormatIBAN.slice(0, 2);
     result.valid = true;
     const spec = ibanSpecs[result.countryCode];
-    if (spec?.account_indentifier) {
-      result.accountNumber = slicePosition(result.iban, spec.account_indentifier);
+    if (spec?.accountPosition) {
+      result.accountNumber = slicePosition(result.iban, spec.accountPosition);
     }
-    if (spec?.bank_identifier) {
-      result.bankIdentifier = slicePosition(result.bban, spec.bank_identifier);
+    if (spec?.bankPosition) {
+      result.bankIdentifier = slicePosition(result.bban, spec.bankPosition);
     }
-    if (spec?.branch_indentifier) {
-      result.branchIdentifier = slicePosition(result.bban, spec.branch_indentifier);
+    if (spec?.branchPosition) {
+      result.branchIdentifier = slicePosition(result.bban, spec.branchPosition);
     }
   }
   return result;

@@ -102,43 +102,31 @@ export interface ExtractBICResult {
   valid: boolean;
 }
 
-/** Public specification of one country, as returned by {@link getCountrySpecifications}. */
+/** Position of an identifier as `[start, end]` character indexes, 0-based and inclusive. */
+export type IdentifierPosition = readonly [start: number, end: number];
+
+/** National checksum validation for a BBAN in electronic format. Returns whether the BBAN is valid. */
+export type BBANValidator = (bban: string) => boolean;
+
+/** Specification of one country, as stored in {@link countrySpecs}. All fields are unset for countries without IBAN. */
 export interface CountrySpec {
-  /** IBAN length, or `null` if the country does not use IBAN. */
-  chars: number | null;
-  /** Regular expression for the BBAN, or `null` if the country does not use IBAN. */
-  bban_regexp: string | null;
+  /** IBAN length. */
+  ibanLength?: number;
+  /** Regular expression source for the BBAN. */
+  bbanPattern?: string;
+  /** Extra national checksum validation for the BBAN. */
+  bbanValidator?: BBANValidator;
   /** Whether the country is listed in the SWIFT IBAN Registry. */
-  IBANRegistry: boolean;
+  ibanRegistry?: boolean;
   /** Whether the country takes part in SEPA. */
-  SEPA: boolean;
+  sepa?: boolean;
+  /** Position of the bank identifier within the BBAN. */
+  bankPosition?: IdentifierPosition;
+  /** Position of the branch identifier within the BBAN. */
+  branchPosition?: IdentifierPosition;
+  /** Position of the account number within the IBAN. */
+  accountPosition?: IdentifierPosition;
 }
 
 /** Country specifications by ISO 3166-1 alpha-2 country code. */
 export type CountryMap = Record<string, CountrySpec>;
-
-/** Position of an identifier as `[start, end]` character indexes, 0-based and inclusive. */
-export type IdentifierPosition = readonly [start: number, end: number];
-
-/** Full specification of one country, as stored in {@link countrySpecs}. */
-export interface CountrySpecInternal {
-  /** IBAN length. Unset for countries that do not use IBAN. */
-  chars?: number;
-  /** Regular expression for the BBAN. Unset for countries that do not use IBAN. */
-  bban_regexp?: string;
-  /** Extra national checksum validation for the BBAN. See {@link setCountryBBANValidation}. */
-  bban_validation_func?: (bban: string) => boolean;
-  /** Whether the country is listed in the SWIFT IBAN Registry. */
-  IBANRegistry?: boolean;
-  /** Whether the country takes part in SEPA. */
-  SEPA?: boolean;
-  /** Position of the branch identifier within the BBAN. */
-  branch_indentifier?: IdentifierPosition;
-  /** Position of the bank identifier within the BBAN. */
-  bank_identifier?: IdentifierPosition;
-  /** Position of the account number within the IBAN. */
-  account_indentifier?: IdentifierPosition;
-}
-
-/** Full country specifications by ISO 3166-1 alpha-2 country code. */
-export type CountryMapInternal = Record<string, CountrySpecInternal>;

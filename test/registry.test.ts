@@ -89,22 +89,22 @@ describe('SWIFT IBAN Registry examples', () => {
   });
 
   it.each(formats)('%s should match the registry BBAN structure', (code, pattern) => {
-    expect(expandPattern(specs[code]?.bban_regexp ?? '')).toBe(pattern);
+    expect(expandPattern(specs[code]?.bbanPattern ?? '')).toBe(pattern);
   });
 
   it.each(formats)('%s should match the registry IBAN length', (code, _pattern, length) => {
-    expect(specs[code]?.chars).toBe(length);
+    expect(specs[code]?.ibanLength).toBe(length);
   });
 
   it.each(formats.map(([code, , , sepa]) => [code, sepa] as const))(
     '%s should match the registry SEPA flag',
     (code, sepa) => {
-      expect(specs[code]?.SEPA).toBe(sepa);
+      expect(specs[code]?.sepa).toBe(sepa);
     },
   );
 
   it.each(codes)('%s should be flagged as an IBAN registry country', (code) => {
-    expect(specs[code]?.IBANRegistry).toBe(true);
+    expect(specs[code]?.ibanRegistry).toBe(true);
   });
 
   it.each(examples)('%s example IBAN should be valid', (_code, example) => {

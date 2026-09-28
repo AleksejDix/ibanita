@@ -8,11 +8,10 @@
 // Re-export all public types
 export { ValidationErrorsBIC, ValidationErrorsIBAN } from './core/types';
 export type {
+  BBANValidator,
   ComposeIBANParams,
   CountryMap,
-  CountryMapInternal,
   CountrySpec,
-  CountrySpecInternal,
   ExtractBICResult,
   ExtractIBANResult,
   IdentifierPosition,

@@ -562,10 +562,10 @@ describe('IBANTools', () => {
   describe('When calling getCountrySpecifications()', () => {
     const specs = iban.getCountrySpecifications();
     it.each(['BI', 'DJ', 'FK'])('%s should be in IBAN registry', (code) => {
-      expect(specs[code]?.IBANRegistry).toBe(true);
+      expect(specs[code]?.ibanRegistry).toBe(true);
     });
     it.each(['EG', 'VA'])('%s BBAN regexp should reject extra characters', (code) => {
-      expect(new RegExp(specs[code]?.bban_regexp ?? '', 'u').test('0'.repeat(30))).toBe(false);
+      expect(new RegExp(specs[code]?.bbanPattern ?? '', 'u').test('0'.repeat(30))).toBe(false);
     });
   });
 
@@ -956,16 +956,16 @@ describe('IBANTools', () => {
   describe('Country spec account positions', () => {
     // RU is excluded: its registry "branch" is the first part of the 20-digit account number.
     const codes = Object.keys(iban.countrySpecs).filter(
-      (code) => code !== 'RU' && iban.countrySpecs[code]?.account_indentifier !== undefined,
+      (code) => code !== 'RU' && iban.countrySpecs[code]?.accountPosition !== undefined,
     );
     it.each(codes)('%s account range should follow bank and branch and fit the IBAN', (code) => {
       const spec = iban.countrySpecs[code] ?? {};
-      const [start, end] = spec.account_indentifier ?? [0, 0];
-      const identifierEnds = [spec.bank_identifier, spec.branch_indentifier].map((range) =>
+      const [start, end] = spec.accountPosition ?? [0, 0];
+      const identifierEnds = [spec.bankPosition, spec.branchPosition].map((range) =>
         range === undefined ? 3 : range[1] + 4,
       );
       expect(start).toBeGreaterThan(Math.max(...identifierEnds));
-      expect(end).toBeLessThanOrEqual(spec.chars ?? 0);
+      expect(end).toBeLessThanOrEqual(spec.ibanLength ?? 0);
     });
   });
 
@@ -1028,43 +1028,43 @@ describe('IBANTools', () => {
 
   describe('Adding country specification allows us to use it', () => {
     it('Adds and uses country code XX', () => {
-      iban.countrySpecs['XX'] = { chars: 24, bban_regexp: '^[0-9]{8}[A-Z0-9]{12}$', IBANRegistry: true };
+      iban.countrySpecs['XX'] = { ibanLength: 24, bbanPattern: '^[0-9]{8}[A-Z0-9]{12}$', ibanRegistry: true };
       const ext = iban.getCountrySpecifications();
-      expect(ext['XX']?.chars).toBe(24);
-      expect(ext['XX']?.bban_regexp).toBe('^[0-9]{8}[A-Z0-9]{12}$');
-      expect(ext['XX']?.IBANRegistry).toBe(true);
-      expect(ext['XX']?.SEPA).toBe(false);
+      expect(ext['XX']?.ibanLength).toBe(24);
+      expect(ext['XX']?.bbanPattern).toBe('^[0-9]{8}[A-Z0-9]{12}$');
+      expect(ext['XX']?.ibanRegistry).toBe(true);
+      expect(ext['XX']?.sepa).toBeUndefined();
     });
   });
 
   describe('When calling getCountrySpecifications()', () => {
     const ext = iban.getCountrySpecifications();
-    it('Country with code BE should return chars 16', () => {
-      expect(ext['BE']?.chars).toBe(16);
+    it('Country with code BE should return ibanLength 16', () => {
+      expect(ext['BE']?.ibanLength).toBe(16);
     });
-    it('Country with code AF should return chars null', () => {
-      expect(ext['AF']?.chars).toBeNull();
+    it('Country with code AF should return ibanLength undefined', () => {
+      expect(ext['AF']?.ibanLength).toBeUndefined();
     });
-    it('Country with code AL should return bban_regexp ^[0-9]{8}[A-Z0-9]{16}$', () => {
-      expect(ext['AL']?.bban_regexp).toBe('^[0-9]{8}[A-Z0-9]{16}$');
+    it('Country with code AL should return bbanPattern ^[0-9]{8}[A-Z0-9]{16}$', () => {
+      expect(ext['AL']?.bbanPattern).toBe('^[0-9]{8}[A-Z0-9]{16}$');
     });
-    it('Country with code AF should return bban_regexp null', () => {
-      expect(ext['AF']?.bban_regexp).toBeNull();
+    it('Country with code AF should return bbanPattern undefined', () => {
+      expect(ext['AF']?.bbanPattern).toBeUndefined();
     });
-    it('Country with code BA should return IBANRegistry true', () => {
-      expect(ext['BA']?.IBANRegistry).toBe(true);
+    it('Country with code BA should return ibanRegistry true', () => {
+      expect(ext['BA']?.ibanRegistry).toBe(true);
     });
-    it('Country with code AO should return IBANRegistry false', () => {
-      expect(ext['AO']?.IBANRegistry).toBe(false);
+    it('Country with code AO should return ibanRegistry false', () => {
+      expect(ext['AO']?.ibanRegistry).toBe(false);
     });
     it('Country with code NL should return SEPA true', () => {
-      expect(ext['NL']?.SEPA).toBe(true);
+      expect(ext['NL']?.sepa).toBe(true);
     });
     it('Country with code PK should return SEPA false', () => {
-      expect(ext['PK']?.SEPA).toBe(false);
+      expect(ext['PK']?.sepa).toBe(false);
     });
     it('Country with code NO should have extra BBAN valication function', () => {
-      expect(iban.countrySpecs['NO']?.bban_validation_func).not.toBeNull();
+      expect(iban.countrySpecs['NO']?.bbanValidator).not.toBeNull();
     });
   });
 

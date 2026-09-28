@@ -1,4 +1,4 @@
-import { type CountryMap } from '../core/types';
+import { type BBANValidator, type CountryMap } from '../core/types';
 import { countrySpecs } from './all';
 import { ibanSpecs } from './specs';
 
@@ -15,53 +15,40 @@ import { ibanSpecs } from './specs';
  */
 export function isSEPACountry(countryCode?: string | null): boolean {
   if (countryCode !== undefined && countryCode !== null) {
-    const spec = ibanSpecs[countryCode];
-    if (spec !== undefined) {
-      return spec.SEPA ?? false;
-    }
+    return ibanSpecs[countryCode]?.sepa ?? false;
   }
   return false;
 }
 
 /**
  * Returns specifications for all countries, even those who are not
- * members of IBAN registry. `IBANRegistry` field indicates if country
- * is member of not.
+ * members of IBAN registry. `ibanRegistry` field indicates if country
+ * is member of not. Countries without IBAN have an empty specification.
  *
  * ```
  * // Get country specifications
  * const specs = ibanita.getCountrySpecifications();
  * const nlSpec = specs['NL'];
- * console.log(nlSpec.chars); // 18
- * console.log(nlSpec.bban_regexp); // '^[A-Z]{4}[0-9]{10}$'
- * console.log(nlSpec.SEPA); // true
+ * console.log(nlSpec.ibanLength); // 18
+ * console.log(nlSpec.bbanPattern); // '^[A-Z]{4}[0-9]{10}$'
+ * console.log(nlSpec.sepa); // true
  * ```
  */
 export function getCountrySpecifications(): CountryMap {
-  const countyMap: CountryMap = {};
-  for (const [countyCode, county] of Object.entries(countrySpecs)) {
-    countyMap[countyCode] = {
-      chars: county.chars ?? null,
-      bban_regexp: county.bban_regexp ?? null,
-      IBANRegistry: county.IBANRegistry ?? false,
-      SEPA: county.SEPA ?? false,
-    };
-  }
-
-  return countyMap;
+  return countrySpecs;
 }
 
 /**
  * Set custom BBAN validation function for country.
  *
- * If `bban_validation_func` already exists for the corresponding country,
+ * If `bbanValidator` already exists for the corresponding country,
  * it will be overwritten.
  */
-export const setCountryBBANValidation = (country: string, func: (bban: string) => boolean): boolean => {
+export const setCountryBBANValidation = (country: string, func: BBANValidator): boolean => {
   if (typeof countrySpecs[country] === 'undefined') {
     return false;
   }
 
-  countrySpecs[country].bban_validation_func = func;
+  countrySpecs[country].bbanValidator = func;
   return true;
 };
