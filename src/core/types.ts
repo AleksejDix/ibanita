@@ -3,21 +3,21 @@
  */
 export const ValidationErrorsIBAN = {
   /** No IBAN was provided, or it was empty. */
-  NoIBANProvided: 0,
+  NoIBANProvided: 'NO_IBAN_PROVIDED',
   /** The first two characters are not the code of a country that uses IBAN. */
-  NoIBANCountry: 1,
+  NoIBANCountry: 'NO_IBAN_COUNTRY',
   /** The IBAN does not have the length defined for its country. */
-  WrongBBANLength: 2,
+  WrongBBANLength: 'WRONG_BBAN_LENGTH',
   /** The BBAN does not match the format defined for its country. */
-  WrongBBANFormat: 3,
+  WrongBBANFormat: 'WRONG_BBAN_FORMAT',
   /** The check digits (characters 3 and 4) are not two digits. */
-  ChecksumNotNumber: 4,
+  ChecksumNotNumber: 'CHECKSUM_NOT_NUMBER',
   /** The MOD 97-10 check digits of the IBAN are wrong. */
-  WrongIBANChecksum: 5,
+  WrongIBANChecksum: 'WRONG_IBAN_CHECKSUM',
   /** The national check digits of the bank, branch or account number are wrong. */
-  WrongAccountBankBranchChecksum: 6,
+  WrongAccountBankBranchChecksum: 'WRONG_ACCOUNT_BANK_BRANCH_CHECKSUM',
   /** The IBAN is a Swiss or Liechtenstein QR-IBAN, and QR-IBANs were not allowed. */
-  QRIBANNotAllowed: 7,
+  QRIBANNotAllowed: 'QR_IBAN_NOT_ALLOWED',
 } as const;
 
 /** One of the {@link ValidationErrorsIBAN} error codes. */
@@ -68,11 +68,11 @@ export interface ExtractIBANResult {
  */
 export const ValidationErrorsBIC = {
   /** No BIC was provided, or it was empty. */
-  NoBICProvided: 0,
+  NoBICProvided: 'NO_BIC_PROVIDED',
   /** Characters 5 and 6 are not a known country code. */
-  NoBICCountry: 1,
+  NoBICCountry: 'NO_BIC_COUNTRY',
   /** The BIC does not have the format of an 8 or 11 character BIC. */
-  WrongBICFormat: 2,
+  WrongBICFormat: 'WRONG_BIC_FORMAT',
 } as const;
 
 /** One of the {@link ValidationErrorsBIC} error codes. */

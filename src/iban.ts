@@ -64,7 +64,7 @@ export function isValidIBAN(
  * ibanita.validateIBAN('CH4431999123000889012');
  * ```
  * ```
- * // returns {errorCodes: [7], valid: false}
+ * // returns {errorCodes: ['QR_IBAN_NOT_ALLOWED'], valid: false}
  * ibanita.validateIBAN('CH4431999123000889012', { allowQRIBAN: false });
  * ```
  */
