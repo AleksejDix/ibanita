@@ -39,4 +39,5 @@ Formats now match SWIFT IBAN Registry release 103 for all 89 registry countries.
 - **`friendlyFormatIBAN`** inserts the separator literally. Separators like `$&` were expanded as regex replacement patterns before.
 - **`ValidationErrorsIBAN` and `ValidationErrorsBIC`** are `as const` objects instead of TypeScript enums. The values are unchanged, and `ValidationErrorsIBAN.WrongIBANChecksum` still works. Code that used the enums as types uses the union types with the same names.
 - **`countrySpecs`:** changing an existing country, or calling `setCountryBBANValidation`, works as before. Adding a brand-new country key to `countrySpecs` by hand no longer affects IBAN validation.
+- **`ExtractBICResult`:** `branchCode` and `testBIC` are optional, because they are not set for an invalid BIC. Check `valid` before reading them.
 - **More permissive types:** `isQRIBAN`, `isSEPACountry`, `extractIBAN`, `extractBIC` and `electronicFormatIBAN` accept `null` and `undefined`.

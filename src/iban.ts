@@ -81,7 +81,7 @@ export function validateIBAN(
   iban?: string | null,
   validationOptions: Readonly<ValidateIBANOptions> = {},
 ): ValidateIBANResult {
-  const result = { errorCodes: [], valid: true } as ValidateIBANResult;
+  const result: ValidateIBANResult = { errorCodes: [], valid: true };
   if (iban !== undefined && iban !== null && iban !== '') {
     const spec = ibanSpecs[iban.slice(0, 2)];
     if (!spec || !(spec.bban_regexp || spec.chars)) {

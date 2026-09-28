@@ -95,9 +95,9 @@ export interface ExtractBICResult {
   /** Location code: characters 7 and 8. */
   locationCode?: string;
   /** Branch code: characters 9 to 11, or `null` for an 8 character BIC. */
-  branchCode: string | null;
+  branchCode?: string | null;
   /** Whether this is a test BIC, meaning the second character of the location code is `0`. */
-  testBIC: boolean;
+  testBIC?: boolean;
   /** Whether the BIC is valid. */
   valid: boolean;
 }

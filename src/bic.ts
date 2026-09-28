@@ -42,20 +42,15 @@ export function isValidBIC(bic: string | null | undefined): boolean {
  * ```
  */
 export function validateBIC(bic?: string | null): ValidateBICResult {
-  const result = { errorCodes: [], valid: true } as ValidateBICResult;
-  if (bic !== undefined && bic !== null && bic !== '') {
-    if (!BIC_REGEX.test(bic)) {
-      result.valid = false;
-      result.errorCodes.push(ValidationErrorsBIC.WrongBICFormat);
-    } else if (!COUNTRY_CODES.has(bic.toUpperCase().slice(4, 6))) {
-      result.valid = false;
-      result.errorCodes.push(ValidationErrorsBIC.NoBICCountry);
-    }
-  } else {
-    result.valid = false;
-    result.errorCodes.push(ValidationErrorsBIC.NoBICProvided);
+  const errorCodes: ValidationErrorsBIC[] = [];
+  if (bic === undefined || bic === null || bic === '') {
+    errorCodes.push(ValidationErrorsBIC.NoBICProvided);
+  } else if (!BIC_REGEX.test(bic)) {
+    errorCodes.push(ValidationErrorsBIC.WrongBICFormat);
+  } else if (!COUNTRY_CODES.has(bic.toUpperCase().slice(4, 6))) {
+    errorCodes.push(ValidationErrorsBIC.NoBICCountry);
   }
-  return result;
+  return { errorCodes, valid: errorCodes.length === 0 };
 }
 
 /**
@@ -66,17 +61,17 @@ export function validateBIC(bic?: string | null): ValidateBICResult {
  * ```
  */
 export function extractBIC(inputBic?: string | null): ExtractBICResult {
-  const result = {} as ExtractBICResult;
   const bic = (inputBic ?? '').toUpperCase();
-  if (isValidBIC(bic)) {
-    result.bankCode = bic.slice(0, 4);
-    result.countryCode = bic.slice(4, 6);
-    result.locationCode = bic.slice(6, 8);
-    result.testBIC = result.locationCode[1] === '0';
-    result.branchCode = bic.length > 8 ? bic.slice(8) : null;
-    result.valid = true;
-  } else {
-    result.valid = false;
+  if (!isValidBIC(bic)) {
+    return { valid: false };
   }
-  return result;
+  const locationCode = bic.slice(6, 8);
+  return {
+    bankCode: bic.slice(0, 4),
+    countryCode: bic.slice(4, 6),
+    locationCode,
+    testBIC: locationCode[1] === '0',
+    branchCode: bic.length > 8 ? bic.slice(8) : null,
+    valid: true,
+  };
 }
