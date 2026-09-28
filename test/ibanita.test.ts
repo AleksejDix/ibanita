@@ -960,9 +960,9 @@ describe('IBANTools', () => {
     );
     it.each(codes)('%s account range should follow bank and branch and fit the IBAN', (code) => {
       const spec = iban.countrySpecs[code] ?? {};
-      const [start, end] = (spec.account_indentifier ?? '').split('-').map(Number);
+      const [start, end] = spec.account_indentifier ?? [0, 0];
       const identifierEnds = [spec.bank_identifier, spec.branch_indentifier].map((range) =>
-        range === undefined ? 3 : Number(range.split('-')[1]) + 4,
+        range === undefined ? 3 : range[1] + 4,
       );
       expect(start).toBeGreaterThan(Math.max(...identifierEnds));
       expect(end).toBeLessThanOrEqual(spec.chars ?? 0);

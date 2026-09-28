@@ -117,6 +117,9 @@ export interface CountrySpec {
 /** Country specifications by ISO 3166-1 alpha-2 country code. */
 export type CountryMap = Record<string, CountrySpec>;
 
+/** Position of an identifier as `[start, end]` character indexes, 0-based and inclusive. */
+export type IdentifierPosition = readonly [start: number, end: number];
+
 /** Full specification of one country, as stored in {@link countrySpecs}. */
 export interface CountrySpecInternal {
   /** IBAN length. Unset for countries that do not use IBAN. */
@@ -129,12 +132,12 @@ export interface CountrySpecInternal {
   IBANRegistry?: boolean;
   /** Whether the country takes part in SEPA. */
   SEPA?: boolean;
-  /** Position of the branch identifier within the BBAN, as `start-end` (0-based, inclusive). */
-  branch_indentifier?: string;
-  /** Position of the bank identifier within the BBAN, as `start-end` (0-based, inclusive). */
-  bank_identifier?: string;
-  /** Position of the account number within the IBAN, as `start-end` (0-based, inclusive). */
-  account_indentifier?: string;
+  /** Position of the branch identifier within the BBAN. */
+  branch_indentifier?: IdentifierPosition;
+  /** Position of the bank identifier within the BBAN. */
+  bank_identifier?: IdentifierPosition;
+  /** Position of the account number within the IBAN. */
+  account_indentifier?: IdentifierPosition;
 }
 
 /** Full country specifications by ISO 3166-1 alpha-2 country code. */

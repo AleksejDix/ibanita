@@ -5,6 +5,7 @@
 import {
   type ComposeIBANParams,
   type ExtractIBANResult,
+  type IdentifierPosition,
   type ValidateIBANOptions,
   type ValidateIBANResult,
   ValidationErrorsIBAN,
@@ -17,6 +18,10 @@ import { isValidBBAN } from './bban';
 
 const CHECKSUM_REGEX = /^[0-9]{2}$/u;
 const QRIBAN_REGEX = /^3[0-1][0-9]{3}$/u;
+
+function slicePosition(value: string, [start, end]: IdentifierPosition): string {
+  return value.slice(start, end + 1);
+}
 
 /**
  * Validate IBAN
@@ -199,22 +204,13 @@ export function extractIBAN(iban?: string | null): ExtractIBANResult {
     result.valid = true;
     const spec = ibanSpecs[result.countryCode];
     if (spec?.account_indentifier) {
-      const [start, end] = spec.account_indentifier.split('-');
-      if (start && end) {
-        result.accountNumber = result.iban.slice(parseInt(start, 10), parseInt(end, 10) + 1);
-      }
+      result.accountNumber = slicePosition(result.iban, spec.account_indentifier);
     }
     if (spec?.bank_identifier) {
-      const [start, end] = spec.bank_identifier.split('-');
-      if (start && end) {
-        result.bankIdentifier = result.bban.slice(parseInt(start, 10), parseInt(end, 10) + 1);
-      }
+      result.bankIdentifier = slicePosition(result.bban, spec.bank_identifier);
     }
     if (spec?.branch_indentifier) {
-      const [start, end] = spec.branch_indentifier.split('-');
-      if (start && end) {
-        result.branchIdentifier = result.bban.slice(parseInt(start, 10), parseInt(end, 10) + 1);
-      }
+      result.branchIdentifier = slicePosition(result.bban, spec.branch_indentifier);
     }
   }
   return result;

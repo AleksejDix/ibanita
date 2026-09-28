@@ -131,7 +131,7 @@ function parseRegistry(txtPath) {
       values.forEach((el, i) => {
         if (result[i] && el !== 'N/A' && el !== '') {
           const parts = el.split('-').map((n) => parseInt(n, 10) - 1);
-          result[i].bank_identifier = parts.join('-');
+          result[i].bank_identifier = parts;
         }
       });
     }
@@ -139,7 +139,7 @@ function parseRegistry(txtPath) {
       values.forEach((el, i) => {
         if (result[i] && el !== 'N/A' && el !== '') {
           const parts = el.split('-').map((n) => parseInt(n, 10) - 1);
-          result[i].branch_indentifier = parts.join('-');
+          result[i].branch_indentifier = parts;
         }
       });
     }
@@ -171,10 +171,10 @@ function generateOutput(specs, registryFile) {
       output += `    SEPA: true,\n`;
     }
     if (spec.bank_identifier) {
-      output += `    bank_identifier: '${spec.bank_identifier}',\n`;
+      output += `    bank_identifier: [${spec.bank_identifier.join(', ')}],\n`;
     }
     if (spec.branch_indentifier) {
-      output += `    branch_indentifier: '${spec.branch_indentifier}',\n`;
+      output += `    branch_indentifier: [${spec.branch_indentifier.join(', ')}],\n`;
     }
     output += '  },\n';
   });

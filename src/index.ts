@@ -15,6 +15,7 @@ export type {
   CountrySpecInternal,
   ExtractBICResult,
   ExtractIBANResult,
+  IdentifierPosition,
   ValidateBICResult,
   ValidateIBANOptions,
   ValidateIBANResult,
