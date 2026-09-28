@@ -14,10 +14,10 @@ By participating, you are expected to uphold this code.
 
 ## Releasing
 
-Releases are published to npm automatically by the Release workflow when a version tag is pushed.
+Releases are published to GitHub Packages (`@aleksejdix/ibanita`) automatically by the Release workflow when a version tag is pushed.
 
 1. Update the version in `package.json` and `package-lock.json`, for example with `npm version 5.0.0 --no-git-tag-version`.
 2. Commit the change: `git commit -am "chore: release 5.0.0"`.
 3. Tag and push: `git tag v5.0.0 && git push origin master v5.0.0`.
 
-The workflow checks that the tag matches the `package.json` version, runs all checks, publishes with provenance and creates a GitHub release. Versions with a hyphen, like `5.0.0-beta.1`, are published under the `next` dist-tag and marked as pre-releases.
+The workflow checks that the tag matches the `package.json` version, runs all checks, publishes the package and creates a GitHub release. Versions with a hyphen, like `5.0.0-beta.1`, are published under the `next` dist-tag and marked as pre-releases.

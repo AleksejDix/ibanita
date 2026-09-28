@@ -29,9 +29,19 @@ For more information about BIC/SWIFT see [this wikipedia page](https://en.wikipe
 
 ## Installation
 
-```bash
-npm install github:AleksejDix/ibantools
+The package is published to GitHub Packages. Add the scope to your `.npmrc` and install:
+
+```ini
+@aleksejdix:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
 ```
+
+```bash
+npm install @aleksejdix/ibanita
+```
+
+GitHub Packages requires a token with the `read:packages` scope even for public packages.
+See [Working with the npm registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry).
 
 ## Usage
 
@@ -40,7 +50,7 @@ See the [full documentation](https://dix.consulting/ibantools) with examples on 
 ### ES Modules (Recommended)
 
 ```js
-import { isValidIBAN, validateIBAN, isValidBIC, electronicFormatIBAN } from 'ibanita';
+import { isValidIBAN, validateIBAN, isValidBIC, electronicFormatIBAN } from '@aleksejdix/ibanita';
 
 const iban = electronicFormatIBAN('NL91 ABNA 0417 1643 00'); // 'NL91ABNA0517164300'
 isValidIBAN(iban); // true
@@ -58,7 +68,7 @@ isValidBIC('ABNANL2A'); // true
 Full TypeScript support with bundled type definitions:
 
 ```typescript
-import { isValidIBAN, validateIBAN, ValidationErrorsIBAN } from 'ibanita';
+import { isValidIBAN, validateIBAN, ValidationErrorsIBAN } from '@aleksejdix/ibanita';
 
 const result = validateIBAN('NL91ABNA0417164300');
 if (!result.valid) {
@@ -73,7 +83,7 @@ Country specifications can be extended with national BBAN validations by calling
 For example, to fully syntactically check German IBAN, you can install [IBANTools-Germany](https://github.com/baumerdev/ibantools-germany):
 
 ```js
-import { setCountryBBANValidation } from 'ibanita';
+import { setCountryBBANValidation } from '@aleksejdix/ibanita';
 import { isValidBBAN } from 'ibantools-germany';
 
 setCountryBBANValidation('DE', isValidBBAN);

@@ -4,8 +4,8 @@ ibanita started as a fork of [ibantools](https://github.com/Simplify/ibantools) 
 
 ## Installation and imports
 
-- **New package name.** Install `ibanita` and change imports from `'ibantools'` to `'ibanita'`. The function names are unchanged.
-- **ES modules only.** There is no separate CommonJS build. On the supported Node versions, `require('ibanita')` still works, because Node can load ES modules with `require`.
+- **New package name.** Install `@aleksejdix/ibanita` from GitHub Packages (see the README) and change imports from `'ibantools'` to `'@aleksejdix/ibanita'`. The function names are unchanged.
+- **ES modules only.** There is no separate CommonJS build. On the supported Node versions, `require('@aleksejdix/ibanita')` still works, because Node can load ES modules with `require`.
 - **Node.js `^20.19.0 || >=22.12.0`.**
 - **MIT license only.** The MPL-2.0 option was dropped.
 

@@ -1,5 +1,5 @@
 {
-  "name": "ibanita",
+  "name": "@aleksejdix/ibanita",
   "version": "4.5.1",
   "description": "Validation, extraction and creation of IBAN, BBAN, BIC/SWIFT numbers",
   "keywords": [
@@ -50,6 +50,9 @@
     "email": "privat@aleksejdix.com"
   },
   "license": "MIT",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "devDependencies": {
     "@types/node": "^22.20.3",
     "@vitest/coverage-v8": "^4.1.7",

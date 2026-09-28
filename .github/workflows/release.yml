@@ -6,23 +6,20 @@ on:
 
 permissions:
   contents: write # create the GitHub release
-  id-token: write # npm trusted publishing and provenance
+  packages: write # publish to GitHub Packages
 
 jobs:
   release:
     name: Publish ${{ github.ref_name }}
     runs-on: ubuntu-latest
-    environment: npm
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22.x
           cache: npm
-          registry-url: https://registry.npmjs.org
-
-      # Trusted publishing (OIDC) needs npm 11.5.1 or later.
-      - run: npm install -g npm@latest
+          registry-url: https://npm.pkg.github.com
+          scope: '@aleksejdix'
 
       - name: Check tag matches package.json version
         run: |
@@ -37,12 +34,14 @@ jobs:
       - run: npm run build
 
       # Versions with a hyphen, like 5.0.0-beta.1, are published under the "next" dist-tag.
-      - name: Publish to npm
+      - name: Publish to GitHub Packages
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
         run: |
           if [[ "$GITHUB_REF_NAME" == *-* ]]; then
-            npm publish --provenance --access public --tag next
+            npm publish --tag next
           else
-            npm publish --provenance --access public
+            npm publish
           fi
 
       - name: Create GitHub release
