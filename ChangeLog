@@ -24,6 +24,11 @@
 	* countrySpecs is frozen; custom national validators are passed as the bbanValidators option instead of setCountryBBANValidation
 	* isValidIBAN and isValidBIC are wrappers over validateIBAN and validateBIC
 	* src/countries/specs.ts is generated from the registry and registry/overrides.mjs; national validators live in src/validators
+	* extractIBAN and extractBIC return unions on valid (ValidIBANParts, ValidBICParts)
+	* composeIBAN takes countryCode, bban and options as arguments
+	* Error codes WRONG_IBAN_LENGTH and CHECK_DIGITS_NOT_NUMERIC replace WRONG_BBAN_LENGTH and CHECKSUM_NOT_NUMBER
+	* Country specs hold a compiled bbanRegExp instead of a pattern string
+	* Åland and the French territories in SEPA are flagged as SEPA
 
 2026-05-26  Aleksej Dix
 	* Updated all dependencies to latest (oxlint 1.67, vitest 4.1.7, typedoc 0.28.19)
