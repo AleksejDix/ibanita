@@ -19,6 +19,8 @@ import { ibanSpecs } from './countries/specs';
 
 const CHECKSUM_REGEX = /^[0-9]{2}$/u;
 const QRIBAN_REGEX = /^3[0-1][0-9]{3}$/u;
+/** QR-IBANs exist in Switzerland and Liechtenstein. Their bank clearing number (IID) is in the range 30000 to 31999. */
+const QRIBAN_COUNTRIES: ReadonlySet<string> = new Set(['CH', 'LI']);
 
 function slicePosition(value: string, [start, end]: IdentifierPosition): string {
   return value.slice(start, end + 1);
@@ -126,13 +128,9 @@ export function validateIBAN(
  * ibanita.isQRIBAN("NL92ABNA0517164300");
  * ```
  */
-export function isQRIBAN(iban?: string | null): boolean {
-  if (iban === undefined || iban === null) {
-    return false;
-  }
-  const countryCode = iban.slice(0, 2);
-  const QRIBANCountries: string[] = ['LI', 'CH'];
-  if (!QRIBANCountries.includes(countryCode)) {
+export function isQRIBAN(input?: string | null): boolean {
+  const iban = electronicFormatIBAN(input);
+  if (iban === null || !QRIBAN_COUNTRIES.has(iban.slice(0, 2))) {
     return false;
   }
   return QRIBAN_REGEX.test(iban.slice(4, 9));

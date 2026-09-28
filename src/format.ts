@@ -28,9 +28,9 @@ export function electronicFormatIBAN(iban?: string | null): string | null {
  * ```
  */
 export function friendlyFormatIBAN(iban?: string | null, separator = ' '): string | null {
-  const electronic_iban = electronicFormatIBAN(iban);
-  if (electronic_iban === null) {
+  const electronicIban = electronicFormatIBAN(iban);
+  if (electronicIban === null) {
     return null;
   }
-  return electronic_iban.replace(/(.{4})(?!$)/gu, (group) => `${group}${separator}`);
+  return electronicIban.replace(/(.{4})(?!$)/gu, (group) => `${group}${separator}`);
 }

@@ -775,6 +775,9 @@ describe('iban', () => {
     it('should return true', () => {
       expect(iban.isQRIBAN('CH4431999123000889012')).toBe(true);
     });
+    it('normalises spaces and case', () => {
+      expect(iban.isQRIBAN(iban.friendlyFormatIBAN('CH4431999123000889012')?.toLowerCase())).toBe(true);
+    });
     it('should return false', () => {
       expect(iban.isQRIBAN('NL50PSTB0000054322')).toBe(false);
     });
