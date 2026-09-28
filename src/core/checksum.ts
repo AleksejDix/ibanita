@@ -2,59 +2,60 @@ import { MOD_97, MOD_97_REMAINDER } from './constants';
 
 const bbanRegexCache = new Map<string, RegExp>();
 const WHITESPACE_REGEX = /[\s.]+/gu;
+const LETTER_OFFSET = 55; // 'A'.charCodeAt(0) - 10, so A is 10, B is 11, ... Z is 35
 
-export function stripSpacesAndPeriods(str: string): string {
-  return str.replace(WHITESPACE_REGEX, '');
+/** Removes whitespace and periods, which some countries use to group BBAN digits. */
+export function stripSpacesAndPeriods(value: string): string {
+  return value.replace(WHITESPACE_REGEX, '');
 }
 
-export function checkFormatBBAN(bban: string, bformat: string): boolean {
-  let reg = bbanRegexCache.get(bformat);
-  if (!reg) {
-    reg = new RegExp(bformat, 'u');
-    bbanRegexCache.set(bformat, reg);
+/** Tests a BBAN against a country's pattern source. Compiled patterns are cached. */
+export function checkFormatBBAN(bban: string, pattern: string): boolean {
+  let regExp = bbanRegexCache.get(pattern);
+  if (!regExp) {
+    regExp = new RegExp(pattern, 'u');
+    bbanRegexCache.set(pattern, regExp);
   }
-  return reg.test(bban);
+  return regExp.test(bban);
 }
 
-export function replaceCharacterWithCode(str: string): string {
-  return str
-    .split('')
-    .map((char) => {
-      const code = char.charCodeAt(0);
-      return code >= 65 ? (code - 55).toString() : char;
-    })
-    .join('');
+/** Replaces every uppercase letter with its ISO 7064 number: A is 10, B is 11, ... Z is 35. */
+export function lettersToDigits(value: string): string {
+  return value.replace(/[A-Z]/gu, (letter) => String(letter.charCodeAt(0) - LETTER_OFFSET));
 }
 
-export function mod9710(validationString: string): number {
-  while (validationString.length > 2) {
-    const part = validationString.slice(0, 6);
-    const partInt = parseInt(part, 10);
-    if (isNaN(partInt)) {
+/**
+ * ISO 7064 MOD 97-10 remainder of a digit string of any length,
+ * computed in chunks so the number never exceeds the safe integer range.
+ * Returns NaN when the string contains anything but digits.
+ */
+export function mod9710(digits: string): number {
+  let rest = digits;
+  while (rest.length > 2) {
+    const chunk = rest.slice(0, 6);
+    const value = parseInt(chunk, 10);
+    if (isNaN(value)) {
       return NaN;
     }
-    validationString = (partInt % MOD_97) + validationString.slice(part.length);
+    rest = (value % MOD_97) + rest.slice(chunk.length);
   }
-  return parseInt(validationString, 10) % MOD_97;
+  return parseInt(rest, 10) % MOD_97;
 }
 
-export function mod9710Iban(iban: string): number {
-  return mod9710(replaceCharacterWithCode(iban.slice(4) + iban.slice(0, 4)));
+/**
+ * The two IBAN check digits for a country code and BBAN, as defined by ISO 13616:
+ * `98 - mod97(bban + countryCode + '00')`, with letters converted to numbers.
+ */
+export function ibanCheckDigits(countryCode: string, bban: string): string {
+  const remainder = mod9710(lettersToDigits(`${bban}${countryCode}00`));
+  return String(MOD_97_REMAINDER - remainder).padStart(2, '0');
 }
 
-export function isValidIBANChecksum(iban: string): boolean {
-  const countryCode: string = iban.slice(0, 2);
-  const providedChecksum: number = parseInt(iban.slice(2, 4), 10);
-  const bban: string = iban.slice(4);
-  const validationString = replaceCharacterWithCode(`${bban}${countryCode}00`);
-  const rest = mod9710(validationString);
-  return MOD_97_REMAINDER - rest === providedChecksum;
-}
-
+/** Sum of each digit multiplied by the weight at the same index. */
 export function weightedSum(digits: string, weights: readonly number[]): number {
   let sum = 0;
-  for (let idx = 0; idx < digits.length; idx++) {
-    sum += parseInt(digits.charAt(idx), 10) * weights[idx]!;
+  for (let index = 0; index < digits.length; index++) {
+    sum += Number(digits.charAt(index)) * weights[index]!;
   }
   return sum;
 }

@@ -11,8 +11,7 @@ import {
   type ValidateIBANResult,
   ValidationErrorsIBAN,
 } from './core/types';
-import { checkFormatBBAN, isValidIBANChecksum, mod9710Iban } from './core/checksum';
-import { MOD_97_REMAINDER } from './core/constants';
+import { checkFormatBBAN, ibanCheckDigits } from './core/checksum';
 import { bbanValidatorFor } from './bban';
 import { electronicFormatIBAN } from './format';
 import { ibanSpecs } from './countries/specs';
@@ -102,7 +101,10 @@ export function validateIBAN(
       result.valid = false;
       result.errorCodes.push(ValidationErrorsIBAN.ChecksumNotNumber);
     }
-    if (result.errorCodes.includes(ValidationErrorsIBAN.WrongBBANFormat) || !isValidIBANChecksum(iban)) {
+    if (
+      result.errorCodes.includes(ValidationErrorsIBAN.WrongBBANFormat) ||
+      iban.slice(2, 4) !== ibanCheckDigits(iban.slice(0, 2), iban.slice(4))
+    ) {
       result.valid = false;
       result.errorCodes.push(ValidationErrorsIBAN.WrongIBANChecksum);
     }
@@ -164,8 +166,7 @@ export function composeIBAN(
     checkFormatBBAN(formattedBban, spec.bbanPattern) &&
     (bbanValidatorFor(params.countryCode, options)?.(formattedBban) ?? true)
   ) {
-    const checkDigits = mod9710Iban(`${params.countryCode}00${formattedBban}`);
-    return `${params.countryCode}${`0${MOD_97_REMAINDER - checkDigits}`.slice(-2)}${formattedBban}`;
+    return `${params.countryCode}${ibanCheckDigits(params.countryCode, formattedBban)}${formattedBban}`;
   }
   return null;
 }
