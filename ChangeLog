@@ -14,6 +14,11 @@
 	* Replaced TypeDoc with deno doc, documented every public type, and published docs at https://dix.consulting/ibantools
 	* Added CI, CodeQL and a tag-triggered npm release workflow
 	* Licensed under MIT only
+	* isValidIBAN and validateIBAN accept IBANs with spaces, dashes and lowercase letters
+	* allowQRIBAN is optional in ValidateIBANOptions
+	* branchCode and testBIC are optional in ExtractBICResult
+	* Identifier positions in countrySpecs are [start, end] tuples
+	* Published to GitHub Packages as @aleksejdix/ibanita
 
 2026-05-26  Aleksej Dix
 	* Updated all dependencies to latest (oxlint 1.67, vitest 4.1.7, typedoc 0.28.19)
