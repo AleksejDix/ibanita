@@ -90,3 +90,13 @@ describe('countries', () => {
     });
   });
 });
+
+describe('SEPA membership', () => {
+  // EU and EEA members, Switzerland, the United Kingdom, the microstates, Gibraltar, Åland and the French territories in SEPA.
+  const SEPA = `AD AT AX BE BG BL CH CY CZ DE DK EE ES FI FR GB GF GI GP GR HR HU IE IS IT LI LT LU LV MC MF MQ MT NL NO PL PM PT RE RO SE SI SK SM VA YT`;
+  it('matches the SEPA country list', () => {
+    const specs = iban.getCountrySpecifications();
+    const sepa = Object.keys(specs).filter((code) => specs[code]?.sepa === true);
+    expect(sepa).toEqual(SEPA.split(' '));
+  });
+});

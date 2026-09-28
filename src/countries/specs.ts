@@ -61,7 +61,7 @@ export const ibanSpecs: Readonly<Record<string, IBANCountrySpec>> = Object.freez
     ibanLength: 18,
     bbanRegExp: /^[0-9]{14}$/u,
     ibanRegistry: true,
-    sepa: false,
+    sepa: true,
   }),
   AZ: Object.freeze<IBANCountrySpec>({
     ibanLength: 28,
@@ -130,7 +130,7 @@ export const ibanSpecs: Readonly<Record<string, IBANCountrySpec>> = Object.freez
     ibanLength: 27,
     bbanRegExp: /^[0-9]{10}[A-Z0-9]{11}[0-9]{2}$/u,
     ibanRegistry: false,
-    sepa: false,
+    sepa: true,
   }),
   BR: Object.freeze<IBANCountrySpec>({
     ibanLength: 29,
@@ -337,7 +337,7 @@ export const ibanSpecs: Readonly<Record<string, IBANCountrySpec>> = Object.freez
     ibanLength: 27,
     bbanRegExp: /^[0-9]{10}[A-Z0-9]{11}[0-9]{2}$/u,
     ibanRegistry: true,
-    sepa: false,
+    sepa: true,
   }),
   GI: Object.freeze<IBANCountrySpec>({
     ibanLength: 23,
@@ -359,7 +359,7 @@ export const ibanSpecs: Readonly<Record<string, IBANCountrySpec>> = Object.freez
     ibanLength: 27,
     bbanRegExp: /^[0-9]{10}[A-Z0-9]{11}[0-9]{2}$/u,
     ibanRegistry: true,
-    sepa: false,
+    sepa: true,
   }),
   GQ: Object.freeze<IBANCountrySpec>({
     ibanLength: 27,
@@ -584,7 +584,7 @@ export const ibanSpecs: Readonly<Record<string, IBANCountrySpec>> = Object.freez
     ibanLength: 27,
     bbanRegExp: /^[0-9]{10}[A-Z0-9]{11}[0-9]{2}$/u,
     ibanRegistry: true,
-    sepa: false,
+    sepa: true,
   }),
   MG: Object.freeze<IBANCountrySpec>({
     ibanLength: 27,
@@ -618,7 +618,7 @@ export const ibanSpecs: Readonly<Record<string, IBANCountrySpec>> = Object.freez
     ibanLength: 27,
     bbanRegExp: /^[0-9]{10}[A-Z0-9]{11}[0-9]{2}$/u,
     ibanRegistry: true,
-    sepa: false,
+    sepa: true,
   }),
   MR: Object.freeze<IBANCountrySpec>({
     ibanLength: 27,
@@ -723,7 +723,7 @@ export const ibanSpecs: Readonly<Record<string, IBANCountrySpec>> = Object.freez
     ibanLength: 27,
     bbanRegExp: /^[0-9]{10}[A-Z0-9]{11}[0-9]{2}$/u,
     ibanRegistry: true,
-    sepa: false,
+    sepa: true,
   }),
   PS: Object.freeze<IBANCountrySpec>({
     ibanLength: 29,
@@ -753,7 +753,7 @@ export const ibanSpecs: Readonly<Record<string, IBANCountrySpec>> = Object.freez
     ibanLength: 27,
     bbanRegExp: /^[0-9]{10}[A-Z0-9]{11}[0-9]{2}$/u,
     ibanRegistry: true,
-    sepa: false,
+    sepa: true,
   }),
   RO: Object.freeze<IBANCountrySpec>({
     ibanLength: 24,
@@ -963,6 +963,6 @@ export const ibanSpecs: Readonly<Record<string, IBANCountrySpec>> = Object.freez
     ibanLength: 27,
     bbanRegExp: /^[0-9]{10}[A-Z0-9]{11}[0-9]{2}$/u,
     ibanRegistry: true,
-    sepa: false,
+    sepa: true,
   }),
 });
