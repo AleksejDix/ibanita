@@ -14,7 +14,6 @@ import { checkFormatBBAN, isValidIBANChecksum, mod9710Iban } from './core/checks
 import { MOD_97_REMAINDER } from './core/constants';
 import { electronicFormatIBAN } from './format';
 import { ibanSpecs } from './countries/specs';
-import { isValidBBAN } from './bban';
 
 const CHECKSUM_REGEX = /^[0-9]{2}$/u;
 const QRIBAN_REGEX = /^3[0-1][0-9]{3}$/u;
@@ -48,25 +47,7 @@ export function isValidIBAN(
   input: string | null | undefined,
   validationOptions: Readonly<ValidateIBANOptions> = {},
 ): boolean {
-  const iban = electronicFormatIBAN(input);
-  if (iban === null) {
-    return false;
-  }
-
-  const countryCode = iban.slice(0, 2);
-  const spec = ibanSpecs[countryCode];
-
-  if (spec === undefined || spec.bban_regexp === undefined || spec.bban_regexp === null || spec.chars === undefined) {
-    return false;
-  }
-
-  return (
-    spec.chars === iban.length &&
-    CHECKSUM_REGEX.test(iban.slice(2, 4)) &&
-    isValidBBAN(iban.slice(4), countryCode) &&
-    isValidIBANChecksum(iban) &&
-    (validationOptions.allowQRIBAN !== false || !isQRIBAN(iban))
-  );
+  return validateIBAN(input, validationOptions).valid;
 }
 
 /**

@@ -25,10 +25,7 @@ const BIC_REGEX = /^[a-zA-Z]{6}[a-zA-Z0-9]{2}([a-zA-Z0-9]{3})?$/u;
  * ```
  */
 export function isValidBIC(bic: string | null | undefined): boolean {
-  if (!bic) {
-    return false;
-  }
-  return BIC_REGEX.test(bic) && COUNTRY_CODES.has(bic.toUpperCase().slice(4, 6));
+  return validateBIC(bic).valid;
 }
 
 /**
