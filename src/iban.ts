@@ -20,6 +20,8 @@ const QRIBAN_REGEX = /^3[0-1][0-9]{3}$/u;
 
 /**
  * Validate IBAN
+ *
+ * Spaces and dashes are removed and letters are uppercased before validation.
  * ```
  * // returns true
  * ibanita.isValidIBAN("NL91ABNA0417164300");
@@ -38,10 +40,11 @@ const QRIBAN_REGEX = /^3[0-1][0-9]{3}$/u;
  * ```
  */
 export function isValidIBAN(
-  iban: string | null | undefined,
+  input: string | null | undefined,
   validationOptions: Readonly<ValidateIBANOptions> = {},
 ): boolean {
-  if (iban === undefined || iban === null) {
+  const iban = electronicFormatIBAN(input);
+  if (iban === null) {
     return false;
   }
 
@@ -63,6 +66,8 @@ export function isValidIBAN(
 
 /**
  * validateIBAN
+ *
+ * Spaces and dashes are removed and letters are uppercased before validation.
  * ```
  * // returns {errorCodes: [], valid: true}
  * ibanita.validateIBAN("NL91ABNA0417164300");
@@ -78,11 +83,12 @@ export function isValidIBAN(
  * ```
  */
 export function validateIBAN(
-  iban?: string | null,
+  input?: string | null,
   validationOptions: Readonly<ValidateIBANOptions> = {},
 ): ValidateIBANResult {
   const result: ValidateIBANResult = { errorCodes: [], valid: true };
-  if (iban !== undefined && iban !== null && iban !== '') {
+  const iban = electronicFormatIBAN(input);
+  if (iban !== null && iban !== '') {
     const spec = ibanSpecs[iban.slice(0, 2)];
     if (!spec || !(spec.bban_regexp || spec.chars)) {
       result.valid = false;

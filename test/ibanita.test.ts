@@ -51,8 +51,8 @@ describe('IBANTools', () => {
     it('with valid IQ IBAN should return true', () => {
       expect(iban.isValidIBAN('IQ98NBIQ850123456789012')).toBe(true);
     });
-    it('with valid IQ IBAN with space it should return false', () => {
-      expect(iban.isValidIBAN('IQ98 NBIQ 8501 2345 6789 012')).toBe(false);
+    it('with valid IQ IBAN with space it should return true', () => {
+      expect(iban.isValidIBAN('IQ98 NBIQ 8501 2345 6789 012')).toBe(true);
     });
     it('with valid JO IBAN should return true', () => {
       expect(iban.isValidIBAN('JO94CBJO0010000000000131000302')).toBe(true);
@@ -351,25 +351,18 @@ describe('IBANTools', () => {
       });
     });
 
-    it('with valid IBAN separeted with spaces returns false', () => {
-      expect(iban.validateIBAN('NL91 ABNA 0417 1643 00')).toEqual({
-        valid: false,
-        errorCodes: [
-          iban.ValidationErrorsIBAN.WrongBBANLength,
-          iban.ValidationErrorsIBAN.WrongBBANFormat,
-          iban.ValidationErrorsIBAN.WrongIBANChecksum,
-        ],
-      });
+    it('with valid IBAN separated with spaces returns true', () => {
+      expect(iban.validateIBAN('NL91 ABNA 0417 1643 00')).toEqual({ valid: true, errorCodes: [] });
     });
 
-    it('with IBAN separeted with dashes returns false', () => {
-      expect(iban.validateIBAN('FR76-4097-8265-8510-1221-2598-123')).toEqual({
-        valid: false,
-        errorCodes: [
-          iban.ValidationErrorsIBAN.WrongBBANLength,
-          iban.ValidationErrorsIBAN.WrongBBANFormat,
-          iban.ValidationErrorsIBAN.WrongIBANChecksum,
-        ],
+    it('with valid IBAN separated with dashes returns true', () => {
+      expect(iban.validateIBAN('NL91-ABNA-0417-1643-00')).toEqual({ valid: true, errorCodes: [] });
+    });
+
+    it('with valid lowercase IBAN returns true', () => {
+      expect(iban.validateIBAN('NL91 ABNA 0417 1643 00'.toLowerCase())).toEqual({
+        valid: true,
+        errorCodes: [],
       });
     });
 

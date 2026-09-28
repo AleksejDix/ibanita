@@ -17,6 +17,7 @@ ibanita started as a fork of [ibantools](https://github.com/Simplify/ibantools) 
 | `isValidIBAN`, `validateIBAN` | Accepted Czech and Slovak IBANs whose check digit was 1 for weighted-sum remainder 1 | Rejects them, following the official mod-11 rule | Nothing. These IBANs were invalid |
 | `validateIBAN` | Added `WrongAccountBankBranchChecksum` (6) when the length or format was already wrong | Only reports length, format and checksum errors | Don't rely on code 6 for malformed input |
 | `validateBIC` | Reported `NoBICCountry` for malformed input such as `AB` | Reports `WrongBICFormat` | Check for code 2 for malformed input |
+| `isValidIBAN`, `validateIBAN` | Rejected IBANs with spaces, dashes or lowercase letters | Removes spaces and dashes and uppercases letters first, like `extractIBAN` | Nothing, unless you relied on the rejection. Call `electronicFormatIBAN` yourself and compare, if you must reject formatted input |
 
 ## Country formats follow the SWIFT IBAN Registry
 
