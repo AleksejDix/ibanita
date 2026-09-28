@@ -12,11 +12,11 @@ import {
   ValidationErrorsIBAN,
 } from './core/types';
 import { checkFormatBBAN, ibanCheckDigits } from './core/checksum';
-import { bbanValidatorFor } from './bban';
+import { bbanValidatorFor, isValidBBAN } from './bban';
 import { electronicFormatIBAN } from './format';
 import { ibanSpecs } from './countries/specs';
 
-const CHECKSUM_REGEX = /^[0-9]{2}$/u;
+const CHECK_DIGITS_REGEX = /^[0-9]{2}$/u;
 const QRIBAN_REGEX = /^3[0-1][0-9]{3}$/u;
 /** QR-IBANs exist in Switzerland and Liechtenstein. Their bank clearing number (IID) is in the range 30000 to 31999. */
 const QRIBAN_COUNTRIES: ReadonlySet<string> = new Set(['CH', 'LI']);
@@ -75,48 +75,41 @@ export function validateIBAN(
   input?: string | null,
   validationOptions: Readonly<ValidateIBANOptions> = {},
 ): ValidateIBANResult {
-  const result: ValidateIBANResult = { errorCodes: [], valid: true };
-  const iban = electronicFormatIBAN(input);
-  if (iban !== null && iban !== '') {
-    const spec = ibanSpecs[iban.slice(0, 2)];
-    if (!spec || !(spec.bbanPattern || spec.ibanLength)) {
-      result.valid = false;
-      result.errorCodes.push(ValidationErrorsIBAN.NoIBANCountry);
-      return result;
-    }
-    if (spec && spec.ibanLength && spec.ibanLength !== iban.length) {
-      result.valid = false;
-      result.errorCodes.push(ValidationErrorsIBAN.WrongBBANLength);
-    }
-    if (spec && spec.bbanPattern && !checkFormatBBAN(iban.slice(4), spec.bbanPattern)) {
-      result.valid = false;
-      result.errorCodes.push(ValidationErrorsIBAN.WrongBBANFormat);
-    }
-    const validator = bbanValidatorFor(iban.slice(0, 2), validationOptions);
-    if (result.valid && validator && !validator(iban.slice(4))) {
-      result.valid = false;
-      result.errorCodes.push(ValidationErrorsIBAN.WrongAccountBankBranchChecksum);
-    }
-    if (!CHECKSUM_REGEX.test(iban.slice(2, 4))) {
-      result.valid = false;
-      result.errorCodes.push(ValidationErrorsIBAN.ChecksumNotNumber);
-    }
-    if (
-      result.errorCodes.includes(ValidationErrorsIBAN.WrongBBANFormat) ||
-      iban.slice(2, 4) !== ibanCheckDigits(iban.slice(0, 2), iban.slice(4))
-    ) {
-      result.valid = false;
-      result.errorCodes.push(ValidationErrorsIBAN.WrongIBANChecksum);
-    }
-    if (validationOptions.allowQRIBAN === false && isQRIBAN(iban)) {
-      result.valid = false;
-      result.errorCodes.push(ValidationErrorsIBAN.QRIBANNotAllowed);
-    }
-  } else {
-    result.valid = false;
-    result.errorCodes.push(ValidationErrorsIBAN.NoIBANProvided);
+  const errorCodes: ValidationErrorsIBAN[] = [];
+  const iban = electronicFormatIBAN(input) ?? '';
+  if (iban === '') {
+    return { errorCodes: [ValidationErrorsIBAN.NoIBANProvided], valid: false };
   }
-  return result;
+  const countryCode = iban.slice(0, 2);
+  const checkDigits = iban.slice(2, 4);
+  const bban = iban.slice(4);
+  const spec = ibanSpecs[countryCode];
+  if (spec === undefined) {
+    return { errorCodes: [ValidationErrorsIBAN.NoIBANCountry], valid: false };
+  }
+
+  if (spec.ibanLength !== iban.length) {
+    errorCodes.push(ValidationErrorsIBAN.WrongBBANLength);
+  }
+  const wrongFormat = !checkFormatBBAN(bban, spec.bbanPattern);
+  if (wrongFormat) {
+    errorCodes.push(ValidationErrorsIBAN.WrongBBANFormat);
+  }
+  // The national checksum is only meaningful when length and format are right.
+  const validator = bbanValidatorFor(countryCode, validationOptions);
+  if (errorCodes.length === 0 && validator !== undefined && !validator(bban)) {
+    errorCodes.push(ValidationErrorsIBAN.WrongAccountBankBranchChecksum);
+  }
+  if (!CHECK_DIGITS_REGEX.test(checkDigits)) {
+    errorCodes.push(ValidationErrorsIBAN.ChecksumNotNumber);
+  }
+  if (wrongFormat || checkDigits !== ibanCheckDigits(countryCode, bban)) {
+    errorCodes.push(ValidationErrorsIBAN.WrongIBANChecksum);
+  }
+  if (validationOptions.allowQRIBAN === false && isQRIBAN(iban)) {
+    errorCodes.push(ValidationErrorsIBAN.QRIBANNotAllowed);
+  }
+  return { errorCodes, valid: errorCodes.length === 0 };
 }
 
 /**
@@ -150,25 +143,12 @@ export function composeIBAN(
   params: Readonly<ComposeIBANParams>,
   options: Readonly<BBANValidationOptions> = {},
 ): string | null {
-  const formattedBban: string = electronicFormatIBAN(params.bban ?? undefined) ?? '';
-  if (params.countryCode === null || params.countryCode === undefined) {
+  const { countryCode } = params;
+  const bban = electronicFormatIBAN(params.bban) ?? '';
+  if (countryCode === undefined || countryCode === null || !isValidBBAN(bban, countryCode, options)) {
     return null;
   }
-  const spec = ibanSpecs[params.countryCode];
-  if (
-    formattedBban !== '' &&
-    spec !== undefined &&
-    spec.ibanLength &&
-    spec.ibanLength !== null &&
-    spec.ibanLength === formattedBban.length + 4 &&
-    spec.bbanPattern &&
-    spec.bbanPattern !== null &&
-    checkFormatBBAN(formattedBban, spec.bbanPattern) &&
-    (bbanValidatorFor(params.countryCode, options)?.(formattedBban) ?? true)
-  ) {
-    return `${params.countryCode}${ibanCheckDigits(params.countryCode, formattedBban)}${formattedBban}`;
-  }
-  return null;
+  return `${countryCode}${ibanCheckDigits(countryCode, bban)}${bban}`;
 }
 
 /**

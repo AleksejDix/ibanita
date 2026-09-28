@@ -35,13 +35,8 @@ export function isValidBBAN(
   if (bban === undefined || bban === null || countryCode === undefined || countryCode === null) {
     return false;
   }
-
   const spec = ibanSpecs[countryCode];
-  if (spec?.bbanPattern === undefined || spec.ibanLength === undefined) {
-    return false;
-  }
-
-  if (spec.ibanLength - 4 !== bban.length || !checkFormatBBAN(bban, spec.bbanPattern)) {
+  if (spec === undefined || spec.ibanLength - 4 !== bban.length || !checkFormatBBAN(bban, spec.bbanPattern)) {
     return false;
   }
   const validator = bbanValidatorFor(countryCode, options);

@@ -118,20 +118,20 @@ export type IdentifierPosition = readonly [start: number, end: number];
 export type BBANValidator = (bban: string) => boolean;
 
 /**
- * Specification of one country, as stored in {@link countrySpecs}. All fields are unset for countries without IBAN.
- * The data is frozen. Pass {@link BBANValidationOptions.bbanValidators} to change validation for a country.
+ * Specification of a country that uses IBAN. The data is frozen.
+ * Pass {@link BBANValidationOptions.bbanValidators} to change validation for a country.
  */
-export interface CountrySpec {
+export interface IBANCountrySpec {
   /** IBAN length. */
-  readonly ibanLength?: number;
+  readonly ibanLength: number;
   /** Regular expression source for the BBAN. */
-  readonly bbanPattern?: string;
+  readonly bbanPattern: string;
+  /** Whether the country is listed in the SWIFT IBAN Registry. */
+  readonly ibanRegistry: boolean;
+  /** Whether the country takes part in SEPA. */
+  readonly sepa: boolean;
   /** Built-in national checksum validation for the BBAN. */
   readonly bbanValidator?: BBANValidator;
-  /** Whether the country is listed in the SWIFT IBAN Registry. */
-  readonly ibanRegistry?: boolean;
-  /** Whether the country takes part in SEPA. */
-  readonly sepa?: boolean;
   /** Position of the bank identifier within the BBAN. */
   readonly bankPosition?: IdentifierPosition;
   /** Position of the branch identifier within the BBAN. */
@@ -139,6 +139,9 @@ export interface CountrySpec {
   /** Position of the account number within the IBAN. */
   readonly accountPosition?: IdentifierPosition;
 }
+
+/** Specification of one country, as stored in {@link countrySpecs}. All fields are unset for countries without IBAN. */
+export type CountrySpec = Partial<IBANCountrySpec>;
 
 /** Country specifications by ISO 3166-1 alpha-2 country code. */
 export type CountryMap = Readonly<Record<string, CountrySpec>>;

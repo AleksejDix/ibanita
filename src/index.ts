@@ -15,6 +15,7 @@ export type {
   CountrySpec,
   ExtractBICResult,
   ExtractIBANResult,
+  IBANCountrySpec,
   IdentifierPosition,
   ValidateBICResult,
   ValidateIBANOptions,
