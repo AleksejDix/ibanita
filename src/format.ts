@@ -27,13 +27,8 @@ export function electronicFormatIBAN(iban?: string | null): string | null {
  * friendlyFormatIBAN("NL91ABNA0417164300","-");
  * ```
  */
-export function friendlyFormatIBAN(iban?: string | null, separator?: string): string | null {
-  if (typeof iban !== 'string') {
-    return null;
-  }
-  separator ??= ' ';
+export function friendlyFormatIBAN(iban?: string | null, separator = ' '): string | null {
   const electronic_iban = electronicFormatIBAN(iban);
-  /* istanbul ignore if */
   if (electronic_iban === null) {
     return null;
   }

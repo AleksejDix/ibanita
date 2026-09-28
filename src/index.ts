@@ -5,8 +5,6 @@
  * @version 4.5.1
  * @license MIT
  */
-'use strict';
-
 // Re-export all public types
 export { ValidationErrorsBIC, ValidationErrorsIBAN } from './core/types';
 export type {

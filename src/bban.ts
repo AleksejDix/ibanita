@@ -2,8 +2,6 @@
  * BBAN validation functions
  * @module bban
  */
-'use strict';
-
 import { checkFormatBBAN, stripSpacesAndPeriods } from './core/checksum';
 import { ibanSpecs } from './countries/specs';
 

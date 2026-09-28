@@ -2,8 +2,6 @@
  * BIC/SWIFT validation and extraction functions
  * @module bic
  */
-'use strict';
-
 import { type ExtractBICResult, type ValidateBICResult, ValidationErrorsBIC } from './core/types';
 import { COUNTRY_CODES } from './countries/codes';
 

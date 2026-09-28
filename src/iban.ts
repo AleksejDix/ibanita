@@ -2,8 +2,6 @@
  * IBAN validation, extraction, and creation functions
  * @module iban
  */
-'use strict';
-
 import {
   type ComposeIBANParams,
   type ExtractIBANResult,

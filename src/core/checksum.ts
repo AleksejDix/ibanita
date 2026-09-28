@@ -16,7 +16,7 @@ export function checkFormatBBAN(bban: string, bformat: string): boolean {
   return reg.test(bban);
 }
 
-export function replaceCharaterWithCode(str: string): string {
+export function replaceCharacterWithCode(str: string): string {
   return str
     .split('')
     .map((char) => {
@@ -39,14 +39,14 @@ export function mod9710(validationString: string): number {
 }
 
 export function mod9710Iban(iban: string): number {
-  return mod9710(replaceCharaterWithCode(iban.slice(4) + iban.slice(0, 4)));
+  return mod9710(replaceCharacterWithCode(iban.slice(4) + iban.slice(0, 4)));
 }
 
 export function isValidIBANChecksum(iban: string): boolean {
   const countryCode: string = iban.slice(0, 2);
   const providedChecksum: number = parseInt(iban.slice(2, 4), 10);
   const bban: string = iban.slice(4);
-  const validationString = replaceCharaterWithCode(`${bban}${countryCode}00`);
+  const validationString = replaceCharacterWithCode(`${bban}${countryCode}00`);
   const rest = mod9710(validationString);
   return MOD_97_REMAINDER - rest === providedChecksum;
 }
