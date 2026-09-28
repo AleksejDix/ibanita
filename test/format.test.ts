@@ -29,14 +29,12 @@ describe('format', () => {
   });
 
   describe('When calling friendlyFormatIBAN() with invalid argument', () => {
-    it('returns null when undefined is provided', () => {
-      expect(iban.friendlyFormatIBAN(undefined)).toBeNull();
-    });
-    it('returns null when null is provided', () => {
-      expect(iban.friendlyFormatIBAN(null)).toBeNull();
-    });
-    it('returns empty string when empty string is provided', () => {
-      expect(iban.friendlyFormatIBAN('')).toBe('');
+    it.each<[string | null | undefined, string | null]>([
+      [undefined, null],
+      [null, null],
+      ['', ''],
+    ])('friendlyFormatIBAN(%s)', (input, expected) => {
+      expect(iban.friendlyFormatIBAN(input)).toBe(expected);
     });
   });
 });

@@ -15,17 +15,13 @@ describe('countries', () => {
   });
 
   describe('When calling isSEPACountry()', () => {
-    it('with valid country code NL should return true', () => {
-      expect(iban.isSEPACountry('NL')).toBe(true);
-    });
-    it('with undefined country code should return false', () => {
-      expect(iban.isSEPACountry(undefined)).toBe(false);
-    });
-    it('with valid country code PK return false', () => {
-      expect(iban.isSEPACountry('PK')).toBe(false);
-    });
-    it('with non valid country code XX return false', () => {
-      expect(iban.isSEPACountry('XX')).toBe(false);
+    it.each<[string | null | undefined, boolean]>([
+      ['NL', true],
+      [undefined, false],
+      ['PK', false],
+      ['XX', false],
+    ])('isSEPACountry(%s)', (countryCode, expected) => {
+      expect(iban.isSEPACountry(countryCode)).toBe(expected);
     });
   });
 
