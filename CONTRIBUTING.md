@@ -6,7 +6,7 @@ This project adheres to the Contributor Covenant [code of conduct](.github/CODE_
 By participating, you are expected to uphold this code.
 
 * Clone this repo and run `npm install`.
-* Write tests for your changes in `test/ibanita.test.ts`.
+* Write tests for your changes in the matching `test/<module>.test.ts` file.
 * Write what you did in `ChangeLog` file.
 * Before making pull requests run `npm run all`.
 * Make sure that test coverage stays at 100%.

@@ -39,7 +39,9 @@ npm run all
 
 ## Testing
 
-- `test/ibanita.test.ts`: unit tests for the public API
+One test file per source module in `test/`:
+
+- `test/iban.test.ts`, `test/bic.test.ts`, `test/bban.test.ts`, `test/format.test.ts`, `test/countries.test.ts`, `test/checksum.test.ts`: unit tests for the public API of that module
 - `test/registry.test.ts`: checks every country against the latest `registry/iban-registry-vXXX.txt` (formats, lengths, flags, example IBANs, identifier positions)
 - **Coverage requirement: 100%** - All pull requests must maintain 100% test coverage
 - Run `npm run coverage` to verify coverage before committing
@@ -48,39 +50,48 @@ npm run all
 
 ### Modular Structure
 
-The library is organized into focused modules for maintainability and tree-shaking:
+One module per concern. Functions take their input and options and return a result; nothing is mutated.
 
 ```
 src/
 ├── index.ts                 # Main barrel (re-exports all public API)
 ├── iban.ts                  # IBAN functions (isValidIBAN, validateIBAN, composeIBAN, extractIBAN, isQRIBAN)
 ├── bic.ts                   # BIC functions (isValidBIC, validateBIC, extractBIC)
-├── bban.ts                  # BBAN functions (isValidBBAN)
-├── bban-validators.ts       # Country-specific BBAN checksum validators
+├── bban.ts                  # BBAN functions (isValidBBAN, bbanValidatorFor)
 ├── format.ts                # Format utilities (electronicFormatIBAN, friendlyFormatIBAN)
 ├── core/
 │   ├── constants.ts         # MOD_97, MOD_97_REMAINDER
-│   ├── types.ts             # All interfaces, types, enums
-│   └── checksum.ts          # Internal utilities (mod9710, checkFormatBBAN, weightedSum, etc.)
+│   ├── types.ts             # All public types, options, results and error codes
+│   └── checksum.ts          # Shared arithmetic (mod9710, weightedSum, mod11CheckDigit, checkMod1110, checkFormatBBAN)
+├── validators/              # One national BBAN checksum per file, named by country code
+│   ├── be.ts, no.ts, pl.ts, es.ts, hr.ts, ee.ts, hu.ts, fr.ts (FR and MC), cz-sk.ts (CZ and SK)
+│   └── mod97-10.ts          # BA, ME, MK, PT, RS, SI
 └── countries/
     ├── codes.ts             # COUNTRY_CODES: all 250 country codes (used by BIC functions)
-    ├── registry.ts          # registrySpecs: generated from the SWIFT IBAN Registry (do not edit)
-    ├── specs.ts             # ibanSpecs: registrySpecs merged with hand-maintained overrides
+    ├── specs.ts             # ibanSpecs: GENERATED from registry/ (do not edit), one frozen entry per IBAN country
     ├── all.ts               # countrySpecs: all countries, built from codes.ts and specs.ts
-    └── sepa.ts              # Country utilities (isSEPACountry, getCountrySpecifications, setCountryBBANValidation)
+    └── sepa.ts              # Country utilities (isSEPACountry, getCountrySpecifications)
 ```
 
 ### Public API
 
 All public functions are re-exported from `src/index.ts`:
 
-1. **Validation Functions**: `isValidIBAN()`, `isValidBBAN()`, `isValidBIC()`
-2. **Detailed Validation**: `validateIBAN()`, `validateBIC()` - return error codes for debugging
+1. **Validation Functions**: `isValidIBAN()`, `isValidBBAN()`, `isValidBIC()` - thin wrappers that return `validateX().valid`
+2. **Detailed Validation**: `validateIBAN()`, `validateBIC()` - return string error codes such as `WRONG_BBAN_FORMAT`
 3. **Creation**: `composeIBAN()` - generates valid IBANs from country code + BBAN
 4. **Extraction**: `extractIBAN()`, `extractBIC()` - parse and extract components
 5. **Formatting**: `electronicFormatIBAN()`, `friendlyFormatIBAN()`
-6. **Utilities**: `isSEPACountry()`, `isQRIBAN()`, `getCountrySpecifications()`, `setCountryBBANValidation()`
-7. **Data**: `countrySpecs` - country specification object
+6. **Utilities**: `isSEPACountry()`, `isQRIBAN()`, `getCountrySpecifications()`
+7. **Data**: `countrySpecs` - frozen country specification object
+
+`isValidIBAN` and `validateIBAN` normalise their input first (spaces and dashes removed, uppercased), like `extractIBAN`.
+
+### Options
+
+- `ValidateIBANOptions` for `isValidIBAN` and `validateIBAN`: `allowQRIBAN` (default true) and `bbanValidators`.
+- `BBANValidationOptions` for `isValidBBAN` and `composeIBAN`: `bbanValidators`.
+- `bbanValidators` maps a country code to a `BBANValidator` that replaces the built-in national checksum for that country. `bbanValidatorFor` in `src/bban.ts` resolves the validator. This is the only extension point; the data is frozen.
 
 ### Country Specifications (`countrySpecs`)
 
@@ -88,17 +99,17 @@ The data is split so bundlers only include what a function needs:
 
 - `ibanSpecs` (`src/countries/specs.ts`) holds the countries that use IBAN. IBAN, BBAN and SEPA functions read it.
 - `COUNTRY_CODES` (`src/countries/codes.ts`) lists all country codes. BIC functions read it. Every `ibanSpecs` country must be listed here, and a test checks this.
-- `countrySpecs` (`src/countries/all.ts`), the public export, has every country, with empty specs for countries without IBAN. It shares the spec objects with `ibanSpecs`, so `setCountryBBANValidation` affects validation.
+- `countrySpecs` (`src/countries/all.ts`), the public export, has every country, with a shared empty spec for countries without IBAN. `getCountrySpecifications()` returns it.
 
-Each spec includes:
+Each `CountrySpec` (all fields camelCase, all optional, all `readonly`):
 
 - `ibanLength`: IBAN length
-- `bbanPattern`: Regex pattern for BBAN validation
-- `bbanValidator`: Optional function for advanced validation (e.g., checksum validation for NO, BE, ES, HR, CZ, SK, EE, FR, MC, HU, PL)
+- `bbanPattern`: Regex source for BBAN validation
+- `bbanValidator`: Built-in national checksum function
 - `ibanRegistry`: Whether country is in official SWIFT IBAN Registry
-- `SEPA`: Whether country participates in SEPA
-- `bankPosition`, `branchPosition`: `[start, end]` positions within the BBAN, 0-based and inclusive (generated by the registry builder)
-- `accountPosition`: `[start, end]` position within the full IBAN, maintained by hand (the registry has no account position)
+- `sepa`: Whether country participates in SEPA
+- `bankPosition`, `branchPosition`: `[start, end]` positions within the BBAN, 0-based and inclusive (from the registry)
+- `accountPosition`: `[start, end]` position within the full IBAN (from the overrides; the registry has no account position)
 
 ### IBAN Validation Algorithm
 
@@ -109,27 +120,13 @@ IBAN validation uses MOD-97-10 checksum (ISO 7064):
 4. Calculate MOD 97 on the numeric string in chunks (handles >30 digit integers)
 5. Compare `98 - remainder` with provided checksum
 
-### Country-Specific BBAN Validation
+### National BBAN Validation
 
-Located in `src/bban-validators.ts`, these functions provide additional BBAN validation beyond regex matching:
-- **Belgium (BE)**: `checkBelgianBBAN` - MOD-97 check on account number
-- **Norway (NO)**: `checkNorwayBBAN` - MOD-11 weighted checksum (weights: 5,4,3,2,7,6,5,4,3,2)
-- **Poland (PL)**: `checkPolandBBAN` - MOD-10 weighted checksum on bank code
-- **Spain (ES)**: `checkSpainBBAN` - Dual MOD-11 checksums (bank+branch, then account)
-- **Croatia (HR)**: `checkCroatianBBAN` - Dual MOD-11/10 checksums
-- **Czech (CZ) / Slovakia (SK)**: `checkCzechAndSlovakBBAN` - Dual MOD-11 checksums on prefix and suffix
-- **Estonia (EE)**: `checkEstonianBBAN` - MOD-10 weighted checksum
-- **France (FR) / Monaco (MC)**: `checkFrenchBBAN` - Letter-to-number conversion + MOD-97
-- **Hungary (HU)**: `checkHungarianBBAN` - MOD-10 weighted checksums (bank+branch, then account)
-- **Portugal (PT), Slovenia (SI), Serbia (RS), Montenegro (ME), Bosnia (BA), North Macedonia (MK)**: `checkMod9710BBAN` - MOD-97/10 on full BBAN
-
-### Extensibility
-
-External packages can add custom BBAN validation via `setCountryBBANValidation(countryCode, validationFunc)`. Example: [IBANTools-Germany](https://github.com/baumerdev/ibantools-germany) adds detailed German validation.
+Each file in `src/validators/` holds one algorithm with a doc comment that describes it. The generated `specs.ts` wires them to countries. Shared arithmetic lives in `src/core/checksum.ts`.
 
 ## IBAN Registry Updates
 
-`src/countries/registry.ts` is generated from the newest SWIFT IBAN Registry file in `registry/` by `npm run registry`; never edit it by hand. `src/countries/specs.ts` merges hand-maintained overrides over it (validators, account positions, non-registry countries, FR/SI deviations). CI fails if the generated file is out of date. See `registry/README.md` for the update steps.
+`src/countries/specs.ts` is generated by `npm run registry` from the newest SWIFT IBAN Registry file in `registry/` merged with `registry/overrides.mjs`; never edit it by hand. The builder fails when an override contradicts the registry unless the deviation is allow-listed. CI fails if the generated file is out of date. See `registry/README.md` for the update steps.
 
 ## Build Configuration
 
@@ -162,7 +159,7 @@ Before submitting PRs:
 1. Run `npm run all` to ensure tests, linting, and docs generation pass
 2. Verify 100% test coverage maintained (`npm run coverage`)
 3. Do not include changes to `dist/` directory (generated during publish)
-4. Update tests in `test/ibanita.test.ts` for any functionality changes
+4. Update the tests in `test/` for any functionality changes
 
 ## Lockfile
 

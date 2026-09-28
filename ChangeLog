@@ -19,6 +19,11 @@
 	* branchCode and testBIC are optional in ExtractBICResult
 	* Identifier positions in countrySpecs are [start, end] tuples
 	* Published to GitHub Packages as @aleksejdix/ibanita
+	* Error codes are strings, such as WRONG_BBAN_FORMAT
+	* Country spec fields are camelCase; CountrySpec and CountryMap describe the full shape
+	* countrySpecs is frozen; custom national validators are passed as the bbanValidators option instead of setCountryBBANValidation
+	* isValidIBAN and isValidBIC are wrappers over validateIBAN and validateBIC
+	* src/countries/specs.ts is generated from the registry and registry/overrides.mjs; national validators live in src/validators
 
 2026-05-26  Aleksej Dix
 	* Updated all dependencies to latest (oxlint 1.67, vitest 4.1.7, typedoc 0.28.19)
