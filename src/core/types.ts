@@ -26,7 +26,7 @@ export type ValidationErrorsIBAN = (typeof ValidationErrorsIBAN)[keyof typeof Va
 /** Options for {@link isValidIBAN} and {@link validateIBAN}. */
 export interface ValidateIBANOptions {
   /** Whether Swiss and Liechtenstein QR-IBANs count as valid. Defaults to `true`. */
-  allowQRIBAN: boolean;
+  allowQRIBAN?: boolean;
 }
 
 /** Result of {@link validateIBAN}. */

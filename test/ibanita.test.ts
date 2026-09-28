@@ -315,6 +315,9 @@ describe('IBANTools', () => {
     it('does not allows QR-IBAN when requested to do so', () => {
       expect(iban.isValidIBAN('CH4431999123000889012', { allowQRIBAN: false })).toBe(false);
     });
+    it('allows QR-IBAN with an empty options object', () => {
+      expect(iban.isValidIBAN('CH4431999123000889012', {})).toBe(true);
+    });
     it('with valid BR IBAN with alphanumeric bank code should return true', () => {
       expect(iban.isValidIBAN('BR6699999A03000010009795493C1')).toBe(true);
     });
@@ -438,6 +441,10 @@ describe('IBANTools', () => {
         valid: false,
         errorCodes: [iban.ValidationErrorsIBAN.QRIBANNotAllowed],
       });
+    });
+
+    it('allows QR-IBAN with an empty options object', () => {
+      expect(iban.validateIBAN('CH4431999123000889012', {})).toEqual({ valid: true, errorCodes: [] });
     });
 
     it('with valid Libya IBAN should return true', () => {

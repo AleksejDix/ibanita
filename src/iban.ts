@@ -39,7 +39,7 @@ const QRIBAN_REGEX = /^3[0-1][0-9]{3}$/u;
  */
 export function isValidIBAN(
   iban: string | null | undefined,
-  validationOptions: Readonly<ValidateIBANOptions> = { allowQRIBAN: true },
+  validationOptions: Readonly<ValidateIBANOptions> = {},
 ): boolean {
   if (iban === undefined || iban === null) {
     return false;
@@ -57,7 +57,7 @@ export function isValidIBAN(
     CHECKSUM_REGEX.test(iban.slice(2, 4)) &&
     isValidBBAN(iban.slice(4), countryCode) &&
     isValidIBANChecksum(iban) &&
-    (validationOptions.allowQRIBAN || !isQRIBAN(iban))
+    (validationOptions.allowQRIBAN !== false || !isQRIBAN(iban))
   );
 }
 
@@ -79,7 +79,7 @@ export function isValidIBAN(
  */
 export function validateIBAN(
   iban?: string | null,
-  validationOptions: Readonly<ValidateIBANOptions> = { allowQRIBAN: true },
+  validationOptions: Readonly<ValidateIBANOptions> = {},
 ): ValidateIBANResult {
   const result = { errorCodes: [], valid: true } as ValidateIBANResult;
   if (iban !== undefined && iban !== null && iban !== '') {
@@ -109,7 +109,7 @@ export function validateIBAN(
       result.valid = false;
       result.errorCodes.push(ValidationErrorsIBAN.WrongIBANChecksum);
     }
-    if (!validationOptions.allowQRIBAN && isQRIBAN(iban)) {
+    if (validationOptions.allowQRIBAN === false && isQRIBAN(iban)) {
       result.valid = false;
       result.errorCodes.push(ValidationErrorsIBAN.QRIBANNotAllowed);
     }
