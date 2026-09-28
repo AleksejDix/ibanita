@@ -499,237 +499,127 @@ describe('iban', () => {
     });
   });
 
-  describe('When calling extractIBAN() with valid Brazilian IBAN', () => {
-    const ext = iban.extractIBAN('BR9700360305000010009795493P1');
-    it('valid should be true', () => {
-      expect(ext.valid).toBe(true);
-    });
-    it('IBAN should be BR9700360305000010009795493P1', () => {
-      expect(ext.iban).toBe('BR9700360305000010009795493P1');
-    });
-    it('BBAN should be 00360305000010009795493P1', () => {
-      expect(ext.bban).toBe('00360305000010009795493P1');
-    });
-    it('countryCode should be BR', () => {
-      expect(ext.countryCode).toBe('BR');
-    });
-    it('accountNumber should be 0009795493P1', () => {
-      expect(ext.accountNumber).toBe('0009795493P1');
-    });
-    it('bankIdentifier should be 00360305', () => {
-      expect(ext.bankIdentifier).toBe('00360305');
-    });
-    it('branchIdentifier should be 00001', () => {
-      expect(ext.branchIdentifier).toBe('00001');
-    });
-  });
-
-  describe('When calling extractIBAN() with valid French IBAN', () => {
-    const ext = iban.extractIBAN('FR3330002005500000157841Z25');
-    it('valid should be true', () => {
-      expect(ext.valid).toBe(true);
-    });
-    it('IBAN should be FR3330002005500000157841Z25', () => {
-      expect(ext.iban).toBe('FR3330002005500000157841Z25');
-    });
-    it('BBAN should be 30002005500000157841Z25', () => {
-      expect(ext.bban).toBe('30002005500000157841Z25');
-    });
-    it('countryCode should be FR', () => {
-      expect(ext.countryCode).toBe('FR');
-    });
-    it('accountNumber should be 0000157841Z', () => {
-      expect(ext.accountNumber).toBe('0000157841Z');
-    });
-    it('bankIdentifier should be 30002', () => {
-      expect(ext.bankIdentifier).toBe('30002');
-    });
-    it('branchIdentifier should be 00550', () => {
-      expect(ext.branchIdentifier).toBe('00550');
-    });
-  });
-
-  describe('When calling extractIBAN() with valid Slovenian IBAN', () => {
-    const ext = iban.extractIBAN('SI56263300012039086');
-    it('valid should be true', () => {
-      expect(ext.valid).toBe(true);
-    });
-    it('IBAN should be SI56263300012039086', () => {
-      expect(ext.iban).toBe('SI56263300012039086');
-    });
-    it('BBAN should be 263300012039086', () => {
-      expect(ext.bban).toBe('263300012039086');
-    });
-    it('countryCode should be SI', () => {
-      expect(ext.countryCode).toBe('SI');
-    });
-    it('accountNumber should be 00120390', () => {
-      expect(ext.accountNumber).toBe('00120390');
-    });
-    it('bankIdentifier should be 26', () => {
-      expect(ext.bankIdentifier).toBe('26');
-    });
-    it('branchIdentifier should be 330', () => {
-      expect(ext.branchIdentifier).toBe('330');
-    });
-  });
-
-  describe('When calling extractIBAN() with invalid IBAN', () => {
-    const ext = iban.extractIBAN('BR970036030510009795493P1');
-    it('valid should be false', () => {
-      expect(ext.valid).toBe(false);
-    });
-    it('IBAN should be BR9700360305100019795493P1', () => {
-      expect(ext.iban).toBe('BR970036030510009795493P1');
-    });
-    it('BBAN should be undefined', () => {
-      expect(ext.bban).toBeUndefined();
-    });
-    it('countryCode should be undefined', () => {
-      expect(ext.countryCode).toBeUndefined();
-    });
-  });
-
-  describe('When calling extractIBAN() with space separated IBAN', () => {
-    const ext = iban.extractIBAN('NL91 ABNA 0417 1643 00');
-    it('valid should be true', () => {
-      expect(ext.valid).toBe(true);
-    });
-
-    it('IBAN should be NL91ABNA0417164300', () => {
-      expect(ext.iban).toBe('NL91ABNA0417164300');
-    });
-
-    it('BBAN should be ABNA0417164300', () => {
-      expect(ext.bban).toBe('ABNA0417164300');
-    });
-    it('countryCode should be NL', () => {
-      expect(ext.countryCode).toBe('NL');
-    });
-    it('accountNumber should be 0417164300', () => {
-      expect(ext.accountNumber).toBe('0417164300');
-    });
-  });
-
-  describe('When calling extractIBAN() with valid Spanish IBAN', () => {
-    const ext = iban.extractIBAN('ES6000491500051234567892');
-    it('valid should be true', () => {
-      expect(ext.valid).toBe(true);
-    });
-    it('IBAN should be ES6000491500051234567892', () => {
-      expect(ext.iban).toBe('ES6000491500051234567892');
-    });
-    it('BBAN should be 00491500051234567892', () => {
-      expect(ext.bban).toBe('00491500051234567892');
-    });
-    it('countryCode should be ES', () => {
-      expect(ext.countryCode).toBe('ES');
-    });
-    it('accountNumber should be 1234567892', () => {
-      expect(ext.accountNumber).toBe('1234567892');
-    });
-    it('bankIdentifier should be 0049', () => {
-      expect(ext.bankIdentifier).toBe('0049');
-    });
-    it('branchIdentifier should be 1500', () => {
-      expect(ext.branchIdentifier).toBe('1500');
-    });
-  });
-
-  describe('When calling extractIBAN() with valid Yemen IBAN', () => {
-    const ext = iban.extractIBAN('YE15CBYE0001018861234567891234');
-    it('valid should be true', () => {
-      expect(ext.valid).toBe(true);
-    });
-    it('IBAN should be YE15CBYE0001018861234567891234', () => {
-      expect(ext.iban).toBe('YE15CBYE0001018861234567891234');
-    });
-    it('BBAN should be CBYE0001018861234567891234', () => {
-      expect(ext.bban).toBe('CBYE0001018861234567891234');
-    });
-    it('countryCode should be YE', () => {
-      expect(ext.countryCode).toBe('YE');
-    });
-    it('accountNumber should be 018861234567891234', () => {
-      expect(ext.accountNumber).toBe('018861234567891234');
-    });
-    it('bankIdentifier should be CBYE', () => {
-      expect(ext.bankIdentifier).toBe('CBYE');
-    });
-    it('branchIdentifier should be 0001', () => {
-      expect(ext.branchIdentifier).toBe('0001');
-    });
-  });
-
-  describe('When calling extractIBAN() with valid Honduras IBAN', () => {
-    const ext = iban.extractIBAN('HN54PISA00000000000000123124');
-    it('valid should be true', () => {
-      expect(ext.valid).toBe(true);
-    });
-    it('IBAN should be HN54PISA00000000000000123124', () => {
-      expect(ext.iban).toBe('HN54PISA00000000000000123124');
-    });
-    it('BBAN should be PISA00000000000000123124', () => {
-      expect(ext.bban).toBe('PISA00000000000000123124');
-    });
-    it('countryCode should be HN', () => {
-      expect(ext.countryCode).toBe('HN');
-    });
-    it('accountNumber should be 00000000000000123124', () => {
-      expect(ext.accountNumber).toBe('00000000000000123124');
-    });
-    it('bankIdentifier should be PISA', () => {
-      expect(ext.bankIdentifier).toBe('PISA');
-    });
-  });
-
-  describe('When calling extractIBAN() with valid Jordan IBAN', () => {
-    const ext = iban.extractIBAN('JO94CBJO0010000000000131000302');
-    it('valid should be true', () => {
-      expect(ext.valid).toBe(true);
-    });
-    it('IBAN should be JO94CBJO0010000000000131000302', () => {
-      expect(ext.iban).toBe('JO94CBJO0010000000000131000302');
-    });
-    it('BBAN should be CBJO0010000000000131000302', () => {
-      expect(ext.bban).toBe('CBJO0010000000000131000302');
-    });
-    it('countryCode should be JO', () => {
-      expect(ext.countryCode).toBe('JO');
-    });
-    it('bankIdentifier should be CBJO', () => {
-      expect(ext.bankIdentifier).toBe('CBJO');
-    });
-    it('branchIdentifier should be 0010', () => {
-      expect(ext.branchIdentifier).toBe('0010');
-    });
-  });
-
-  describe('When calling extractIBAN() with Icelandic IBAN', () => {
-    it('should extract bank, branch and account', () => {
-      const ext = iban.extractIBAN(iban.composeIBAN('IS', '0159260076545510730339') ?? '');
-      expect(ext.bankIdentifier).toBe('01');
-      expect(ext.branchIdentifier).toBe('59');
-      expect(ext.accountNumber).toBe('260076545510730339');
-    });
-  });
-
-  describe('When calling extractIBAN() with dash separated IBAN', () => {
-    const ext = iban.extractIBAN('NL91-ABNA-0417-1643-00');
-
-    it('valid should be true', () => {
-      expect(ext.valid).toBe(true);
-    });
-
-    it('IBAN should be NL91ABNA0417164300', () => {
-      expect(ext.iban).toBe('NL91ABNA0417164300');
-    });
-
-    it('BBAN should be ABNA0417164300', () => {
-      expect(ext.bban).toBe('ABNA0417164300');
-    });
-    it('countryCode should be NL', () => {
-      expect(ext.countryCode).toBe('NL');
+  describe('extractIBAN()', () => {
+    it.each<[string, iban.ExtractIBANResult]>([
+      [
+        'BR9700360305000010009795493P1',
+        {
+          valid: true,
+          iban: 'BR9700360305000010009795493P1',
+          countryCode: 'BR',
+          bban: '00360305000010009795493P1',
+          accountNumber: '0009795493P1',
+          bankIdentifier: '00360305',
+          branchIdentifier: '00001',
+        },
+      ],
+      [
+        'FR3330002005500000157841Z25',
+        {
+          valid: true,
+          iban: 'FR3330002005500000157841Z25',
+          countryCode: 'FR',
+          bban: '30002005500000157841Z25',
+          accountNumber: '0000157841Z',
+          bankIdentifier: '30002',
+          branchIdentifier: '00550',
+        },
+      ],
+      [
+        'SI56263300012039086',
+        {
+          valid: true,
+          iban: 'SI56263300012039086',
+          countryCode: 'SI',
+          bban: '263300012039086',
+          accountNumber: '00120390',
+          bankIdentifier: '26',
+          branchIdentifier: '330',
+        },
+      ],
+      ['BR970036030510009795493P1', { valid: false, iban: 'BR970036030510009795493P1' }],
+      [
+        'NL91 ABNA 0417 1643 00',
+        {
+          valid: true,
+          iban: 'NL91ABNA0417164300',
+          countryCode: 'NL',
+          bban: 'ABNA0417164300',
+          accountNumber: '0417164300',
+          bankIdentifier: 'ABNA',
+        },
+      ],
+      [
+        'ES6000491500051234567892',
+        {
+          valid: true,
+          iban: 'ES6000491500051234567892',
+          countryCode: 'ES',
+          bban: '00491500051234567892',
+          accountNumber: '1234567892',
+          bankIdentifier: '0049',
+          branchIdentifier: '1500',
+        },
+      ],
+      [
+        'YE15CBYE0001018861234567891234',
+        {
+          valid: true,
+          iban: 'YE15CBYE0001018861234567891234',
+          countryCode: 'YE',
+          bban: 'CBYE0001018861234567891234',
+          accountNumber: '018861234567891234',
+          bankIdentifier: 'CBYE',
+          branchIdentifier: '0001',
+        },
+      ],
+      [
+        'HN54PISA00000000000000123124',
+        {
+          valid: true,
+          iban: 'HN54PISA00000000000000123124',
+          countryCode: 'HN',
+          bban: 'PISA00000000000000123124',
+          accountNumber: '00000000000000123124',
+          bankIdentifier: 'PISA',
+        },
+      ],
+      [
+        'JO94CBJO0010000000000131000302',
+        {
+          valid: true,
+          iban: 'JO94CBJO0010000000000131000302',
+          countryCode: 'JO',
+          bban: 'CBJO0010000000000131000302',
+          bankIdentifier: 'CBJO',
+          branchIdentifier: '0010',
+        },
+      ],
+      [
+        iban.composeIBAN('IS', '0159260076545510730339') ?? '',
+        {
+          valid: true,
+          iban: 'IS140159260076545510730339',
+          countryCode: 'IS',
+          bban: '0159260076545510730339',
+          accountNumber: '260076545510730339',
+          bankIdentifier: '01',
+          branchIdentifier: '59',
+        },
+      ],
+      [
+        'NL91-ABNA-0417-1643-00',
+        {
+          valid: true,
+          iban: 'NL91ABNA0417164300',
+          countryCode: 'NL',
+          bban: 'ABNA0417164300',
+          accountNumber: '0417164300',
+          bankIdentifier: 'ABNA',
+        },
+      ],
+    ])('%s', (input, expected) => {
+      expect(iban.extractIBAN(input)).toEqual(expected);
     });
   });
 

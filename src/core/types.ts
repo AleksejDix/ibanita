@@ -46,23 +46,34 @@ export interface ValidateIBANResult {
   valid: boolean;
 }
 
-/** Result of {@link extractIBAN}. Only `iban` and `valid` are set when the IBAN is invalid. */
-export interface ExtractIBANResult {
+/** The parts of a valid IBAN, returned by {@link extractIBAN}. */
+export interface ValidIBANParts {
+  /** Always `true`. */
+  readonly valid: true;
   /** The IBAN in electronic format, without spaces or dashes. */
-  iban: string;
-  /** The domestic account number (BBAN): everything after the first four characters. */
-  bban?: string;
+  readonly iban: string;
   /** ISO 3166-1 alpha-2 country code. */
-  countryCode?: string;
+  readonly countryCode: string;
+  /** The domestic account number (BBAN): everything after the first four characters. */
+  readonly bban: string;
   /** Account number, for countries whose account position is known. */
-  accountNumber?: string;
-  /** Branch identifier, for countries that define one. */
-  branchIdentifier?: string;
+  readonly accountNumber?: string;
   /** Bank identifier, for countries that define one. */
-  bankIdentifier?: string;
-  /** Whether the IBAN is valid. */
-  valid: boolean;
+  readonly bankIdentifier?: string;
+  /** Branch identifier, for countries that define one. */
+  readonly branchIdentifier?: string;
 }
+
+/** Returned by {@link extractIBAN} for an invalid IBAN. */
+export interface InvalidIBANParts {
+  /** Always `false`. */
+  readonly valid: false;
+  /** The input in electronic format, or an empty string for `null` and `undefined`. */
+  readonly iban: string;
+}
+
+/** Result of {@link extractIBAN}. Check `valid` to narrow to {@link ValidIBANParts}. */
+export type ExtractIBANResult = ValidIBANParts | InvalidIBANParts;
 
 /**
  * Error codes returned by {@link validateBIC} in {@link ValidateBICResult.errorCodes}.
@@ -87,21 +98,30 @@ export interface ValidateBICResult {
   valid: boolean;
 }
 
-/** Result of {@link extractBIC}. Only `valid` is set when the BIC is invalid. */
-export interface ExtractBICResult {
+/** The parts of a valid BIC, returned by {@link extractBIC}. */
+export interface ValidBICParts {
+  /** Always `true`. */
+  readonly valid: true;
   /** Bank code: characters 1 to 4. */
-  bankCode?: string;
+  readonly bankCode: string;
   /** ISO 3166-1 alpha-2 country code: characters 5 and 6. */
-  countryCode?: string;
+  readonly countryCode: string;
   /** Location code: characters 7 and 8. */
-  locationCode?: string;
+  readonly locationCode: string;
   /** Branch code: characters 9 to 11, or `null` for an 8 character BIC. */
-  branchCode?: string | null;
+  readonly branchCode: string | null;
   /** Whether this is a test BIC, meaning the second character of the location code is `0`. */
-  testBIC?: boolean;
-  /** Whether the BIC is valid. */
-  valid: boolean;
+  readonly testBIC: boolean;
 }
+
+/** Returned by {@link extractBIC} for an invalid BIC. */
+export interface InvalidBICParts {
+  /** Always `false`. */
+  readonly valid: false;
+}
+
+/** Result of {@link extractBIC}. Check `valid` to narrow to {@link ValidBICParts}. */
+export type ExtractBICResult = ValidBICParts | InvalidBICParts;
 
 /** Position of an identifier as `[start, end]` character indexes, 0-based and inclusive. */
 export type IdentifierPosition = readonly [start: number, end: number];

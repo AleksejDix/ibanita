@@ -89,76 +89,23 @@ describe('bic', () => {
     });
   });
 
-  describe('When calling extractBIC() with valid BIC ABNANL2A', () => {
-    const ext = iban.extractBIC('ABNANL2A');
-    it('valid should be true', () => {
-      expect(ext.valid).toBe(true);
-    });
-    it('bankCode should be ABNA', () => {
-      expect(ext.bankCode).toBe('ABNA');
-    });
-    it('countryCode should be NL', () => {
-      expect(ext.countryCode).toBe('NL');
-    });
-    it('locationCode should be 2A', () => {
-      expect(ext.locationCode).toBe('2A');
-    });
-    it('testBIC should be false', () => {
-      expect(ext.testBIC).toBe(false);
-    });
-    it('branchCode should be null', () => {
-      expect(ext.branchCode).toBe(null);
-    });
-  });
-
-  describe('When calling extractBIC() with lowercase BIC dnbanokk', () => {
-    const ext = iban.extractBIC('dnbanokk');
-    it('countryCode should be NO', () => {
-      expect(ext.countryCode).toBe('NO');
-    });
-  });
-
-  describe('When calling extractBIC() with invalid BIC ABN7NL2A', () => {
-    const ext = iban.extractBIC('ABN7NL2A');
-    it('valid should be false', () => {
-      expect(ext.valid).toBe(false);
-    });
-    it('bankCode should be undefined', () => {
-      expect(ext.bankCode).toBeUndefined();
-    });
-    it('countryCode should be undefined', () => {
-      expect(ext.countryCode).toBeUndefined();
-    });
-    it('locationCode should be undefined', () => {
-      expect(ext.locationCode).toBeUndefined();
-    });
-    it('testBIC should be undefined', () => {
-      expect(ext.testBIC).toBeUndefined();
-    });
-    it('branchCode should be undefined', () => {
-      expect(ext.branchCode).toBeUndefined();
-    });
-  });
-
-  describe('When calling extractBIC() with valid BIC NEDSZAJ0XXX', () => {
-    const ext = iban.extractBIC('NEDSZAJ0XXX');
-    it('valid should be true', () => {
-      expect(ext.valid).toBe(true);
-    });
-    it('bankCode should be NEDS', () => {
-      expect(ext.bankCode).toBe('NEDS');
-    });
-    it('countryCode should be ZA', () => {
-      expect(ext.countryCode).toBe('ZA');
-    });
-    it('locationCode should be J0', () => {
-      expect(ext.locationCode).toBe('J0');
-    });
-    it('testBIC should be true', () => {
-      expect(ext.testBIC).toBe(true);
-    });
-    it('branchCode should be XXX', () => {
-      expect(ext.branchCode).toBe('XXX');
+  describe('extractBIC()', () => {
+    it.each<[string, iban.ExtractBICResult]>([
+      [
+        'ABNANL2A',
+        { bankCode: 'ABNA', countryCode: 'NL', locationCode: '2A', testBIC: false, branchCode: null, valid: true },
+      ],
+      [
+        'dnbanokk',
+        { bankCode: 'DNBA', countryCode: 'NO', locationCode: 'KK', testBIC: false, branchCode: null, valid: true },
+      ],
+      ['ABN7NL2A', { valid: false }],
+      [
+        'NEDSZAJ0XXX',
+        { bankCode: 'NEDS', countryCode: 'ZA', locationCode: 'J0', testBIC: true, branchCode: 'XXX', valid: true },
+      ],
+    ])('%s', (input, expected) => {
+      expect(iban.extractBIC(input)).toEqual(expected);
     });
   });
 });

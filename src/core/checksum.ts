@@ -2,7 +2,8 @@ import { MOD_97, MOD_97_REMAINDER } from './constants';
 
 const bbanRegexCache = new Map<string, RegExp>();
 const WHITESPACE_REGEX = /[\s.]+/gu;
-const LETTER_OFFSET = 55; // 'A'.charCodeAt(0) - 10, so A is 10, B is 11, ... Z is 35
+// 'A'.charCodeAt(0) - 10, so A is 10, B is 11, ... Z is 35
+const LETTER_OFFSET = 55;
 
 /** Removes whitespace and periods, which some countries use to group BBAN digits. */
 export function stripSpacesAndPeriods(value: string): string {

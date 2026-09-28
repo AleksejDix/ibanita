@@ -3,6 +3,7 @@ import * as iban from '../src/index';
 import { describe, expect, it } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { type ValidIBANParts } from '../src/index';
 
 const REGISTRY_DIR = join(__dirname, '..', 'registry');
 
@@ -25,6 +26,14 @@ function readRow(rows: readonly string[], name: string): string[] {
 function slicePosition(electronicIban: string, position: string): string | undefined {
   const match = /^(\d+)-(\d+)$/u.exec(position);
   return match ? electronicIban.slice(3 + Number(match[1]), 4 + Number(match[2])) : undefined;
+}
+
+function parts(example: string): ValidIBANParts {
+  const result = iban.extractIBAN(example);
+  if (!result.valid) {
+    throw new Error(`${example} is not a valid IBAN`);
+  }
+  return result;
 }
 
 const lines = readFileSync(latestRegistryFile(), 'utf8').split(/\r?\n/u);
@@ -114,7 +123,7 @@ describe('SWIFT IBAN Registry examples', () => {
   it.each(examples.filter(([code]) => !BANK_DEVIATIONS.has(code)))(
     '%s example should extract the bank identifier at the registry position',
     (_code, example, bank) => {
-      expect(iban.extractIBAN(example).bankIdentifier).toBe(bank);
+      expect(parts(example).bankIdentifier).toBe(bank);
     },
   );
 
@@ -123,6 +132,6 @@ describe('SWIFT IBAN Registry examples', () => {
       .filter(([code]) => !BRANCH_DEVIATIONS.has(code))
       .map(([code, example, , branch]) => [code, example, branch]),
   )('%s example should extract the branch identifier at the registry position', (_code, example, branch) => {
-    expect(iban.extractIBAN(example).branchIdentifier).toBe(branch);
+    expect(parts(example).branchIdentifier).toBe(branch);
   });
 });

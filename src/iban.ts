@@ -4,14 +4,15 @@
  */
 import {
   type BBANValidationOptions,
+  type CountrySpec,
   type ExtractIBANResult,
   type IdentifierPosition,
   type ValidateIBANOptions,
   type ValidateIBANResult,
   ValidationErrorsIBAN,
 } from './core/types';
-import { checkFormatBBAN, ibanCheckDigits } from './core/checksum';
 import { bbanValidatorFor, isValidBBAN } from './bban';
+import { checkFormatBBAN, ibanCheckDigits } from './core/checksum';
 import { electronicFormatIBAN } from './format';
 import { ibanSpecs } from './countries/specs';
 
@@ -157,26 +158,21 @@ export function composeIBAN(
  * ibanita.extractIBAN("NL91 ABNA 0417 1643 00");
  * ```
  */
-export function extractIBAN(iban?: string | null): ExtractIBANResult {
-  const eFormatIBAN: string | null = electronicFormatIBAN(iban);
-  const result: ExtractIBANResult = {
-    iban: eFormatIBAN ?? '',
-    valid: false,
-  };
-  if (eFormatIBAN !== null && isValidIBAN(eFormatIBAN)) {
-    result.bban = eFormatIBAN.slice(4);
-    result.countryCode = eFormatIBAN.slice(0, 2);
-    result.valid = true;
-    const spec = ibanSpecs[result.countryCode];
-    if (spec?.accountPosition) {
-      result.accountNumber = slicePosition(result.iban, spec.accountPosition);
-    }
-    if (spec?.bankPosition) {
-      result.bankIdentifier = slicePosition(result.bban, spec.bankPosition);
-    }
-    if (spec?.branchPosition) {
-      result.branchIdentifier = slicePosition(result.bban, spec.branchPosition);
-    }
+export function extractIBAN(input?: string | null): ExtractIBANResult {
+  const iban = electronicFormatIBAN(input) ?? '';
+  if (!isValidIBAN(iban)) {
+    return { valid: false, iban };
   }
-  return result;
+  const countryCode = iban.slice(0, 2);
+  const bban = iban.slice(4);
+  const spec: CountrySpec = ibanSpecs[countryCode] ?? {};
+  return {
+    valid: true,
+    iban,
+    countryCode,
+    bban,
+    ...(spec.accountPosition ? { accountNumber: slicePosition(iban, spec.accountPosition) } : {}),
+    ...(spec.bankPosition ? { bankIdentifier: slicePosition(bban, spec.bankPosition) } : {}),
+    ...(spec.branchPosition ? { branchIdentifier: slicePosition(bban, spec.branchPosition) } : {}),
+  };
 }

@@ -16,9 +16,13 @@ export type {
   ExtractIBANResult,
   IBANCountrySpec,
   IdentifierPosition,
+  InvalidBICParts,
+  InvalidIBANParts,
   ValidateBICResult,
   ValidateIBANOptions,
   ValidateIBANResult,
+  ValidBICParts,
+  ValidIBANParts,
 } from './core/types';
 
 // Re-export utility functions
