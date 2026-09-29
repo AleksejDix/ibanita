@@ -23,17 +23,17 @@ describe('bban', () => {
 });
 
 describe('validateBBAN', () => {
-  const E = iban.BBANValidationError;
+  const Errors = iban.BBANValidationError;
   it.each<[string | null | undefined, string | null | undefined, iban.BBANValidationResult]>([
     ['ABNA0417164300', 'NL', { valid: true, errorCodes: [] }],
     ['abna 0417.1643-00', 'nl', { valid: true, errorCodes: [] }],
-    ['', 'NL', { valid: false, errorCodes: [E.NoBBANProvided] }],
-    [null, 'NL', { valid: false, errorCodes: [E.NoBBANProvided] }],
-    ['ABNA0417164300', undefined, { valid: false, errorCodes: [E.NoBBANProvided] }],
-    ['ABNA0417164300', 'XX', { valid: false, errorCodes: [E.NoIBANCountry] }],
-    ['ABNA04171643001', 'NL', { valid: false, errorCodes: [E.WrongBBANLength, E.WrongBBANFormat] }],
-    ['A7NA0417164300', 'NL', { valid: false, errorCodes: [E.WrongBBANFormat] }],
-    ['86011117948', 'NO', { valid: false, errorCodes: [E.WrongBBANChecksum] }],
+    ['', 'NL', { valid: false, errorCodes: [Errors.NoBBANProvided] }],
+    [null, 'NL', { valid: false, errorCodes: [Errors.NoBBANProvided] }],
+    ['ABNA0417164300', undefined, { valid: false, errorCodes: [Errors.NoBBANProvided] }],
+    ['ABNA0417164300', 'XX', { valid: false, errorCodes: [Errors.NoIBANCountry] }],
+    ['ABNA04171643001', 'NL', { valid: false, errorCodes: [Errors.WrongBBANLength, Errors.WrongBBANFormat] }],
+    ['A7NA0417164300', 'NL', { valid: false, errorCodes: [Errors.WrongBBANFormat] }],
+    ['86011117948', 'NO', { valid: false, errorCodes: [Errors.WrongBBANChecksum] }],
     ['86011117947', 'NO', { valid: true, errorCodes: [] }],
   ])('validateBBAN(%s, %s)', (bban, countryCode, expected) => {
     expect(iban.validateBBAN(bban, countryCode)).toEqual(expected);
@@ -43,7 +43,7 @@ describe('validateBBAN', () => {
     const rejectNO = { bbanValidators: { NO: () => false } };
     expect(iban.validateBBAN('86011117947', 'NO', rejectNO)).toEqual({
       valid: false,
-      errorCodes: [E.WrongBBANChecksum],
+      errorCodes: [Errors.WrongBBANChecksum],
     });
   });
 });

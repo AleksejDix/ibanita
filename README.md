@@ -72,7 +72,7 @@ import { isValidBIC } from '@aleksejdix/ibanita/bic';
 import { friendlyFormatIBAN } from '@aleksejdix/ibanita/format';
 ```
 
-Available: `/iban`, `/bic`, `/bban` and `/format`.
+Available: `/iban`, `/bic`, `/bban`, `/format` and `/country`.
 
 ### TypeScript
 

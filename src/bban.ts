@@ -3,8 +3,8 @@
  * @module bban
  */
 
-import { type BBANValidationOptions, type BBANValidationResult, BBANValidationError } from './core/types';
-import { bbanErrors } from './core/bban';
+import { BBANValidationError, type BBANValidationOptions, type BBANValidationResult } from './core/types';
+import { bbanErrors, bbanValidatorFor } from './core/bban';
 import { electronicFormat } from './format';
 import { ibanSpecs } from './countries/specs';
 
@@ -35,7 +35,7 @@ export function validateBBAN(
   if (spec === undefined) {
     return { errorCodes: [BBANValidationError.NoIBANCountry], valid: false };
   }
-  const errorCodes = bbanErrors(spec, code, electronicBban, options);
+  const errorCodes = bbanErrors(spec, electronicBban, bbanValidatorFor(spec, code, options));
   return { errorCodes, valid: errorCodes.length === 0 };
 }
 

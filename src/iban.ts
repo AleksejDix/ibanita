@@ -6,16 +6,16 @@ import {
   type BBANValidationOptions,
   type CountrySpec,
   type IBANExtractionResult,
-  type IdentifierPosition,
+  IBANValidationError,
   type IBANValidationOptions,
   type IBANValidationResult,
-  IBANValidationError,
+  type IdentifierPosition,
 } from './core/types';
-import { bbanErrors } from './core/bban';
-import { isValidBBAN } from './bban';
-import { ibanCheckDigits } from './core/checksum';
+import { bbanErrors, bbanValidatorFor } from './core/bban';
 import { electronicFormatIBAN } from './format';
+import { ibanCheckDigits } from './core/checksum';
 import { ibanSpecs } from './countries/specs';
+import { isValidBBAN } from './bban';
 
 const CHECK_DIGITS_REGEX = /^[0-9]{2}$/u;
 const QRIBAN_REGEX = /^3[0-1][0-9]{3}$/u;
@@ -88,7 +88,8 @@ export function validateIBAN(
     return { errorCodes: [IBANValidationError.NoIBANCountry], valid: false };
   }
 
-  const errorCodes: IBANValidationError[] = bbanErrors(spec, countryCode, bban, validationOptions);
+  const validator = bbanValidatorFor(spec, countryCode, validationOptions);
+  const errorCodes: IBANValidationError[] = bbanErrors(spec, bban, validator);
   if (!CHECK_DIGITS_REGEX.test(checkDigits)) {
     errorCodes.push(IBANValidationError.CheckDigitsNotNumeric);
   }

@@ -31,6 +31,10 @@
     "./format": {
       "types": "./dist/format.d.ts",
       "import": "./dist/format.js"
+    },
+    "./country": {
+      "types": "./dist/country.d.ts",
+      "import": "./dist/country.js"
     }
   },
   "files": [

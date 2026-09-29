@@ -1,4 +1,4 @@
-import { type BBANValidationOptions, type IBANCountrySpec, BBANValidationError } from './types';
+import { BBANValidationError, type BBANValidationOptions, type BBANValidator, type IBANCountrySpec } from './types';
 
 /** The BBAN codes that describe the content of a BBAN, as opposed to missing input or an unknown country. */
 export type BBANContentError = (typeof BBANValidationError)[
@@ -6,15 +6,23 @@ export type BBANContentError = (typeof BBANValidationError)[
   | 'WrongBBANFormat'
   | 'WrongBBANChecksum'];
 
+/** The national validator for a country: the one passed in the options, or the built-in one. */
+export function bbanValidatorFor(
+  spec: IBANCountrySpec,
+  countryCode: string,
+  options: Readonly<BBANValidationOptions>,
+): BBANValidator | undefined {
+  return options.bbanValidators?.[countryCode] ?? spec.bbanValidator;
+}
+
 /**
  * The length, format and national checksum problems of a BBAN in electronic format,
- * checked against its country's specification. Shared by {@link validateBBAN} and {@link validateIBAN}.
+ * checked against its country's specification. Shared by `validateBBAN` and `validateIBAN`.
  */
 export function bbanErrors(
   spec: IBANCountrySpec,
-  countryCode: string,
   bban: string,
-  options: Readonly<BBANValidationOptions>,
+  validator: BBANValidator | undefined,
 ): BBANContentError[] {
   const errorCodes: BBANContentError[] = [];
   if (spec.ibanLength - 4 !== bban.length) {
@@ -24,7 +32,6 @@ export function bbanErrors(
     errorCodes.push(BBANValidationError.WrongBBANFormat);
   }
   // The national checksum is only meaningful when length and format are right.
-  const validator = options.bbanValidators?.[countryCode] ?? spec.bbanValidator;
   if (errorCodes.length === 0 && validator !== undefined && !validator(bban)) {
     errorCodes.push(BBANValidationError.WrongBBANChecksum);
   }

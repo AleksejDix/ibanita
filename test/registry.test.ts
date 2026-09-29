@@ -2,8 +2,8 @@
 import * as iban from '../src/index';
 import { describe, expect, it } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
-import { join } from 'node:path';
 import { type IBANParts } from '../src/index';
+import { join } from 'node:path';
 
 const REGISTRY_DIR = join(__dirname, '..', 'registry');
 
@@ -74,7 +74,7 @@ const formats = codes.map((code, index): readonly [string, string, number, boole
   Number(ibanLengths[index]),
   sepaFlags[index] === 'Yes',
 ]);
-const specs = iban.getCountrySpecifications();
+const specs = iban.countrySpecs;
 
 // Each row: country code, example IBAN, bank identifier and branch identifier at the registry positions.
 const examples = codes.map((code, index): readonly [string, string, string | undefined, string | undefined] => {

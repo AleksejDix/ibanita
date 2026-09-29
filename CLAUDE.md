@@ -61,7 +61,8 @@ src/
 ├── iban.ts                  # IBAN functions (isValidIBAN, validateIBAN, composeIBAN, extractIBAN, isQRIBAN)
 ├── bic.ts                   # BIC functions (isValidBIC, validateBIC, extractBIC)
 ├── bban.ts                  # BBAN functions (isValidBBAN, bbanValidatorFor)
-├── format.ts                # Format utilities (electronicFormatIBAN, friendlyFormatIBAN)
+├── format.ts                # Format utilities (electronicFormat, electronicFormatIBAN, friendlyFormatIBAN)
+├── country.ts               # Country functions (isSEPACountry) and the countrySpecs export
 ├── core/
 │   ├── constants.ts         # MOD_97, MOD_97_REMAINDER
 │   ├── types.ts             # All public types, options, results and error codes
@@ -72,8 +73,7 @@ src/
 └── countries/
     ├── codes.ts             # COUNTRY_CODES: all 250 country codes (used by BIC functions)
     ├── specs.ts             # ibanSpecs: GENERATED from registry/ (do not edit), one frozen entry per IBAN country
-    ├── all.ts               # countrySpecs: all countries, built from codes.ts and specs.ts
-    └── sepa.ts              # Country utilities (isSEPACountry, getCountrySpecifications)
+    └── all.ts               # countrySpecs: all countries, built from codes.ts and specs.ts
 ```
 
 ### Public API
@@ -85,7 +85,7 @@ All public functions are re-exported from `src/index.ts`:
 3. **Creation**: `composeIBAN()` - generates valid IBANs from country code + BBAN
 4. **Extraction**: `extractIBAN()`, `extractBIC()` - parse and extract components
 5. **Formatting**: `electronicFormatIBAN()`, `friendlyFormatIBAN()`
-6. **Utilities**: `isSEPACountry()`, `isQRIBAN()`, `getCountrySpecifications()`
+6. **Utilities**: `isSEPACountry()`, `isQRIBAN()`
 7. **Data**: `countrySpecs` - frozen country specification object
 
 `isValidIBAN` and `validateIBAN` normalise their input first (spaces and dashes removed, uppercased), like `extractIBAN`.
@@ -102,7 +102,7 @@ The data is split so bundlers only include what a function needs:
 
 - `ibanSpecs` (`src/countries/specs.ts`) holds the countries that use IBAN. IBAN, BBAN and SEPA functions read it.
 - `COUNTRY_CODES` (`src/countries/codes.ts`) lists all country codes. BIC functions read it. Every `ibanSpecs` country must be listed here, and a test checks this.
-- `countrySpecs` (`src/countries/all.ts`), the public export, has every country, with a shared empty spec for countries without IBAN. `getCountrySpecifications()` returns it.
+- `countrySpecs` (`src/countries/all.ts`), exported through `src/country.ts`, has every country, with a shared empty spec for countries without IBAN.
 
 Each `CountrySpec` (all fields camelCase, all optional, all `readonly`):
 

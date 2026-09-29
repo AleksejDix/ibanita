@@ -4,8 +4,8 @@ import { COUNTRY_CODES } from '../src/countries/codes';
 import { ibanSpecs } from '../src/countries/specs';
 
 describe('countries', () => {
-  describe('When calling getCountrySpecifications()', () => {
-    const specs = iban.getCountrySpecifications();
+  describe('countrySpecs', () => {
+    const specs = iban.countrySpecs;
     it.each(['BI', 'DJ', 'FK'])('%s should be in IBAN registry', (code) => {
       expect(specs[code]?.ibanRegistry).toBe(true);
     });
@@ -55,8 +55,8 @@ describe('countries', () => {
     });
   });
 
-  describe('When calling getCountrySpecifications()', () => {
-    const ext = iban.getCountrySpecifications();
+  describe('countrySpecs', () => {
+    const ext = iban.countrySpecs;
     it('Country with code BE should return ibanLength 16', () => {
       expect(ext['BE']?.ibanLength).toBe(16);
     });
@@ -91,7 +91,7 @@ describe('SEPA membership', () => {
   // EU and EEA members, Switzerland, the United Kingdom, the microstates, Gibraltar, Åland and the French territories in SEPA.
   const SEPA = `AD AT AX BE BG BL CH CY CZ DE DK EE ES FI FR GB GF GI GP GR HR HU IE IS IT LI LT LU LV MC MF MQ MT NL NO PL PM PT RE RO SE SI SK SM VA YT`;
   it('matches the SEPA country list', () => {
-    const specs = iban.getCountrySpecifications();
+    const specs = iban.countrySpecs;
     const sepa = Object.keys(specs).filter((code) => specs[code]?.sepa === true);
     expect(sepa).toEqual(SEPA.split(' '));
   });

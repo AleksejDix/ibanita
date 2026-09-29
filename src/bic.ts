@@ -2,7 +2,7 @@
  * BIC/SWIFT validation and extraction functions
  * @module bic
  */
-import { type BICExtractionResult, type BICValidationResult, BICValidationError } from './core/types';
+import { type BICExtractionResult, BICValidationError, type BICValidationResult } from './core/types';
 import { COUNTRY_CODES } from './countries/codes';
 import { electronicFormat } from './format';
 
