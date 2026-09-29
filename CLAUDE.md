@@ -63,7 +63,7 @@ src/
 ├── iban.ts                  # IBAN functions (isValidIBAN, validateIBAN, composeIBAN, extractIBAN, isQRIBAN)
 ├── bic.ts                   # BIC functions (isValidBIC, validateBIC, extractBIC)
 ├── bban.ts                  # BBAN functions (isValidBBAN, bbanValidatorFor)
-├── format.ts                # Format utilities (electronicFormat, electronicFormatIBAN, friendlyFormatIBAN)
+├── format.ts                # Format utilities (electronicFormat, friendlyFormatIBAN)
 ├── country.ts               # Country functions (isSEPACountry) and the countrySpecs export
 ├── core/                    # The rules without the data. Entry `@aleksejdix/ibanita/core` (core/index.ts)
 │   ├── index.ts             # createIBANTools, isQRIBAN, electronicFormat, error codes, types
@@ -92,7 +92,7 @@ All public functions are re-exported from `src/index.ts`:
 2. **Detailed Validation**: `validateIBAN()`, `validateBIC()` - return string error codes such as `WRONG_BBAN_FORMAT`
 3. **Creation**: `composeIBAN()` - generates valid IBANs from country code + BBAN
 4. **Extraction**: `extractIBAN()`, `extractBIC()` - parse and extract components
-5. **Formatting**: `electronicFormatIBAN()`, `friendlyFormatIBAN()`
+5. **Formatting**: `electronicFormat()`, `friendlyFormatIBAN()`
 6. **Utilities**: `isSEPACountry()`, `isQRIBAN()`
 7. **Data**: `countrySpecs` - frozen country specification object
 8. **Core**: `createIBANTools(specs)` - the IBAN, BBAN and country functions bound to a subset of countries

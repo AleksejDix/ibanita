@@ -26,7 +26,7 @@ function slicePosition(value: string, [start, end]: IdentifierPosition): string 
  * Needs no country data.
  */
 export function isQRIBAN(input?: string | null): boolean {
-  const iban = electronicFormat(input ?? '');
+  const iban = electronicFormat(input);
   if (!QRIBAN_COUNTRIES.has(iban.slice(0, 2))) {
     return false;
   }
@@ -39,7 +39,7 @@ export function validateIBANWith(
   input?: string | null,
   validationOptions: Readonly<IBANValidationOptions> = {},
 ): IBANValidationResult {
-  const iban = electronicFormat(input ?? '');
+  const iban = electronicFormat(input);
   if (iban === '') {
     return { errorCodes: [IBANValidationError.NoIBANProvided], valid: false };
   }
@@ -73,8 +73,8 @@ export function composeIBANWith(
   bban: string | null | undefined,
   options: Readonly<BBANValidationOptions> = {},
 ): string | null {
-  const code = electronicFormat(countryCode ?? '');
-  const electronicBban = electronicFormat(bban ?? '');
+  const code = electronicFormat(countryCode);
+  const electronicBban = electronicFormat(bban);
   if (!validateBBANWith(specs, electronicBban, code, options).valid) {
     return null;
   }
@@ -83,7 +83,7 @@ export function composeIBANWith(
 
 /** `extractIBAN` against the given country specifications. */
 export function extractIBANWith(specs: IBANCountrySpecs, input?: string | null): IBANExtractionResult {
-  const iban = electronicFormat(input ?? '');
+  const iban = electronicFormat(input);
   if (!validateIBANWith(specs, iban).valid) {
     return { valid: false, iban };
   }
@@ -103,5 +103,5 @@ export function extractIBANWith(specs: IBANCountrySpecs, input?: string | null):
 
 /** `isSEPACountry` against the given country specifications. */
 export function isSEPACountryWith(specs: IBANCountrySpecs, countryCode?: string | null): boolean {
-  return specs[electronicFormat(countryCode ?? '')]?.sepa ?? false;
+  return specs[electronicFormat(countryCode)]?.sepa ?? false;
 }

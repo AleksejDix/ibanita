@@ -2,9 +2,9 @@ import * as iban from '../src/index';
 import { describe, expect, it } from 'vitest';
 
 describe('format', () => {
-  describe('When calling electronicFormatIBAN()', () => {
+  describe('When calling electronicFormat()', () => {
     it('with valid Brazilian IBAN should return BR9700360305000010009795493P1', () => {
-      expect(iban.electronicFormatIBAN('BR97 0036 0305 0000 1000 9795 493P 1')).toBe('BR9700360305000010009795493P1');
+      expect(iban.electronicFormat('BR97 0036 0305 0000 1000 9795 493P 1')).toBe('BR9700360305000010009795493P1');
     });
   });
 
@@ -36,5 +36,16 @@ describe('format', () => {
     ])('friendlyFormatIBAN(%s)', (input, expected) => {
       expect(iban.friendlyFormatIBAN(input)).toBe(expected);
     });
+  });
+});
+
+describe('electronicFormat input rule', () => {
+  it.each<[string | null | undefined, string]>([
+    [null, ''],
+    [undefined, ''],
+    ['', ''],
+    [' ab-cd.ef\t12 ', 'ABCDEF12'],
+  ])('electronicFormat(%s)', (input, expected) => {
+    expect(iban.electronicFormat(input)).toBe(expected);
   });
 });

@@ -39,7 +39,7 @@ export function isValidBIC(bic: string | null | undefined): boolean {
  */
 export function validateBIC(input?: string | null): BICValidationResult {
   const errorCodes: BICValidationError[] = [];
-  const bic = electronicFormat(input ?? '');
+  const bic = electronicFormat(input);
   if (bic === '') {
     errorCodes.push(BICValidationError.NoBICProvided);
   } else if (!BIC_REGEX.test(bic)) {
@@ -58,7 +58,7 @@ export function validateBIC(input?: string | null): BICValidationResult {
  * ```
  */
 export function extractBIC(inputBic?: string | null): BICExtractionResult {
-  const bic = electronicFormat(inputBic ?? '');
+  const bic = electronicFormat(inputBic);
   if (!isValidBIC(bic)) {
     return { valid: false };
   }

@@ -50,9 +50,9 @@ See the [full documentation](https://dix.consulting/ibantools) with examples on 
 ### ES Modules (Recommended)
 
 ```js
-import { isValidIBAN, validateIBAN, isValidBIC, electronicFormatIBAN } from '@aleksejdix/ibanita';
+import { isValidIBAN, validateIBAN, isValidBIC, electronicFormat } from '@aleksejdix/ibanita';
 
-const iban = electronicFormatIBAN('NL91 ABNA 0417 1643 00'); // 'NL91ABNA0517164300'
+const iban = electronicFormat('NL91 ABNA 0417 1643 00'); // 'NL91ABNA0517164300'
 isValidIBAN(iban); // true
 
 // If you want to know reason why IBAN is invalid

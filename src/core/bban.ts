@@ -53,8 +53,8 @@ export function validateBBANWith(
   countryCode: string | null | undefined,
   options: Readonly<BBANValidationOptions> = {},
 ): BBANValidationResult {
-  const electronicBban = electronicFormat(bban ?? '');
-  const code = electronicFormat(countryCode ?? '');
+  const electronicBban = electronicFormat(bban);
+  const code = electronicFormat(countryCode);
   if (electronicBban === '' || code === '') {
     return { errorCodes: [BBANValidationError.NoBBANProvided], valid: false };
   }

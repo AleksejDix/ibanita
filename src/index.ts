@@ -29,7 +29,7 @@ export type {
 export { createIBANTools, type IBANTools } from './core/tools';
 
 // Re-export utility functions
-export { electronicFormat, electronicFormatIBAN, friendlyFormatIBAN } from './format';
+export { electronicFormat, friendlyFormatIBAN } from './format';
 
 // Re-export IBAN functions
 export { composeIBAN, extractIBAN, isQRIBAN, isValidIBAN, validateIBAN } from './iban';
