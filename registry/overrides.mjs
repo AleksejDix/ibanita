@@ -4,11 +4,13 @@
  * - account number positions (`accountPosition`, 0-based within the IBAN)
  * - countries and territories outside the registry, such as those covered by the FR and FI entries
  * - deliberate deviations: FR also has a branch identifier, and SI splits its bank code into bank and branch
+ * - SEPA membership the SWIFT registry has not caught up with: AL, MD, ME, MK and RS are in the EPC scope
+ *   (EPC409-09 v8.0, December 2025; Serbia from May 2026)
  */
 export const overrides = {
   AD: { accountPosition: [12, 23] },
   AE: { accountPosition: [7, 23] },
-  AL: { accountPosition: [12, 28] },
+  AL: { accountPosition: [12, 28], sepa: true },
   AO: { ibanLength: 25, bbanPattern: '^[0-9]{21}$', ibanRegistry: false },
   AX: { ibanLength: 18, bbanPattern: '^[0-9]{14}$', ibanRegistry: true, sepa: true },
   AZ: { accountPosition: [8, 27] },
@@ -66,11 +68,11 @@ export const overrides = {
   LY: { accountPosition: [10, 25] },
   MA: { ibanLength: 28, bbanPattern: '^[0-9]{24}$', ibanRegistry: false },
   MC: { bbanValidator: 'checkFrenchBBAN' },
-  MD: { accountPosition: [6, 24] },
-  ME: { bbanValidator: 'checkMod9710BBAN', accountPosition: [7, 19] },
+  MD: { accountPosition: [6, 24], sepa: true },
+  ME: { bbanValidator: 'checkMod9710BBAN', accountPosition: [7, 19], sepa: true },
   MF: { ibanLength: 27, bbanPattern: '^[0-9]{10}[A-Z0-9]{11}[0-9]{2}$', ibanRegistry: true, sepa: true },
   MG: { ibanLength: 27, bbanPattern: '^[0-9]{23}$', ibanRegistry: false },
-  MK: { bbanValidator: 'checkMod9710BBAN' },
+  MK: { bbanValidator: 'checkMod9710BBAN', sepa: true },
   ML: { ibanLength: 28, bbanPattern: '^[A-Z0-9]{2}[0-9]{22}$', ibanRegistry: false },
   MN: { accountPosition: [8, 20] },
   MQ: { ibanLength: 27, bbanPattern: '^[0-9]{10}[A-Z0-9]{11}[0-9]{2}$', ibanRegistry: true, sepa: true },
@@ -91,7 +93,7 @@ export const overrides = {
   QA: { accountPosition: [8, 29] },
   RE: { ibanLength: 27, bbanPattern: '^[0-9]{10}[A-Z0-9]{11}[0-9]{2}$', ibanRegistry: true, sepa: true },
   RO: { accountPosition: [8, 23] },
-  RS: { bbanValidator: 'checkMod9710BBAN' },
+  RS: { bbanValidator: 'checkMod9710BBAN', sepa: true },
   RU: { accountPosition: [13, 33] },
   SA: { accountPosition: [6, 23] },
   SC: { accountPosition: [12, 27] },

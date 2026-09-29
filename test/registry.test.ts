@@ -91,6 +91,8 @@ const examples = codes.map((code, index): readonly [string, string, string | und
 // and FR has a branch identifier the registry does not define.
 const BANK_DEVIATIONS = new Set(['SI']);
 const BRANCH_DEVIATIONS = new Set(['FR', 'SI']);
+// In the SEPA scope per the EPC list (EPC409-09 v8.0) before the SWIFT registry recorded it.
+const SEPA_DEVIATIONS = new Set(['AL', 'MD', 'ME', 'MK', 'RS']);
 
 describe('SWIFT IBAN Registry examples', () => {
   it('should contain all registry countries', () => {
@@ -105,7 +107,7 @@ describe('SWIFT IBAN Registry examples', () => {
     expect(specs[code]?.ibanLength).toBe(length);
   });
 
-  it.each(formats.map(([code, , , sepa]) => [code, sepa] as const))(
+  it.each(formats.filter(([code]) => !SEPA_DEVIATIONS.has(code)).map(([code, , , sepa]) => [code, sepa] as const))(
     '%s should match the registry SEPA flag',
     (code, sepa) => {
       expect(specs[code]?.sepa).toBe(sepa);

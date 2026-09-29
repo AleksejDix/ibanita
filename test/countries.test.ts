@@ -88,8 +88,11 @@ describe('countries', () => {
 });
 
 describe('SEPA membership', () => {
-  // EU and EEA members, Switzerland, the United Kingdom, the microstates, Gibraltar, Åland and the French territories in SEPA.
-  const SEPA = `AD AT AX BE BG BL CH CY CZ DE DK EE ES FI FR GB GF GI GP GR HR HU IE IS IT LI LT LU LV MC MF MQ MT NL NO PL PM PT RE RO SE SI SK SM VA YT`;
+  // The EPC list of SEPA scheme countries, EPC409-09 v8.0 (December 2025): EU and EEA members, the eleven non-EEA
+  // countries (Albania, Andorra, Moldova, Monaco, Montenegro, North Macedonia, San Marino, Serbia, Switzerland,
+  // the United Kingdom, Vatican), Gibraltar, Åland and the French territories. Guernsey, Jersey and the Isle of Man
+  // use GB IBANs, and the Canary Islands, Azores and Madeira use ES and PT.
+  const SEPA = `AD AL AT AX BE BG BL CH CY CZ DE DK EE ES FI FR GB GF GI GP GR HR HU IE IS IT LI LT LU LV MC MD ME MF MK MQ MT NL NO PL PM PT RE RO RS SE SI SK SM VA YT`;
   it('matches the SEPA country list', () => {
     const specs = iban.countrySpecs;
     const sepa = Object.keys(specs).filter((code) => specs[code]?.sepa === true);

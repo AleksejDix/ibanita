@@ -7,7 +7,7 @@ export const MD: IBANCountrySpec = Object.freeze<IBANCountrySpec>({
   ibanLength: 24,
   bbanRegExp: /^[A-Z0-9]{20}$/u,
   ibanRegistry: true,
-  sepa: false,
+  sepa: true,
   bankPosition: [0, 1],
   accountPosition: [6, 24],
 });

@@ -118,7 +118,7 @@ isValidIBAN(input, options);
 | `ibanLength` | Length of the IBAN |
 | `bbanRegExp` | Regular expression the BBAN must match |
 | `ibanRegistry` | Listed in the SWIFT IBAN Registry |
-| `sepa` | Takes part in SEPA |
+| `sepa` | In the SEPA schemes' geographical scope, per the EPC list (EPC409-09) |
 | `bbanValidator` | Built-in national checksum, when the country has one |
 | `bankPosition`, `branchPosition` | `[start, end]` within the BBAN, 0-based and inclusive |
 | `accountPosition` | `[start, end]` within the IBAN |
@@ -150,3 +150,5 @@ ibanita 5 is a rewrite with a different API surface. [MIGRATION.md](MIGRATION.md
 ## License
 
 MIT. `SPDX-License-Identifier: MIT`
+
+ibanita started in 2025 as a fork of [ibantools](https://github.com/Simplify/ibantools). It has since been rewritten from the ground up, and no code or test data from the original remains.

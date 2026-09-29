@@ -171,7 +171,17 @@ const VALIDATOR_MODULES = {
 };
 
 /** Overrides that deliberately differ from the registry. Any other difference is an error. */
-const DEVIATIONS = new Set(['SI.bankPosition', 'SI.branchPosition', 'FR.branchPosition']);
+const DEVIATIONS = new Set([
+  'SI.bankPosition',
+  'SI.branchPosition',
+  'FR.branchPosition',
+  // In the EPC SEPA scope (EPC409-09 v8.0) but still 'No' in the SWIFT registry
+  'AL.sepa',
+  'MD.sepa',
+  'ME.sepa',
+  'MK.sepa',
+  'RS.sepa',
+]);
 
 /**
  * Merge the hand-maintained overrides over the registry data, one entry per country.
