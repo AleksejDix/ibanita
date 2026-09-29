@@ -1,8 +1,9 @@
 /// <reference types="node" />
 import * as iban from '../src/index';
 import { describe, expect, it } from 'vitest';
+import { registryExamples, registryRow } from './registry-file';
 import { type IBANParts } from '../src/index';
-import { registryRow } from './registry-file';
+import { ibanSpecs } from '../src/countries/specs';
 
 // Registry positions are 1-based and inclusive, counted within the BBAN.
 function slicePosition(electronicIban: string, position: string): string | undefined {
@@ -116,5 +117,56 @@ describe('SWIFT IBAN Registry examples', () => {
       .map(([code, example, , branch]) => [code, example, branch]),
   )('%s example should extract the branch identifier at the registry position', (_code, example, branch) => {
     expect(parts(example).branchIdentifier).toBe(branch);
+  });
+});
+
+describe('SWIFT IBAN Registry examples, mutated', () => {
+  const Errors = iban.IBANValidationError;
+  const changeCheckDigits = (example: string): string =>
+    example.slice(0, 2) + String((Number(example.slice(2, 4)) + 1) % 100).padStart(2, '0') + example.slice(4);
+  // Changes the last BBAN character to another one of the same kind, so the format stays valid.
+  const changeLastCharacter = (example: string): string => {
+    const last = example.at(-1) ?? '0';
+    if (/[0-9]/u.test(last)) {
+      return example.slice(0, -1) + String((Number(last) + 1) % 10);
+    }
+    return example.slice(0, -1) + (last === 'Z' ? 'A' : String.fromCharCode(last.charCodeAt(0) + 1));
+  };
+
+  it.each(registryExamples)('%s with changed check digits is rejected', (_code, example) => {
+    expect(iban.validateIBAN(changeCheckDigits(example)).errorCodes).toContain(Errors.WrongIBANChecksum);
+  });
+
+  it.each(registryExamples)('%s with a changed BBAN character is rejected', (_code, example) => {
+    expect(iban.isValidIBAN(changeLastCharacter(example))).toBe(false);
+  });
+
+  it.each(registryExamples)('%s with an extra character is rejected', (_code, example) => {
+    expect(iban.validateIBAN(`${example}0`).errorCodes).toContain(Errors.WrongBBANLength);
+  });
+});
+
+describe('SWIFT IBAN Registry examples, round trips', () => {
+  const tools = iban.withCountries(ibanSpecs);
+
+  it.each(registryExamples)('%s composes back to itself', (code, example) => {
+    expect(iban.composeIBAN(code, example.slice(4))).toBe(example);
+  });
+
+  it.each(registryExamples)('%s extracts parts that compose back to itself', (_code, example) => {
+    const extracted = parts(example);
+    expect(iban.composeIBAN(extracted.countryCode, extracted.bban)).toBe(example);
+  });
+
+  it.each(registryExamples)('%s survives friendly then electronic formatting', (_code, example) => {
+    expect(iban.electronicFormat(iban.friendlyFormatIBAN(example))).toBe(example);
+    expect(iban.electronicFormat(iban.friendlyFormatIBAN(example, '-'))).toBe(example);
+  });
+
+  it.each(registryExamples)('%s gives the same results through withCountries', (code, example) => {
+    expect(tools.validateIBAN(example)).toEqual(iban.validateIBAN(example));
+    expect(tools.extractIBAN(example)).toEqual(iban.extractIBAN(example));
+    expect(tools.validateBBAN(example.slice(4), code)).toEqual(iban.validateBBAN(example.slice(4), code));
+    expect(tools.isSEPACountry(code)).toBe(iban.isSEPACountry(code));
   });
 });
