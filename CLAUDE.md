@@ -21,7 +21,7 @@ npm test
 # Run tests in watch mode
 npm run test:watch
 
-# Generate coverage report (must maintain 100% coverage)
+# Generate coverage report (informational, no required percentage)
 npm run coverage
 
 # Type-check source and tests (strict settings in tsconfig.json)
@@ -50,9 +50,8 @@ One test file per source module in `test/`:
 - `test/docs.test.ts`: evaluates every `// returns` example in the doc comments
 - `test/core.test.ts`: `withCountries` with a subset, and the compile-time country code keys
 - `test/registry-file.ts`: shared reader for the registry file
-- **Coverage requirement: 100%** - All pull requests must maintain 100% test coverage
-- Coverage is not enough: a new rule needs a test that fails when the rule is broken, such as a rejected input
-- Run `npm run coverage` to verify coverage before committing
+- **No coverage target.** Coverage is a hint for finding untested code, not a goal. Do not add tests only to raise the number.
+- **Every rule needs a test that fails when the rule is broken**, typically a rejected input next to an accepted one. A quick check: make the rule return a constant and see whether a test fails.
 
 ## Code Architecture
 
@@ -175,7 +174,7 @@ Project includes `.node-version` and `.nvmrc` files set to Node 22 for consisten
 Before submitting PRs:
 
 1. Run `npm run all` to ensure tests, linting, and docs generation pass
-2. Verify 100% test coverage maintained (`npm run coverage`)
+2. Check that new rules have tests that fail when the rule is broken
 3. Do not include changes to `dist/` directory (generated during publish)
 4. Update the tests in `test/` for any functionality changes
 

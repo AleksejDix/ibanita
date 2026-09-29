@@ -8,7 +8,7 @@ By participating, you are expected to uphold this code.
 * Clone this repo and run `npm install`.
 * Write tests for your changes in the matching `test/<module>.test.ts` file.
 * Before making pull requests run `npm run all`.
-* Make sure that test coverage stays at 100%.
+* Give every new rule a test that fails when the rule is broken, such as a rejected input. There is no coverage target.
 * Try not to make pull requests with changes in `dist`, `jsnext` or `build` directories.
 
 ## Releasing
