@@ -7,12 +7,12 @@ export { electronicFormat };
  * IBAN validation is not performed.
  * When non-string value for IBAN is provided, returns null.
  * ```
- * // returns "NL91 ABNA 0417 1643 00"
- * friendlyFormatIBAN("NL91ABNA0417164300");
+ * // returns "NL06 KNNF 4736 9423 47"
+ * friendlyFormatIBAN("NL06KNNF4736942347");
  * ```
  * ```
- * // returns "NL91-ABNA-0417-1643-00"
- * friendlyFormatIBAN("NL91ABNA0417164300","-");
+ * // returns "NL06-KNNF-4736-9423-47"
+ * friendlyFormatIBAN("NL06KNNF4736942347","-");
  * ```
  */
 export function friendlyFormatIBAN(iban?: string | null, separator = ' '): string | null {

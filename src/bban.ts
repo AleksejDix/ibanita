@@ -13,11 +13,11 @@ import { validateBBANWith } from './core/bban';
  * Whitespace, dashes and periods are removed and letters are uppercased before validation.
  * ```
  * // returns {errorCodes: [], valid: true}
- * ibanita.validateBBAN("ABNA0417164300", "NL");
+ * ibanita.validateBBAN("KNNF4736942347", "NL");
  * ```
  * ```
  * // returns {errorCodes: ['WRONG_BBAN_FORMAT'], valid: false}
- * ibanita.validateBBAN("A7NA0417164300", "NL");
+ * ibanita.validateBBAN("K7NF4736942347", "NL");
  * ```
  */
 export function validateBBAN(
@@ -33,7 +33,7 @@ export function validateBBAN(
  *
  * ```
  * // returns true
- * ibanita.isValidBBAN("ABNA0417164300", "NL");
+ * ibanita.isValidBBAN("KNNF4736942347", "NL");
  * ```
  * ```
  * // returns false

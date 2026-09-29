@@ -4,18 +4,18 @@ import { describe, expect, it } from 'vitest';
 describe('bic', () => {
   describe('When calling isValidBIC()', () => {
     it.each<[string | null | undefined, boolean]>([
-      ['ABNANL2A', true],
-      ['ABNANL2A000', true],
-      ['ABNANL2AXXX', true],
-      ['ABNAAA2AXXX', false],
-      ['NOLADE21KIE', true],
-      ['INGDDEFFXXX', true],
-      ['INGDEFFXXX', false],
-      ['ABN4NL2A', false],
-      ['ABNANL2A01F', true],
+      ['DEMONL2A', true],
+      ['DEMONL2A000', true],
+      ['DEMONL2AXXX', true],
+      ['DEMOAA2AXXX', false],
+      ['BANKDE21KIE', true],
+      ['BANKDEFFXXX', true],
+      ['BANDEFFXXX', false],
+      ['DEM4NL2A', false],
+      ['DEMONL2A01F', true],
       [null, false],
       [undefined, false],
-      ['ABNAXX2A', false],
+      ['DEMOXX2A', false],
     ])('isValidBIC(%s)', (input, expected) => {
       expect(iban.isValidBIC(input)).toBe(expected);
     });
@@ -45,14 +45,14 @@ describe('bic', () => {
         },
       ],
       [
-        'ABN4NL2A',
+        'DEM4NL2A',
         {
           valid: false,
           errorCodes: [iban.BICValidationError.WrongBICFormat],
         },
       ],
       [
-        'ABNAXX2A',
+        'DEMOXX2A',
         {
           valid: false,
           errorCodes: [iban.BICValidationError.NoBICCountry],
@@ -65,7 +65,7 @@ describe('bic', () => {
           errorCodes: [iban.BICValidationError.WrongBICFormat],
         },
       ],
-      ['ABNANL2A', { valid: true, errorCodes: [] }],
+      ['DEMONL2A', { valid: true, errorCodes: [] }],
     ])('validateBIC(%s)', (input, expected) => {
       expect(iban.validateBIC(input)).toEqual(expected);
     });
@@ -74,17 +74,17 @@ describe('bic', () => {
   describe('extractBIC()', () => {
     it.each<[string, iban.BICExtractionResult]>([
       [
-        'ABNANL2A',
-        { bankCode: 'ABNA', countryCode: 'NL', locationCode: '2A', testBIC: false, branchCode: null, valid: true },
+        'DEMONL2A',
+        { bankCode: 'DEMO', countryCode: 'NL', locationCode: '2A', testBIC: false, branchCode: null, valid: true },
       ],
       [
-        'dnbanokk',
-        { bankCode: 'DNBA', countryCode: 'NO', locationCode: 'KK', testBIC: false, branchCode: null, valid: true },
+        'banknokk',
+        { bankCode: 'BANK', countryCode: 'NO', locationCode: 'KK', testBIC: false, branchCode: null, valid: true },
       ],
-      ['ABN7NL2A', { valid: false }],
+      ['DEM7NL2A', { valid: false }],
       [
-        'NEDSZAJ0XXX',
-        { bankCode: 'NEDS', countryCode: 'ZA', locationCode: 'J0', testBIC: true, branchCode: 'XXX', valid: true },
+        'TESTZAJ0XXX',
+        { bankCode: 'TEST', countryCode: 'ZA', locationCode: 'J0', testBIC: true, branchCode: 'XXX', valid: true },
       ],
     ])('%s', (input, expected) => {
       expect(iban.extractBIC(input)).toEqual(expected);
@@ -94,17 +94,17 @@ describe('bic', () => {
 
 describe('BIC input rule', () => {
   it.each<[string, boolean]>([
-    ['ABNA NL 2A', true],
-    ['abna-nl-2a', true],
-    [' NEDSZAJJXXX ', true],
+    ['DEMO NL 2A', true],
+    ['demo-nl-2a', true],
+    [' TESTZAJJXXX ', true],
     ['ABNA NL 2', false],
   ])('isValidBIC(%s)', (input, expected) => {
     expect(iban.isValidBIC(input)).toBe(expected);
   });
   it('extractBIC normalises its input', () => {
-    expect(iban.extractBIC('abna nl 2a')).toEqual({
+    expect(iban.extractBIC('demo nl 2a')).toEqual({
       valid: true,
-      bankCode: 'ABNA',
+      bankCode: 'DEMO',
       countryCode: 'NL',
       locationCode: '2A',
       branchCode: null,

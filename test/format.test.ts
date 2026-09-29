@@ -3,28 +3,30 @@ import { describe, expect, it } from 'vitest';
 
 describe('format', () => {
   describe('When calling electronicFormat()', () => {
-    it('with valid Brazilian IBAN should return BR9700360305000010009795493P1', () => {
-      expect(iban.electronicFormat('BR97 0036 0305 0000 1000 9795 493P 1')).toBe('BR9700360305000010009795493P1');
+    it('with valid Brazilian IBAN should return BR6699999A03000010009795493C1', () => {
+      expect(iban.electronicFormat('BR66 9999 9A03 0000 1000 9795 493C 1')).toBe('BR6699999A03000010009795493C1');
     });
   });
 
   describe('When calling friendlyFormatIBAN()', () => {
-    it('with valid badly formated Brazilian IBAN should return BR97 0036 0305 0000 1000 9795 493P 1', () => {
-      expect(iban.friendlyFormatIBAN('BR97 0036-030500001000-9795493-P1')).toBe('BR97 0036 0305 0000 1000 9795 493P 1');
+    it('with valid badly formated Brazilian IBAN should return BR66 9999 9A03 0000 1000 9795 493C 1', () => {
+      expect(iban.friendlyFormatIBAN('BR66 9999 9A03 0000 1000 9795 493C 1')).toBe(
+        'BR66 9999 9A03 0000 1000 9795 493C 1',
+      );
     });
   });
 
   describe('When calling friendlyFormatIBAN() with - as separator', () => {
-    it('with valid badly formated Brazilian IBAN should return BR97-0036-0305-0000-1000-9795-493P-1', () => {
-      expect(iban.friendlyFormatIBAN('BR97 0036-030500001000-9795493-P1', '-')).toBe(
-        'BR97-0036-0305-0000-1000-9795-493P-1',
+    it('with valid badly formated Brazilian IBAN should return BR66-9999-9A03-0000-1000-9795-493C-1', () => {
+      expect(iban.friendlyFormatIBAN('BR66 9999 9A03 0000 1000 9795 493C 1', '-')).toBe(
+        'BR66-9999-9A03-0000-1000-9795-493C-1',
       );
     });
   });
 
   describe('When calling friendlyFormatIBAN() with replacement pattern as separator', () => {
     it('should insert the separator literally', () => {
-      expect(iban.friendlyFormatIBAN('NL91ABNA0417164300', '$&')).toBe('NL91$&ABNA$&0417$&1643$&00');
+      expect(iban.friendlyFormatIBAN('NL06KNNF4736942347', '$&')).toBe('NL06$&KNNF$&4736$&9423$&47');
     });
   });
 

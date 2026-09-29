@@ -14,16 +14,16 @@ const BIC_REGEX = /^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/u;
  *
  * ```
  * // returns true
- * ibanita.isValidBIC("ABNANL2A");
+ * ibanita.isValidBIC("DEMONL2A");
  *
  * // returns true
- * ibanita.isValidBIC("NEDSZAJJXXX");
+ * ibanita.isValidBIC("TESTZAJJXXX");
  *
  * // returns false
- * ibanita.isValidBIC("ABN4NL2A");
+ * ibanita.isValidBIC("DEM4NL2A");
  *
  * // returns true, spaces are removed first
- * ibanita.isValidBIC("ABNA NL 2A");
+ * ibanita.isValidBIC("DEMO NL 2A");
  * ```
  */
 export function isValidBIC(bic: string | null | undefined): boolean {
@@ -34,7 +34,7 @@ export function isValidBIC(bic: string | null | undefined): boolean {
  * validateBIC
  * ```
  * // returns {errorCodes: [], valid: true}
- * ibanita.validateBIC("NEDSZAJJXXX");
+ * ibanita.validateBIC("TESTZAJJXXX");
  * ```
  */
 export function validateBIC(input?: string | null): BICValidationResult {
@@ -54,7 +54,7 @@ export function validateBIC(input?: string | null): BICValidationResult {
  * extractBIC
  * ```
  * // returns {bankCode: "ABNA", countryCode: "NL", locationCode: "2A", branchCode: null, testBIC: false, valid: true}
- * ibanita.extractBIC("ABNANL2A");
+ * ibanita.extractBIC("DEMONL2A");
  * ```
  */
 export function extractBIC(inputBic?: string | null): BICExtractionResult {

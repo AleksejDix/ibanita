@@ -19,7 +19,7 @@ export { isQRIBAN };
  * Spaces and dashes are removed and letters are uppercased before validation.
  * ```
  * // returns true
- * ibanita.isValidIBAN("NL91ABNA0417164300");
+ * ibanita.isValidIBAN("NL06KNNF4736942347");
  * ```
  * ```
  * // returns false
@@ -27,11 +27,11 @@ export { isQRIBAN };
  * ```
  * ```
  * // returns true
- * ibanita.isValidIBAN('CH4431999123000889012');
+ * ibanita.isValidIBAN('CH283109120L9PSR9BKOK');
  * ```
  * ```
  * // returns false
- * ibanita.isValidIBAN('CH4431999123000889012', { allowQRIBAN: false });
+ * ibanita.isValidIBAN('CH283109120L9PSR9BKOK', { allowQRIBAN: false });
  * ```
  */
 export function isValidIBAN(
@@ -47,16 +47,16 @@ export function isValidIBAN(
  * Spaces and dashes are removed and letters are uppercased before validation.
  * ```
  * // returns {errorCodes: [], valid: true}
- * ibanita.validateIBAN("NL91ABNA0417164300");
+ * ibanita.validateIBAN("NL06KNNF4736942347");
  * ```
  * ```
  * ```
  * // returns {errorCodes: [], valid: true}
- * ibanita.validateIBAN('CH4431999123000889012');
+ * ibanita.validateIBAN('CH283109120L9PSR9BKOK');
  * ```
  * ```
  * // returns {errorCodes: ['QR_IBAN_NOT_ALLOWED'], valid: false}
- * ibanita.validateIBAN('CH4431999123000889012', { allowQRIBAN: false });
+ * ibanita.validateIBAN('CH283109120L9PSR9BKOK', { allowQRIBAN: false });
  * ```
  */
 export function validateIBAN(
@@ -70,8 +70,8 @@ export function validateIBAN(
  * composeIBAN
  *
  * ```
- * // returns NL91ABNA0417164300
- * ibanita.composeIBAN("NL", "ABNA0417164300");
+ * // returns NL06KNNF4736942347
+ * ibanita.composeIBAN("NL", "KNNF4736942347");
  * ```
  */
 export function composeIBAN(
@@ -85,8 +85,8 @@ export function composeIBAN(
 /**
  * extractIBAN
  * ```
- * // returns {iban: "NL91ABNA0417164300", bban: "ABNA0417164300", countryCode: "NL", valid: true, accountNumber: '0417164300', bankIdentifier: 'ABNA'}
- * ibanita.extractIBAN("NL91 ABNA 0417 1643 00");
+ * // returns {iban: "NL06KNNF4736942347", bban: "KNNF4736942347", countryCode: "NL", valid: true, accountNumber: '4736942347', bankIdentifier: 'ABNA'}
+ * ibanita.extractIBAN("NL06 KNNF 4736 9423 47");
  * ```
  */
 export function extractIBAN(input?: string | null): IBANExtractionResult {
