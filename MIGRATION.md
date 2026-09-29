@@ -1,6 +1,6 @@
 # Migrating from ibantools 4.x to ibanita 5
 
-ibanita started as a fork of [ibantools](https://github.com/Simplify/ibantools) 4.5. This guide lists every change that can affect existing code.
+ibanita 5 replaces ibantools 4.x with a different API. This guide lists every change that can affect existing code.
 
 ## Installation and imports
 

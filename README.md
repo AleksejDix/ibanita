@@ -150,5 +150,3 @@ ibanita 5 is a rewrite with a different API surface. [MIGRATION.md](MIGRATION.md
 ## License
 
 MIT. `SPDX-License-Identifier: MIT`
-
-ibanita began in 2025 as a fork of [ibantools](https://github.com/Simplify/ibantools) by Saša Jovanić and has since been rewritten. The LICENSE file keeps the original attribution.
