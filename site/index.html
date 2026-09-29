@@ -1,0 +1,531 @@
+<title>Anatomy of an IBAN</title>
+<meta name="description" content="An interactive look at how an IBAN is built and how its check digits catch mistakes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@87.5,400;100,500;112.5,700&family=Public+Sans:ital,wght@0,400;0,600;0,800;1,400&display=swap">
+<style>
+  :root {
+    --paper: #e9efeb;
+    --sheet: #f6f8f6;
+    --ink: #17242a;
+    --muted: #55655f;
+    --rule: #c9d4ce;
+    --country: #2e5f8f;
+    --check: #b42318;
+    --bank: #6a4c9c;
+    --branch: #1b7a67;
+    --account: #8a6414;
+    --other: #6f7d78;
+    --good: #1f7a3d;
+    --good-bg: #dcefe2;
+    --bad: #b42318;
+    --bad-bg: #f8e1de;
+    --focus: #2e5f8f;
+    --mono: 'Martian Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+    --sans: 'Public Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+      color-scheme: dark;
+      --paper: #0e1614;
+      --sheet: #152120;
+      --ink: #dfe8e3;
+      --muted: #93a39c;
+      --rule: #2a3a36;
+      --country: #7fb0e0;
+      --check: #ff8a7a;
+      --bank: #b9a0e6;
+      --branch: #5fd0b5;
+      --account: #e0bb62;
+      --other: #8d9b96;
+      --good: #6fd08f;
+      --good-bg: #173524;
+      --bad: #ff8a7a;
+      --bad-bg: #3b1c19;
+      --focus: #7fb0e0;
+    }
+  }
+  :root[data-theme='dark'] {
+    color-scheme: dark;
+    --paper: #0e1614;
+    --sheet: #152120;
+    --ink: #dfe8e3;
+    --muted: #93a39c;
+    --rule: #2a3a36;
+    --country: #7fb0e0;
+    --check: #ff8a7a;
+    --bank: #b9a0e6;
+    --branch: #5fd0b5;
+    --account: #e0bb62;
+    --other: #8d9b96;
+    --good: #6fd08f;
+    --good-bg: #173524;
+    --bad: #ff8a7a;
+    --bad-bg: #3b1c19;
+    --focus: #7fb0e0;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font: 400 1rem/1.6 var(--sans);
+    padding-inline: 20px;
+    padding-block: 40px 64px;
+  }
+  main { max-width: 960px; margin-inline: auto; display: grid; gap: 56px; }
+  h1, h2 { text-wrap: balance; margin: 0; line-height: 1.15; }
+  h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; letter-spacing: -0.02em; }
+  h2 { font-size: 1.375rem; font-weight: 800; }
+  p { margin: 0; max-width: 65ch; }
+  .lede { color: var(--muted); font-size: 1.125rem; }
+  .eyebrow {
+    font: 500 0.75rem/1 var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+  }
+  .mono { font-family: var(--mono); font-size: 0.9em; }
+  header { display: grid; gap: 12px; }
+
+  .document {
+    background-color: var(--sheet);
+    background-image: repeating-linear-gradient(135deg, transparent 0 11px, color-mix(in srgb, var(--rule) 35%, transparent) 11px 12px);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: clamp(20px, 4vw, 36px);
+    display: grid;
+    gap: 24px;
+  }
+  .controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
+  .field { display: grid; gap: 6px; }
+  .field.grow { flex: 1 1 320px; }
+  label { font: 500 0.75rem/1 var(--mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+  input, select, button {
+    font: inherit;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 10px 12px;
+  }
+  select { max-width: 100%; }
+  input { font-family: var(--mono); font-size: 0.95rem; width: 100%; }
+  button { cursor: pointer; font-weight: 600; }
+  button:hover:not(:disabled) { border-color: var(--ink); }
+  button:disabled { opacity: 0.45; cursor: default; }
+  :is(input, select, button):focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  .iban-wrap { overflow-x: auto; padding-block: 4px; }
+  .iban {
+    font: 500 clamp(1.3rem, 3.6vw, 2.25rem)/1.2 var(--mono);
+    display: flex;
+    gap: 0.55em;
+    white-space: nowrap;
+    width: max-content;
+  }
+  .group { display: flex; gap: 0.04em; }
+  .ch { padding-bottom: 8px; border-bottom: 4px solid currentColor; }
+  .r-country { color: var(--country); }
+  .r-check { color: var(--check); }
+  .r-bank { color: var(--bank); }
+  .r-branch { color: var(--branch); }
+  .r-account { color: var(--account); }
+  .r-other { color: var(--other); }
+  .flash { animation: flash 0.9s ease-out; }
+  @keyframes flash { from { background: color-mix(in srgb, var(--check) 30%, transparent); } to { background: transparent; } }
+
+  .parts { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px 24px; }
+  .part { display: grid; gap: 2px; align-content: start; border-top: 4px solid currentColor; padding-top: 8px; }
+  .part b { font: 600 0.8rem/1.3 var(--sans); color: var(--ink); }
+  .part span { font: 500 0.95rem/1.4 var(--mono); overflow-wrap: anywhere; }
+  .part small { color: var(--muted); font-size: 0.8rem; line-height: 1.4; }
+
+  .verdict { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
+  .pill { font: 700 0.8rem/1 var(--mono); padding: 8px 12px; border-radius: 999px; letter-spacing: 0.04em; }
+  .pill.ok { background: var(--good-bg); color: var(--good); }
+  .pill.no { background: var(--bad-bg); color: var(--bad); }
+  .verdict p { color: var(--muted); flex: 1 1 280px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 28px; counter-reset: step; }
+  .step { display: grid; grid-template-columns: 2.25rem 1fr; gap: 4px 16px; counter-increment: step; }
+  .step::before {
+    content: counter(step);
+    grid-row: span 2;
+    font: 700 1rem/2.25rem var(--mono);
+    width: 2.25rem; height: 2.25rem; text-align: center;
+    border: 1px solid var(--rule); border-radius: 50%;
+    color: var(--muted);
+  }
+  .step h3 { margin: 0; font-size: 1.05rem; font-weight: 600; line-height: 2.25rem; }
+  .step .body { display: grid; gap: 10px; min-width: 0; }
+  .strip { font: 400 0.95rem/1.7 var(--mono); overflow-wrap: anywhere; }
+  .strip.dim { color: var(--muted); font-size: 0.85rem; }
+  .table-wrap { overflow-x: auto; }
+  table { border-collapse: collapse; font: 400 0.85rem/1.5 var(--mono); font-variant-numeric: tabular-nums; }
+  th, td { text-align: right; padding: 4px 16px 4px 0; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  th { font: 500 0.7rem/1.4 var(--mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+  td .carry { color: var(--muted); }
+  .result { font: 700 1.1rem/1.4 var(--mono); }
+  .result.ok { color: var(--good); }
+  .result.no { color: var(--bad); }
+
+  .blocks { display: flex; flex-wrap: wrap; gap: 4px; }
+  .block {
+    font: 500 0.8rem/1 var(--mono);
+    padding: 10px 8px;
+    border-radius: 3px;
+    color: var(--sheet);
+    background: var(--other);
+    min-width: 2.5rem;
+    text-align: center;
+  }
+  .block.cc { background: var(--country); flex-grow: 2; }
+  .block.cd { background: var(--check); flex-grow: 2; }
+  .block.digits { background: var(--ink); }
+  .block.letters { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); }
+  .block.mixed { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--muted); background-image: repeating-linear-gradient(135deg, transparent 0 5px, color-mix(in srgb, var(--muted) 30%, transparent) 5px 6px); }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px 24px; margin: 0; }
+  .facts div { display: grid; gap: 2px; }
+  .facts dt { font: 500 0.7rem/1.4 var(--mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+  .facts dd { margin: 0; font-weight: 600; }
+  section { display: grid; gap: 20px; }
+  footer { color: var(--muted); font-size: 0.875rem; border-top: 1px solid var(--rule); padding-top: 16px; }
+  @media (prefers-reduced-motion: reduce) { .flash { animation: none; } }
+</style>
+
+<main>
+  <header>
+    <span class="eyebrow">ISO 13616 · International Bank Account Number</span>
+    <h1>Anatomy of an IBAN</h1>
+    <p class="lede">Every IBAN is a country code, two check digits and the account number used inside that country. The check digits are computed from everything else, so almost any typo makes them stop matching.</p>
+  </header>
+
+  <div class="document" aria-label="IBAN inspector">
+    <div class="controls">
+      <div class="field">
+        <label for="country">Country</label>
+        <select id="country"></select>
+      </div>
+      <div class="field grow">
+        <label for="iban-input">IBAN, type or paste your own</label>
+        <input id="iban-input" autocomplete="off" spellcheck="false">
+      </div>
+    </div>
+
+    <div class="iban-wrap"><div class="iban" id="iban"></div></div>
+    <div class="parts" id="parts"></div>
+
+    <div class="verdict" aria-live="polite">
+      <span class="pill" id="pill"></span>
+      <p id="verdict-text"></p>
+    </div>
+    <div class="actions">
+      <button type="button" id="new-example">New example</button>
+      <button type="button" id="change-digit">Change one digit</button>
+      <button type="button" id="swap">Swap two neighbours</button>
+      <button type="button" id="fix">Recompute check digits</button>
+    </div>
+  </div>
+
+  <section aria-labelledby="how">
+    <span class="eyebrow">The check digits</span>
+    <h2 id="how">How the check digits catch mistakes</h2>
+    <p>The check is ISO 7064 MOD 97-10. It turns the whole IBAN into one large number and divides it by 97. A correct IBAN always leaves a remainder of exactly 1. These are the steps for the IBAN above.</p>
+    <ol class="steps">
+      <li class="step">
+        <h3>Move the first four characters to the end</h3>
+        <div class="body"><div class="strip" id="step-move"></div></div>
+      </li>
+      <li class="step">
+        <h3>Replace each letter with a number</h3>
+        <div class="body">
+          <p>A becomes 10, B becomes 11, and so on up to Z, which becomes 35.</p>
+          <div class="strip dim" id="step-letters"></div>
+          <div class="strip" id="step-digits"></div>
+        </div>
+      </li>
+      <li class="step">
+        <h3>Divide by 97, nine digits at a time</h3>
+        <div class="body">
+          <p>The number is too long for ordinary arithmetic, so the remainder is carried into the next chunk. Grey digits are the carried remainder.</p>
+          <div class="table-wrap"><table id="step-chunks"></table></div>
+        </div>
+      </li>
+      <li class="step">
+        <h3>The remainder must be 1</h3>
+        <div class="body">
+          <div class="result" id="step-result"></div>
+          <p id="step-explain"></p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="country-title">
+    <span class="eyebrow">Country format</span>
+    <h2 id="country-title">Structure</h2>
+    <p id="country-lede"></p>
+    <div class="blocks" id="blocks"></div>
+    <dl class="facts" id="facts"></dl>
+  </section>
+
+  <footer>
+    <p>Examples are generated on this page and belong to no real account. The checks run on <span class="mono">ibanita</span>, the same code the library ships, with country data from the SWIFT IBAN Registry.</p>
+  </footer>
+</main>
+
+<script>/*__IBANITA__*/</script>
+<script>
+(() => {
+  const lib = window.ibanita;
+  const { countrySpecs, composeIBAN, validateIBAN, extractIBAN, electronicFormat, friendlyFormatIBAN, IBANValidationError: E } = lib;
+  const names = new Intl.DisplayNames(['en'], { type: 'region' });
+  const nameOf = (code) => { try { return names.of(code) ?? code; } catch { return code; } };
+  const codes = Object.keys(countrySpecs).filter((c) => countrySpecs[c].ibanLength).sort((a, b) => nameOf(a).localeCompare(nameOf(b)));
+  const $ = (id) => document.getElementById(id);
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; };
+
+  const VALIDATORS = {
+    checkBelgianBBAN: 'MOD 97 on the account number',
+    checkNorwayBBAN: 'MOD 11 control digit',
+    checkPolandBBAN: 'MOD 10 on the bank code',
+    checkSpainBBAN: 'Two MOD 11 control digits',
+    checkCroatianBBAN: 'Two ISO 7064 MOD 11-10 control digits',
+    checkCzechAndSlovakBBAN: 'MOD 11 on prefix and account',
+    checkEstonianBBAN: 'MOD 10 control digit',
+    checkFrenchBBAN: 'RIB key, MOD 97',
+    checkHungarianBBAN: 'MOD 10 on bank and account',
+    checkMod9710BBAN: 'MOD 97-10 on the whole BBAN',
+  };
+  const MESSAGES = {
+    [E.NoIBANProvided]: 'Type an IBAN or pick a country.',
+    [E.NoIBANCountry]: 'The first two letters are not a country that uses IBAN.',
+    [E.WrongBBANLength]: 'The length is wrong for this country.',
+    [E.WrongBBANFormat]: 'A character is in the wrong place: a letter where a digit belongs, or the other way round.',
+    [E.WrongBBANChecksum]: 'The national check digits inside the account number do not match.',
+    [E.CheckDigitsNotNumeric]: 'Characters 3 and 4 must be digits.',
+    [E.WrongIBANChecksum]: 'The check digits do not match the rest of the IBAN. This is how a typo is caught.',
+    [E.QRIBANNotAllowed]: 'This is a Swiss QR-IBAN.',
+  };
+
+  // Small seeded generator (mulberry32), so examples are reproducible.
+  let state = 2026 * 929;
+  const random = () => {
+    state = (state + 0x6d2b79f5) | 0;
+    let t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 2 ** 32;
+  };
+  const range = (from, count) => Array.from({ length: count }, (_, i) => String.fromCharCode(from.charCodeAt(0) + i));
+  const DIGITS = range('0', 10);
+  const LETTERS = range('A', 26);
+  const pick = (set) => set[Math.floor(random() * set.length)];
+  const classes = (spec) => [...spec.bbanRegExp.source.matchAll(/\[([^\]]+)\]\{(\d+)\}/g)].map(([, cls, n]) => ({ cls, n: Number(n) }));
+  const kindOf = (cls) => (cls === '0-9' ? 'digits' : cls === 'A-Z' ? 'letters' : 'mixed');
+
+  function example(code) {
+    const spec = countrySpecs[code];
+    for (let attempt = 0; attempt < 5000; attempt++) {
+      let bban = '';
+      for (const { cls, n } of classes(spec)) {
+        const kind = kindOf(cls);
+        // Real account numbers are mostly digits even where letters are allowed.
+        for (let i = 0; i < n; i++) bban += pick(kind === 'letters' || (kind === 'mixed' && random() < 0.1) ? LETTERS : DIGITS);
+      }
+      const iban = composeIBAN(code, bban);
+      if (iban) return iban;
+    }
+    return '';
+  }
+
+  function roles(iban) {
+    const spec = countrySpecs[iban.slice(0, 2)] ?? {};
+    const within = (i, pos) => pos && i >= pos[0] && i <= pos[1];
+    return [...iban].map((_, i) => {
+      if (i < 2) return 'country';
+      if (i < 4) return 'check';
+      if (within(i - 4, spec.bankPosition)) return 'bank';
+      if (within(i - 4, spec.branchPosition)) return 'branch';
+      if (within(i, spec.accountPosition)) return 'account';
+      return 'other';
+    });
+  }
+
+  function renderIban(iban, changed) {
+    const box = $('iban');
+    box.replaceChildren();
+    const r = roles(iban);
+    for (let g = 0; g < iban.length; g += 4) {
+      const group = el('span', 'group');
+      for (let i = g; i < Math.min(g + 4, iban.length); i++) {
+        const ch = el('span', `ch r-${r[i]}${changed.includes(i) ? ' flash' : ''}`, iban[i]);
+        ch.title = r[i];
+        group.append(ch);
+      }
+      box.append(group);
+    }
+    if (!iban) box.append(el('span', 'r-other', '—'));
+  }
+
+  function renderParts(iban) {
+    const parts = $('parts');
+    parts.replaceChildren();
+    const x = extractIBAN(iban);
+    const cc = iban.slice(0, 2);
+    const add = (role, label, value, note) => {
+      if (!value) return;
+      const p = el('div', `part r-${role}`);
+      p.append(el('b', '', label), el('span', '', value), el('small', '', note));
+      parts.append(p);
+    };
+    add('country', 'Country', cc, countrySpecs[cc]?.ibanLength ? nameOf(cc) : 'not an IBAN country');
+    add('check', 'Check digits', iban.slice(2, 4), 'computed from all other characters');
+    if (x.valid) {
+      add('bank', 'Bank', x.bankIdentifier, 'identifies the bank');
+      add('branch', 'Branch', x.branchIdentifier, 'identifies the branch');
+      add('account', 'Account', x.accountNumber, 'the account at that bank');
+      add('other', 'BBAN', x.bban, 'the domestic account number, everything after the check digits');
+    } else if (iban.length > 4) {
+      add('other', 'BBAN', iban.slice(4), 'the domestic account number');
+    }
+  }
+
+  function renderVerdict(iban) {
+    const result = validateIBAN(iban);
+    const pill = $('pill');
+    pill.className = `pill ${result.valid ? 'ok' : 'no'}`;
+    pill.textContent = result.valid ? 'VALID' : 'INVALID';
+    $('verdict-text').textContent = result.valid
+      ? 'Length, format, national check digits and IBAN check digits all match.'
+      : result.errorCodes.map((c) => MESSAGES[c] ?? c).join(' ');
+    $('fix').disabled = result.valid || !countrySpecs[iban.slice(0, 2)]?.ibanLength || !/^[A-Z]{2}[0-9A-Z]{3,}$/.test(iban);
+  }
+
+  const toDigits = (s) => s.replace(/[A-Z]/g, (l) => String(l.charCodeAt(0) - 55));
+  function expectedCheckDigits(cc, bban) {
+    let r = 0;
+    for (const ch of toDigits(bban + cc + '00')) r = (r * 10 + Number(ch)) % 97;
+    return String(98 - r).padStart(2, '0');
+  }
+
+  function renderSteps(iban) {
+    const ok = /^[A-Z]{2}[0-9A-Z]{3,}$/.test(iban);
+    const moved = iban.slice(4) + iban.slice(0, 4);
+    const move = $('step-move');
+    move.replaceChildren();
+    if (ok) move.append(el('span', '', iban.slice(4)), el('span', 'r-country', iban.slice(0, 2)), el('span', 'r-check', iban.slice(2, 4)));
+    else move.textContent = 'Needs at least five letters or digits, starting with a country code.';
+
+    const letters = [...new Set(moved.match(/[A-Z]/g) ?? [])];
+    $('step-letters').textContent = ok ? letters.map((l) => `${l} = ${l.charCodeAt(0) - 55}`).join('   ') : '';
+    const digits = ok ? toDigits(moved) : '';
+    $('step-digits').textContent = digits;
+
+    const table = $('step-chunks');
+    table.replaceChildren();
+    let remainder = NaN;
+    if (ok) {
+      const head = el('tr');
+      head.append(el('th', '', 'Carried + next digits'), el('th', '', 'Remainder'));
+      table.append(head);
+      let rest = digits;
+      let carry = '';
+      while (rest.length) {
+        const take = 9 - carry.length;
+        const chunk = carry + rest.slice(0, take);
+        rest = rest.slice(take);
+        remainder = Number(chunk) % 97;
+        const row = el('tr');
+        const cell = el('td');
+        cell.append(el('span', 'carry', carry), document.createTextNode(chunk.slice(carry.length)));
+        row.append(cell, el('td', '', String(remainder)));
+        table.append(row);
+        carry = String(remainder);
+      }
+    }
+    const res = $('step-result');
+    res.className = `result ${remainder === 1 ? 'ok' : 'no'}`;
+    res.textContent = ok ? `Remainder ${remainder}${remainder === 1 ? ', correct' : ', should be 1'}` : '';
+    const cc = iban.slice(0, 2);
+    $('step-explain').textContent = !ok
+      ? ''
+      : remainder === 1
+        ? `The check digits ${iban.slice(2, 4)} were chosen to make this work: put 00 in their place, take the remainder, and subtract it from 98.`
+        : `For this country code and account number the check digits would have to be ${expectedCheckDigits(cc, iban.slice(4))}, not ${iban.slice(2, 4)}. A single wrong character or two swapped neighbours always changes the remainder.`;
+  }
+
+  function renderCountry(code) {
+    const spec = countrySpecs[code];
+    const blocks = $('blocks');
+    const facts = $('facts');
+    blocks.replaceChildren();
+    facts.replaceChildren();
+    if (!spec?.ibanLength) {
+      $('country-title').textContent = 'Structure';
+      $('country-lede').textContent = 'Pick a country to see its format.';
+      return;
+    }
+    $('country-title').textContent = `Structure of an IBAN from ${nameOf(code)}`;
+    $('country-lede').textContent = `${spec.ibanLength} characters: the country code, two check digits, then ${spec.ibanLength - 4} characters in this pattern.`;
+    blocks.append(el('span', 'block cc', code), el('span', 'block cd', '2 check'));
+    for (const { cls, n } of classes(spec)) {
+      const kind = kindOf(cls);
+      const b = el('span', `block ${kind}`, `${n} ${kind === 'mixed' ? 'letters or digits' : kind}`);
+      b.style.flexGrow = String(n);
+      blocks.append(b);
+    }
+    const fact = (k, v) => { const d = el('div'); d.append(el('dt', '', k), el('dd', '', v)); facts.append(d); };
+    fact('Length', `${spec.ibanLength} characters`);
+    fact('SEPA', spec.sepa ? 'Yes' : 'No');
+    fact('SWIFT registry', spec.ibanRegistry ? 'Listed' : 'Not listed');
+    fact('National check', spec.bbanValidator ? (VALIDATORS[spec.bbanValidator.name] ?? 'Yes') : 'None');
+  }
+
+  let current = '';
+  function show(value, changed = []) {
+    current = electronicFormat(value);
+    const input = $('iban-input');
+    if (electronicFormat(input.value) !== current) input.value = friendlyFormatIBAN(current) ?? '';
+    renderIban(current, changed);
+    renderParts(current);
+    renderVerdict(current);
+    renderSteps(current);
+    const cc = current.slice(0, 2);
+    if (countrySpecs[cc]?.ibanLength) $('country').value = cc;
+    renderCountry(cc);
+  }
+
+  const select = $('country');
+  for (const code of codes) {
+    const o = el('option', '', `${nameOf(code)} (${code})`);
+    o.value = code;
+    select.append(o);
+  }
+  select.addEventListener('change', () => show(example(select.value)));
+  $('iban-input').addEventListener('input', (e) => show(e.target.value));
+  $('new-example').addEventListener('click', () => show(example(select.value)));
+  $('change-digit').addEventListener('click', () => {
+    const positions = [...current].map((c, i) => (i >= 4 && /[0-9]/.test(c) ? i : -1)).filter((i) => i >= 0);
+    if (!positions.length) return;
+    const i = pick(positions);
+    const digit = (Number(current[i]) + 1 + Math.floor(random() * 9)) % 10;
+    show(current.slice(0, i) + digit + current.slice(i + 1), [i]);
+  });
+  $('swap').addEventListener('click', () => {
+    const candidates = [];
+    for (let i = 4; i < current.length - 1; i++) if (current[i] !== current[i + 1]) candidates.push(i);
+    if (!candidates.length) return;
+    const i = pick(candidates);
+    show(current.slice(0, i) + current[i + 1] + current[i] + current.slice(i + 2), [i, i + 1]);
+  });
+  $('fix').addEventListener('click', () => {
+    const cc = current.slice(0, 2);
+    show(cc + expectedCheckDigits(cc, current.slice(4)) + current.slice(4), [2, 3]);
+  });
+
+  select.value = 'CH';
+  show(example('CH'));
+})();
+</script>

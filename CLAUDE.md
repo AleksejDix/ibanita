@@ -15,6 +15,9 @@ npm run build
 # Check the built package: export paths resolve, gzipped size under the limit (scripts/check-package.mjs)
 npm run check:package
 
+# Build the interactive IBAN explainer: site/index.html with the library inlined, into dist-site/
+npm run site
+
 # Run all tests
 npm test
 
