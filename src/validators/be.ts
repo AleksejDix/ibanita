@@ -1,4 +1,4 @@
-import { MOD_97 } from '../core/constants';
+import { MOD_97 } from '../core/checksum';
 
 /**
  * Belgium: 12-digit BBAN. The last two digits are the first 10 digits modulo 97,

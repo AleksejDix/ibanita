@@ -64,8 +64,9 @@ src/
 ├── format.ts                # Format utilities (electronicFormat, electronicFormatIBAN, friendlyFormatIBAN)
 ├── country.ts               # Country functions (isSEPACountry) and the countrySpecs export
 ├── core/
-│   ├── constants.ts         # MOD_97, MOD_97_REMAINDER
-│   ├── types.ts             # All public types, options, results and error codes
+│   ├── types.ts             # All public types: options, results, specs
+│   ├── errors.ts            # Error code constants (IBANValidationError, BBANValidationError, BICValidationError)
+│   ├── bban.ts              # Shared BBAN checks used by validateBBAN and validateIBAN
 │   └── checksum.ts          # Shared arithmetic (mod9710, weightedSum, mod11CheckDigit, checkMod1110)
 ├── validators/              # One national BBAN checksum per file, named by country code
 │   ├── be.ts, no.ts, pl.ts, es.ts, hr.ts, ee.ts, hu.ts, fr.ts (FR and MC), cz-sk.ts (CZ and SK)

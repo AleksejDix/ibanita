@@ -6,11 +6,11 @@ import {
   type BBANValidationOptions,
   type CountrySpec,
   type IBANExtractionResult,
-  IBANValidationError,
   type IBANValidationOptions,
   type IBANValidationResult,
   type IdentifierPosition,
 } from './core/types';
+import { IBANValidationError } from './core/errors';
 import { bbanErrors, bbanValidatorFor } from './core/bban';
 import { electronicFormatIBAN } from './format';
 import { ibanCheckDigits } from './core/checksum';

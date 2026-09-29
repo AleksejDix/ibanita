@@ -1,4 +1,5 @@
-import { BBANValidationError, type BBANValidationOptions, type BBANValidator, type IBANCountrySpec } from './types';
+import { type BBANValidationOptions, type BBANValidator, type IBANCountrySpec } from './types';
+import { BBANValidationError } from './errors';
 
 /** The BBAN codes that describe the content of a BBAN, as opposed to missing input or an unknown country. */
 export type BBANContentError = (typeof BBANValidationError)[

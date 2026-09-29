@@ -5,7 +5,7 @@
  * @license MIT
  */
 // Re-export all public types
-export { BBANValidationError, BICValidationError, IBANValidationError } from './core/types';
+export { BBANValidationError, BICValidationError, IBANValidationError } from './core/errors';
 export type {
   BBANValidationOptions,
   BBANValidationResult,

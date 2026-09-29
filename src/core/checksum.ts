@@ -1,4 +1,7 @@
-import { MOD_97, MOD_97_REMAINDER } from './constants';
+/** ISO 7064 MOD 97-10 modulus. */
+export const MOD_97 = 97;
+/** The check digits are 98 minus the MOD 97 remainder. */
+const MOD_97_REMAINDER = 98;
 
 // 'A'.charCodeAt(0) - 10, so A is 10, B is 11, ... Z is 35
 const LETTER_OFFSET = 55;

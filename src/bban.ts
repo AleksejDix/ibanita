@@ -3,7 +3,8 @@
  * @module bban
  */
 
-import { BBANValidationError, type BBANValidationOptions, type BBANValidationResult } from './core/types';
+import { type BBANValidationOptions, type BBANValidationResult } from './core/types';
+import { BBANValidationError } from './core/errors';
 import { bbanErrors, bbanValidatorFor } from './core/bban';
 import { electronicFormat } from './format';
 import { ibanSpecs } from './countries/specs';
