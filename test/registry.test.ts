@@ -1,26 +1,8 @@
 /// <reference types="node" />
 import * as iban from '../src/index';
 import { describe, expect, it } from 'vitest';
-import { readFileSync, readdirSync } from 'node:fs';
 import { type IBANParts } from '../src/index';
-import { join } from 'node:path';
-
-const REGISTRY_DIR = join(__dirname, '..', 'registry');
-
-function registryVersion(file: string): number {
-  return Number(/\d+/u.exec(file)?.[0] ?? 0);
-}
-
-function latestRegistryFile(): string {
-  const files = readdirSync(REGISTRY_DIR).filter((file) => /^iban-registry-v\d+\.txt$/u.test(file));
-  files.sort((left, right) => registryVersion(right) - registryVersion(left));
-  return join(REGISTRY_DIR, files[0] ?? '');
-}
-
-function readRow(rows: readonly string[], name: string): string[] {
-  const row = rows.find((line) => line.startsWith(`${name}\t`));
-  return (row ?? '').split('\t').map((cell) => cell.trim());
-}
+import { registryRow } from './registry-file';
 
 // Registry positions are 1-based and inclusive, counted within the BBAN.
 function slicePosition(electronicIban: string, position: string): string | undefined {
@@ -36,14 +18,13 @@ function parts(example: string): IBANParts {
   return result;
 }
 
-const lines = readFileSync(latestRegistryFile(), 'utf8').split(/\r?\n/u);
-const codes = readRow(lines, 'IBAN prefix country code (ISO 3166)').slice(1);
-const ibanExamples = readRow(lines, 'IBAN electronic format example').slice(1);
-const bankPositions = readRow(lines, 'Bank identifier position within the BBAN').slice(1);
-const branchPositions = readRow(lines, 'Branch identifier position within the BBAN').slice(1);
-const bbanStructures = readRow(lines, 'BBAN structure').slice(1);
-const ibanLengths = readRow(lines, 'IBAN length').slice(1);
-const sepaFlags = readRow(lines, 'SEPA country').slice(1);
+const codes = registryRow('IBAN prefix country code (ISO 3166)');
+const ibanExamples = registryRow('IBAN electronic format example');
+const bankPositions = registryRow('Bank identifier position within the BBAN');
+const branchPositions = registryRow('Branch identifier position within the BBAN');
+const bbanStructures = registryRow('BBAN structure');
+const ibanLengths = registryRow('IBAN length');
+const sepaFlags = registryRow('SEPA country');
 
 // Registry field types, following the library convention of upper case letters only.
 const FIELD_CLASSES = new Map([
