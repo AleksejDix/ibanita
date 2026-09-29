@@ -461,3 +461,11 @@ describe('isQRIBAN range', () => {
     expect(iban.isQRIBAN(iban.composeIBAN('DE', `30000${'0'.repeat(13)}`))).toBe(false);
   });
 });
+
+describe('extractIBAN without identifier positions', () => {
+  it('omits the fields a country does not define', () => {
+    // Angola is outside the registry and has no bank, branch or account position.
+    const angolan = iban.composeIBAN('AO', '1'.repeat(21)) ?? '';
+    expect(iban.extractIBAN(angolan)).toEqual({ valid: true, iban: angolan, countryCode: 'AO', bban: '1'.repeat(21) });
+  });
+});

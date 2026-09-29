@@ -1,6 +1,5 @@
 import {
   type BBANValidationOptions,
-  type CountrySpec,
   type IBANCountryCode,
   type IBANCountrySpecs,
   type IBANExtractionResult,
@@ -85,12 +84,12 @@ export function composeIBANWith(
 /** `extractIBAN` against the given country specifications. */
 export function extractIBANWith(specs: IBANCountrySpecs, input?: string | null): IBANExtractionResult {
   const iban = electronicFormat(input);
-  if (!validateIBANWith(specs, iban).valid) {
+  const countryCode = iban.slice(0, 2);
+  const spec = specFor(specs, countryCode);
+  if (spec === undefined || !validateIBANWith(specs, iban).valid) {
     return { valid: false, iban };
   }
-  const countryCode = iban.slice(0, 2);
   const bban = iban.slice(4);
-  const spec: CountrySpec = specFor(specs, countryCode) ?? {};
   return {
     valid: true,
     iban,
