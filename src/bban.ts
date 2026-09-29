@@ -4,8 +4,8 @@
  */
 
 import { type BBANValidationOptions, type BBANValidationResult } from './core/types';
-import { BBANValidationError } from './core/errors';
 import { bbanErrors, bbanValidatorFor } from './core/bban';
+import { BBANValidationError } from './core/errors';
 import { electronicFormat } from './format';
 import { ibanSpecs } from './countries/specs';
 

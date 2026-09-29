@@ -1,6 +1,6 @@
 # SWIFT IBAN Registry
 
-This folder holds the SWIFT IBAN Registry, the hand-maintained overrides, and the builder that turns both into `src/countries/specs.ts`.
+This folder holds the SWIFT IBAN Registry, the hand-maintained overrides and country list, and the builder that turns them into `src/countries/`.
 
 ## Source
 
@@ -11,16 +11,17 @@ This folder holds the SWIFT IBAN Registry, the hand-maintained overrides, and th
 ## Files
 
 - `iban-registry-vXXX.txt`: the registry release, as downloaded from SWIFT. The builder uses the newest one.
-- `overrides.mjs`: what the registry does not define. National checksum validators (by export name in `src/validators`), account positions, countries and territories outside the registry, and two deliberate deviations (FR branch, SI bank and branch).
-- `builder.mjs`: parses the TXT file, merges the overrides over it and writes `src/countries/specs.ts`, one frozen entry per country with every field written out. An override that changes a registry value is an error unless it is listed as a deliberate deviation.
+- `overrides.mjs`: what the registry does not define. National checksum validators (by export name in `src/validators`), account positions, countries and territories outside the registry with their names, and two deliberate deviations (FR branch, SI bank and branch).
+- `country-codes.mjs`: every ISO 3166-1 alpha-2 code, with or without IBAN.
+- `builder.mjs`: parses the TXT file, merges the overrides over it and writes `src/countries/`: one file per IBAN country (`CH.ts` exports the frozen `CH` spec and imports only its own validator), `specs.ts` (re-exports them and collects `ibanSpecs`), `codes.ts` (`COUNTRY_CODES`) and `all.ts` (`countrySpecs`). An override that changes a registry value is an error unless it is listed as a deliberate deviation.
 
-`src/countries/specs.ts` is generated. Never edit it by hand. CI regenerates it and fails if it differs from the committed file. `test/registry.test.ts` checks every country against the newest registry file.
+Everything in `src/countries/` is generated. Never edit it by hand. CI regenerates the folder and fails if it differs from the committed files. `test/registry.test.ts` checks every country against the newest registry file.
 
 ## Updating to a new registry release
 
 1. Download the TXT file from https://www.swift.com/swift-resource/11971/download.
 2. Save it as `registry/iban-registry-vXXX.txt`, with the release number.
-3. Run `npm run registry` to regenerate `src/countries/specs.ts`. The builder picks the newest file and fails on conflicts with `overrides.mjs`.
+3. Run `npm run registry` to regenerate `src/countries/`. The builder picks the newest file and fails on conflicts with `overrides.mjs`.
 4. Run `npm test`. The registry test reports remaining differences.
 5. Update the version above.
 

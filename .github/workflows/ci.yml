@@ -34,7 +34,7 @@ jobs:
       - name: Check generated registry data is up to date
         run: |
           npm run registry
-          git diff --exit-code src/countries/specs.ts
+          git diff --exit-code src/countries
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run format:check

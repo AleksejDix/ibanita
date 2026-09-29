@@ -96,3 +96,11 @@ describe('SEPA membership', () => {
     expect(sepa).toEqual(SEPA.split(' '));
   });
 });
+
+describe('per-country modules', () => {
+  it('CH exports the same frozen spec as ibanSpecs', async () => {
+    const { CH } = await import('../src/countries/CH');
+    expect(CH).toBe(ibanSpecs['CH']);
+    expect(Object.isFrozen(CH)).toBe(true);
+  });
+});

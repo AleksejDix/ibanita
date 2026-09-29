@@ -10,8 +10,8 @@ import {
   type IBANValidationResult,
   type IdentifierPosition,
 } from './core/types';
-import { IBANValidationError } from './core/errors';
 import { bbanErrors, bbanValidatorFor } from './core/bban';
+import { IBANValidationError } from './core/errors';
 import { electronicFormatIBAN } from './format';
 import { ibanCheckDigits } from './core/checksum';
 import { ibanSpecs } from './countries/specs';

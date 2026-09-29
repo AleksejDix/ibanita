@@ -1,16 +1,24 @@
 #!/usr/bin/env node
 // Checks the built package: every export path resolves and imports, and the gzipped size stays under the limit.
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, statSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
-import { join, resolve } from 'node:path';
+import { resolve } from 'node:path';
+import { build } from 'vite';
 
-const SIZE_LIMIT = 10 * 1024; // sum of the gzipped sizes of every JavaScript file in dist
+// Gzipped size of each entry bundled with everything it imports.
+const SIZE_LIMITS = {
+  'dist/index.js': 8 * 1024,
+  'dist/bic.js': 1536,
+};
 
 const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
 let failed = false;
 
-for (const [path, target] of Object.entries(pkg.exports)) {
-  for (const file of [target.types, target.import]) {
+// A wildcard export such as ./countries/* is checked with one sample country.
+const SAMPLE = 'CH';
+for (const [pattern, target] of Object.entries(pkg.exports)) {
+  const path = pattern.replace('*', SAMPLE);
+  for (const file of [target.types, target.import].map((file) => file.replace('*', SAMPLE))) {
     try {
       statSync(file);
     } catch {
@@ -18,26 +26,27 @@ for (const [path, target] of Object.entries(pkg.exports)) {
       failed = true;
     }
   }
-  const mod = await import(resolve(target.import));
+  const mod = await import(resolve(target.import.replace('*', SAMPLE)));
   console.log(`export ${path.padEnd(9)} ${Object.keys(mod).length} symbols`);
 }
 
-function jsFiles(dir) {
-  return readdirSync(dir).flatMap((name) => {
-    const file = join(dir, name);
-    return statSync(file).isDirectory() ? jsFiles(file) : name.endsWith('.js') ? [file] : [];
+/** Gzipped size of an entry bundled and minified with Vite, which is what an application ships. */
+async function bundleSize(entry) {
+  const result = await build({
+    configFile: false,
+    logLevel: 'silent',
+    build: { write: false, minify: true, lib: { entry: resolve(entry), formats: ['es'], fileName: 'bundle' } },
   });
+  const chunk = result[0].output.find((item) => item.type === 'chunk');
+  return gzipSync(chunk.code).length;
 }
-const files = jsFiles('dist').sort();
-let total = 0;
-for (const file of files) {
-  const size = gzipSync(readFileSync(file)).length;
-  total += size;
-  console.log(`${String(size).padStart(6)} ${file}`);
-}
-console.log(`${String(total).padStart(6)} total gzipped (limit ${SIZE_LIMIT})`);
-if (total > SIZE_LIMIT) {
-  console.error(`gzipped size ${total} exceeds the limit of ${SIZE_LIMIT} bytes`);
-  failed = true;
+
+for (const [entry, limit] of Object.entries(SIZE_LIMITS)) {
+  const bytes = await bundleSize(entry);
+  console.log(`${String(bytes).padStart(6)} gzipped  ${entry} (limit ${limit})`);
+  if (bytes > limit) {
+    console.error(`${entry}: gzipped size ${bytes} exceeds the limit of ${limit} bytes`);
+    failed = true;
+  }
 }
 process.exit(failed ? 1 : 0);
