@@ -16,19 +16,16 @@ export { isQRIBAN };
 /**
  * Validate IBAN
  *
- * Spaces and dashes are removed and letters are uppercased before validation.
+ * Whitespace, dashes and periods are removed and letters are uppercased before validation.
  * ```
  * // returns true
  * ibanita.isValidIBAN("NL06KNNF4736942347");
  * ```
- * ```
  * // returns false
  * ibanita.isValidIBAN("NL92ABNA0517164300");
  * ```
- * ```
  * // returns true
  * ibanita.isValidIBAN('CH283109120L9PSR9BKOK');
- * ```
  * ```
  * // returns false
  * ibanita.isValidIBAN('CH283109120L9PSR9BKOK', { allowQRIBAN: false });
@@ -44,16 +41,14 @@ export function isValidIBAN(
 /**
  * validateIBAN
  *
- * Spaces and dashes are removed and letters are uppercased before validation.
+ * Whitespace, dashes and periods are removed and letters are uppercased before validation.
  * ```
  * // returns {errorCodes: [], valid: true}
  * ibanita.validateIBAN("NL06KNNF4736942347");
  * ```
  * ```
- * ```
  * // returns {errorCodes: [], valid: true}
  * ibanita.validateIBAN('CH283109120L9PSR9BKOK');
- * ```
  * ```
  * // returns {errorCodes: ['QR_IBAN_NOT_ALLOWED'], valid: false}
  * ibanita.validateIBAN('CH283109120L9PSR9BKOK', { allowQRIBAN: false });
@@ -70,7 +65,7 @@ export function validateIBAN(
  * composeIBAN
  *
  * ```
- * // returns NL06KNNF4736942347
+ * // returns 'NL06KNNF4736942347'
  * ibanita.composeIBAN("NL", "KNNF4736942347");
  * ```
  */
@@ -85,7 +80,7 @@ export function composeIBAN(
 /**
  * extractIBAN
  * ```
- * // returns {iban: "NL06KNNF4736942347", bban: "KNNF4736942347", countryCode: "NL", valid: true, accountNumber: '4736942347', bankIdentifier: 'ABNA'}
+ * // returns { valid: true, iban: 'NL06KNNF4736942347', countryCode: 'NL', bban: 'KNNF4736942347', accountNumber: '4736942347', bankIdentifier: 'KNNF' }
  * ibanita.extractIBAN("NL06 KNNF 4736 9423 47");
  * ```
  */

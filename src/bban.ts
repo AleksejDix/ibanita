@@ -15,7 +15,6 @@ import { validateBBANWith } from './core/bban';
  * // returns {errorCodes: [], valid: true}
  * ibanita.validateBBAN("KNNF4736942347", "NL");
  * ```
- * ```
  * // returns {errorCodes: ['WRONG_BBAN_FORMAT'], valid: false}
  * ibanita.validateBBAN("K7NF4736942347", "NL");
  * ```
@@ -34,7 +33,6 @@ export function validateBBAN(
  * ```
  * // returns true
  * ibanita.isValidBBAN("KNNF4736942347", "NL");
- * ```
  * ```
  * // returns false
  * ibanita.isValidBBAN("A7NA0517164300", "NL");

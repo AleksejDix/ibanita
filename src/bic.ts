@@ -22,7 +22,8 @@ const BIC_REGEX = /^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/u;
  * // returns false
  * ibanita.isValidBIC("DEM4NL2A");
  *
- * // returns true, spaces are removed first
+ * // spaces are removed first
+ * // returns true
  * ibanita.isValidBIC("DEMO NL 2A");
  * ```
  */
@@ -53,7 +54,7 @@ export function validateBIC(input?: string | null): BICValidationResult {
 /**
  * extractBIC
  * ```
- * // returns {bankCode: "ABNA", countryCode: "NL", locationCode: "2A", branchCode: null, testBIC: false, valid: true}
+ * // returns { bankCode: 'DEMO', countryCode: 'NL', locationCode: '2A', testBIC: false, branchCode: null, valid: true }
  * ibanita.extractBIC("DEMONL2A");
  * ```
  */

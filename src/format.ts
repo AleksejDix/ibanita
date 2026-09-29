@@ -8,11 +8,10 @@ export { electronicFormat };
  * When non-string value for IBAN is provided, returns null.
  * ```
  * // returns "NL06 KNNF 4736 9423 47"
- * friendlyFormatIBAN("NL06KNNF4736942347");
- * ```
+ * ibanita.friendlyFormatIBAN("NL06KNNF4736942347");
  * ```
  * // returns "NL06-KNNF-4736-9423-47"
- * friendlyFormatIBAN("NL06KNNF4736942347","-");
+ * ibanita.friendlyFormatIBAN("NL06KNNF4736942347","-");
  * ```
  */
 export function friendlyFormatIBAN(iban?: string | null, separator = ' '): string | null {

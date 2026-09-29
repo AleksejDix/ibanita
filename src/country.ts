@@ -11,7 +11,6 @@ import { isSEPACountryWith } from './core/iban';
  * // returns true
  * ibanita.isSEPACountry("NL");
  * ```
- * ```
  * // returns false
  * ibanita.isSEPACountry("PK");
  * ```
