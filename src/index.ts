@@ -26,7 +26,7 @@ export type {
   InvalidIBANParts,
 } from './core/types';
 
-export { createIBANTools, type IBANTools } from './core/tools';
+export { withCountries, type Ibanita } from './core/tools';
 
 // Re-export utility functions
 export { electronicFormat, friendlyFormatIBAN } from './format';

@@ -36,7 +36,7 @@ function coreWithOneCountry() {
   const entry = resolve('dist/core-with-one-country.js');
   writeFileSync(
     entry,
-    "import { createIBANTools } from './core/index.js';\nimport { CH } from './countries/CH.js';\nexport const tools = createIBANTools({ CH });\n",
+    "import { withCountries } from './core/index.js';\nimport { CH } from './countries/CH.js';\nexport const tools = withCountries({ CH });\n",
   );
   return entry;
 }

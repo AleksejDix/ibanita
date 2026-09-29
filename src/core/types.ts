@@ -14,7 +14,7 @@ export interface BBANValidationResult {
 export interface BBANValidationOptions {
   /**
    * National checksum validators by country code. A validator given here replaces the built-in one
-   * for that country. Use it to plug in stricter checks, for example from `ibantools-germany`.
+   * for that country. Use it to plug in stricter checks, for example a German bank-code validator.
    */
   bbanValidators?: Readonly<Record<string, BBANValidator>>;
 }
@@ -124,7 +124,7 @@ export interface IBANCountrySpec {
   readonly accountPosition?: IdentifierPosition;
 }
 
-/** IBAN country specifications by country code, as passed to {@link createIBANTools}. */
+/** IBAN country specifications by country code, as passed to {@link withCountries}. */
 export type IBANCountrySpecs = Readonly<Record<string, IBANCountrySpec>>;
 
 /** Specification of one country, as stored in {@link countrySpecs}. All fields are unset for countries without IBAN. */

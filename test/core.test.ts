@@ -1,4 +1,4 @@
-import { IBANValidationError, createIBANTools } from '../src/core/index';
+import { IBANValidationError, withCountries } from '../src/core/index';
 import { composeIBAN, extractIBAN, isValidIBAN } from '../src/index';
 import { describe, expect, it } from 'vitest';
 import { CH } from '../src/countries/CH';
@@ -10,7 +10,7 @@ const CH_IBAN = composeIBAN('CH', CH_BBAN) ?? '';
 const DE_IBAN = composeIBAN('DE', '0'.repeat(18)) ?? '';
 
 describe('core', () => {
-  const tools = createIBANTools({ CH });
+  const tools = withCountries({ CH });
 
   it('validates the countries it was given', () => {
     expect(CH_IBAN).not.toBe('');
@@ -28,7 +28,7 @@ describe('core', () => {
     expect(tools.isValidIBAN(DE_IBAN)).toBe(false);
     expect(tools.validateIBAN(DE_IBAN)).toEqual({ valid: false, errorCodes: [IBANValidationError.NoIBANCountry] });
     expect(tools.isSEPACountry('DE')).toBe(false);
-    expect(createIBANTools({ CH, DE }).isValidIBAN(DE_IBAN)).toBe(true);
+    expect(withCountries({ CH, DE }).isValidIBAN(DE_IBAN)).toBe(true);
   });
 
   it('agrees with the default entry for every option', () => {

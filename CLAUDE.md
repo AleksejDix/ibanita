@@ -55,7 +55,7 @@ One test file per source module in `test/`:
 
 One module per concern. Functions take their input and options and return a result; nothing is mutated.
 
-The rules live in `core/` and take the country specifications as their first argument (`validateIBANWith(specs, ...)`). The top-level modules `iban.ts`, `bban.ts`, `bic.ts`, `format.ts` and `country.ts` are the default entry: thin wrappers bound to all countries in `countries/specs.ts`. `createIBANTools(specs)` binds the same rules to any subset, for consumers that import single countries from `countries/<CC>.ts`.
+The rules live in `core/` and take the country specifications as their first argument (`validateIBANWith(specs, ...)`). The top-level modules `iban.ts`, `bban.ts`, `bic.ts`, `format.ts` and `country.ts` are the default entry: thin wrappers bound to all countries in `countries/specs.ts`. `withCountries(specs)` binds the same rules to any subset, for consumers that import single countries from `countries/<CC>.ts`.
 
 ```
 src/
@@ -66,8 +66,8 @@ src/
 ├── format.ts                # Format utilities (electronicFormat, friendlyFormatIBAN)
 ├── country.ts               # Country functions (isSEPACountry) and the countrySpecs export
 ├── core/                    # The rules without the data. Entry `@aleksejdix/ibanita/core` (core/index.ts)
-│   ├── index.ts             # createIBANTools, isQRIBAN, electronicFormat, error codes, types
-│   ├── tools.ts             # createIBANTools(specs): the IBAN, BBAN and country functions bound to a spec map
+│   ├── index.ts             # withCountries, isQRIBAN, electronicFormat, error codes, types
+│   ├── tools.ts             # withCountries(specs): the IBAN, BBAN and country functions bound to a spec map, typed Ibanita
 │   ├── iban.ts              # validateIBANWith, extractIBANWith, composeIBANWith, isSEPACountryWith, isQRIBAN
 │   ├── bban.ts              # validateBBANWith and the shared BBAN checks
 │   ├── format.ts            # electronicFormat: the one input rule
@@ -95,7 +95,7 @@ All public functions are re-exported from `src/index.ts`:
 5. **Formatting**: `electronicFormat()`, `friendlyFormatIBAN()`
 6. **Utilities**: `isSEPACountry()`, `isQRIBAN()`
 7. **Data**: `countrySpecs` - frozen country specification object
-8. **Core**: `createIBANTools(specs)` - the IBAN, BBAN and country functions bound to a subset of countries
+8. **Core**: `withCountries(specs)` - the IBAN, BBAN and country functions bound to a subset of countries
 
 `isValidIBAN` and `validateIBAN` normalise their input first (spaces and dashes removed, uppercased), like `extractIBAN`.
 

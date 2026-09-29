@@ -6,10 +6,10 @@ import type { isSEPACountry } from '../country';
 import { validateBBANWith } from './bban';
 
 /**
- * The IBAN, BBAN and country functions bound to one set of country specifications.
+ * The IBAN, BBAN and country functions bound to one set of country specifications, as returned by {@link withCountries}.
  * Each member has exactly the type of its counterpart in the default entry, so the two cannot drift.
  */
-export interface IBANTools {
+export interface Ibanita {
   /** Same as `isValidIBAN` in the default entry. */
   readonly isValidIBAN: typeof isValidIBAN;
   /** Same as `validateIBAN` in the default entry. */
@@ -31,13 +31,17 @@ export interface IBANTools {
  * Import only the countries you need from `@aleksejdix/ibanita/countries/<CC>`; nothing else is bundled.
  *
  * ```
- * import { createIBANTools } from '@aleksejdix/ibanita/core';
+ * import { withCountries } from '@aleksejdix/ibanita/core';
  * import { CH } from '@aleksejdix/ibanita/countries/CH';
  *
- * const { isValidIBAN } = createIBANTools({ CH });
+ * const { isValidIBAN } = withCountries({ CH });
+ *
+ * // or keep the object
+ * const ibanita = withCountries({ CH });
+ * ibanita.isValidIBAN(input);
  * ```
  */
-export function createIBANTools(specs: IBANCountrySpecs): IBANTools {
+export function withCountries(specs: IBANCountrySpecs): Ibanita {
   return {
     isValidIBAN: (input, options) => validateIBANWith(specs, input, options).valid,
     validateIBAN: (input, options) => validateIBANWith(specs, input, options),

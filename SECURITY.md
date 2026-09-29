@@ -9,7 +9,7 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in IBANTools, please report it
+If you discover a security vulnerability in Ibanita, please report it
 privately. **Do not open a public GitHub issue.**
 
 Send a report to: **<INSERT_SECURITY_CONTACT_EMAIL>**

@@ -1,31 +1,14 @@
 # ibanita
 
-![License](https://img.shields.io/badge/License-MIT-blue)
-
 [![CI](https://github.com/AleksejDix/ibantools/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/AleksejDix/ibantools/actions/workflows/ci.yml)
-
-![GitHub last commit](https://img.shields.io/github/last-commit/AleksejDix/ibantools)
-![GitHub contributors](https://img.shields.io/github/contributors/AleksejDix/ibantools)
-![GitHub issues](https://img.shields.io/github/issues/AleksejDix/ibantools)
-![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/AleksejDix/ibantools)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/AleksejDix/ibantools)
-![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/AleksejDix/ibantools)
-
+![License](https://img.shields.io/badge/License-MIT-blue)
 ![No deps](https://img.shields.io/badge/dependencies-0-brightgreen)
-![dev deps](https://img.shields.io/librariesio/github/AleksejDix/ibantools?label=devDependencies)
 
-## About
+Validation, extraction and creation of IBAN, BBAN and BIC/SWIFT numbers. TypeScript, ES modules, zero runtime dependencies, frozen data generated from the [SWIFT IBAN Registry](https://www.swift.com/resource/iban-registry-pdf).
 
-IBANTools is TypeScript/JavaScript library for validation, creation and extraction of IBAN, BBAN and BIC/SWIFT numbers.
-
-For more information about IBAN/BBAN see [wikipedia page](https://en.wikipedia.org/wiki/International_Bank_Account_Number) and
-[IBAN registry](https://www.swift.com/resource/iban-registry-pdf).
-
-For more information about BIC/SWIFT see [this wikipedia page](https://en.wikipedia.org/wiki/ISO_9362).
-
-## Requirements
-
-- Node.js `^20.19.0 || >=22.12.0`
+- Every function normalises its input first: whitespace, dashes and periods are removed and letters uppercased.
+- Results tell you why: string error codes such as `WRONG_IBAN_CHECKSUM`, and extraction results narrowed on `valid`.
+- Ship only what you use: about 6 kB gzipped for all 124 countries, 1.5 kB for the rules plus one country.
 
 ## Installation
 
@@ -43,96 +26,129 @@ npm install @aleksejdix/ibanita
 GitHub Packages requires a token with the `read:packages` scope even for public packages.
 See [Working with the npm registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry).
 
+Requires Node.js `^20.19.0 || >=22.12.0`.
+
 ## Usage
 
-See the [full documentation](https://dix.consulting/ibantools) with examples on GitHub Pages.
+```ts
+import { isValidIBAN, validateIBAN, extractIBAN, isValidBIC, IBANValidationError } from '@aleksejdix/ibanita';
 
-### ES Modules (Recommended)
+isValidIBAN(input); // true or false, input may contain spaces, dashes and lowercase letters
 
-```js
-import { isValidIBAN, validateIBAN, isValidBIC, electronicFormat } from '@aleksejdix/ibanita';
+const result = validateIBAN(input);
+if (!result.valid) {
+  result.errorCodes; // for example ['WRONG_IBAN_CHECKSUM']
+  result.errorCodes.includes(IBANValidationError.WrongIBANChecksum);
+}
 
-const iban = electronicFormat('NL91 ABNA 0417 1643 00'); // 'NL91ABNA0517164300'
-isValidIBAN(iban); // true
+const parts = extractIBAN(input);
+if (parts.valid) {
+  parts.countryCode; // 'NL'
+  parts.bban; // the domestic account number
+  parts.bankIdentifier; // when the country defines one
+}
 
-// If you want to know reason why IBAN is invalid
-validateIBAN('NL91ABNA0517164300');
-// Returns { valid: false, errorCodes: [IBANValidationError.WrongIBANChecksum] }
-
-// Validate BIC
-isValidBIC('ABNANL2A'); // true
+isValidBIC('ABNA NL 2A'); // true
 ```
 
 ### Only the countries you need
 
 The rules and the data are separate. Pair the core with the countries you validate, and nothing else is bundled:
 
-```js
-import { createIBANTools } from '@aleksejdix/ibanita/core';
+```ts
+import { withCountries } from '@aleksejdix/ibanita/core';
 import { CH } from '@aleksejdix/ibanita/countries/CH';
 import { LI } from '@aleksejdix/ibanita/countries/LI';
 
-const { isValidIBAN, validateIBAN, extractIBAN } = createIBANTools({ CH, LI });
+const ibanita = withCountries({ CH, LI });
+ibanita.isValidIBAN(input);
 ```
 
-The functions are the same as in the default entry, bound to those countries. An IBAN from any other country is reported as `NO_IBAN_COUNTRY`. The core with one country is about 1.5 kB gzipped; the default entry with all countries about 6 kB.
+The object has the same IBAN, BBAN and country functions as the default entry, bound to those countries. An IBAN from any other country is reported as `NO_IBAN_COUNTRY`.
 
-### Subpath imports
+### Custom national validation
 
-Each module is also exported on its own, so a bundle for BIC validation never includes the IBAN country data:
+`bbanValidators` replaces the built-in national checksum for a country, per call. The country data itself is frozen.
 
-```js
-import { isValidBIC } from '@aleksejdix/ibanita/bic';
-import { friendlyFormatIBAN } from '@aleksejdix/ibanita/format';
-```
-
-Available: `/iban`, `/bic`, `/bban`, `/format` and `/country`.
-
-### TypeScript
-
-Full TypeScript support with bundled type definitions:
-
-```typescript
-import { isValidIBAN, validateIBAN, IBANValidationError } from '@aleksejdix/ibanita';
-
-const result = validateIBAN('NL91ABNA0417164300');
-if (!result.valid) {
-  console.log('Invalid IBAN:', result.errorCodes);
-}
-```
-
-### Extension
-
-National BBAN validation can be replaced per country by passing `bbanValidators` to `isValidIBAN`, `validateIBAN`, `isValidBBAN` or `composeIBAN`. The country data itself is frozen.
-
-For example, to fully syntactically check German IBANs, you can install [IBANTools-Germany](https://github.com/baumerdev/ibantools-germany):
-
-```js
+```ts
 import { isValidIBAN } from '@aleksejdix/ibanita';
-import { isValidBBAN } from 'ibantools-germany';
 
-const options = { bbanValidators: { DE: isValidBBAN } };
-isValidIBAN(germanIban, options);
+const options = { bbanValidators: { DE: (bban) => myGermanBankCodeCheck(bban) } };
+isValidIBAN(input, options);
 ```
+
+## Public API
+
+### Entry points
+
+| Import path | Contents |
+|---|---|
+| `@aleksejdix/ibanita` | Everything below, bound to all 124 IBAN countries |
+| `@aleksejdix/ibanita/core` | `withCountries`, `isQRIBAN`, `electronicFormat`, the error codes and the types. No country data |
+| `@aleksejdix/ibanita/countries/CH` | One frozen `IBANCountrySpec` per country. Any of the 124 ISO codes |
+| `@aleksejdix/ibanita/iban`, `/bban`, `/bic`, `/format`, `/country` | The default functions, one module at a time |
+
+### Functions
+
+| Function | Returns |
+|---|---|
+| `isValidIBAN(input, options?)` | `boolean` |
+| `validateIBAN(input, options?)` | `IBANValidationResult`: `{ valid, errorCodes }` |
+| `extractIBAN(input)` | `IBANExtractionResult`: `IBANParts` when valid, `{ valid: false, iban }` otherwise |
+| `composeIBAN(countryCode, bban, options?)` | The IBAN with computed check digits, or `null` when the BBAN is invalid |
+| `isQRIBAN(input)` | `boolean`. Swiss and Liechtenstein IBANs whose bank clearing number is 30000 to 31999 |
+| `isValidBBAN(bban, countryCode, options?)` | `boolean` |
+| `validateBBAN(bban, countryCode, options?)` | `BBANValidationResult`: `{ valid, errorCodes }` |
+| `isValidBIC(input)` | `boolean` |
+| `validateBIC(input)` | `BICValidationResult`: `{ valid, errorCodes }` |
+| `extractBIC(input)` | `BICExtractionResult`: `BICParts` when valid, `{ valid: false }` otherwise |
+| `electronicFormat(value)` | The input with whitespace, dashes and periods removed and letters uppercased. `''` for `null` and `undefined` |
+| `friendlyFormatIBAN(iban, separator?)` | Groups of four characters, separated by a space by default. `null` for `null` and `undefined` |
+| `isSEPACountry(countryCode)` | `boolean` |
+| `withCountries(specs)` | `Ibanita`: the IBAN, BBAN and country functions bound to `specs` |
+
+`options` is `IBANValidationOptions` for the IBAN functions (`allowQRIBAN`, default `true`, and `bbanValidators`) and `BBANValidationOptions` for the BBAN functions and `composeIBAN` (`bbanValidators`).
+
+### Data
+
+`countrySpecs` maps every ISO 3166-1 alpha-2 code to a frozen `CountrySpec`. Countries without IBAN have an empty specification. An IBAN country has:
+
+| Field | Meaning |
+|---|---|
+| `ibanLength` | Length of the IBAN |
+| `bbanRegExp` | Regular expression the BBAN must match |
+| `ibanRegistry` | Listed in the SWIFT IBAN Registry |
+| `sepa` | Takes part in SEPA |
+| `bbanValidator` | Built-in national checksum, when the country has one |
+| `bankPosition`, `branchPosition` | `[start, end]` within the BBAN, 0-based and inclusive |
+| `accountPosition` | `[start, end]` within the IBAN |
+
+### Error codes
+
+`IBANValidationError`, `BBANValidationError` and `BICValidationError` are constant objects whose values are the strings found in `errorCodes`.
+
+| Object | Codes |
+|---|---|
+| `IBANValidationError` | `NO_IBAN_PROVIDED`, `NO_IBAN_COUNTRY`, `WRONG_BBAN_LENGTH`, `WRONG_BBAN_FORMAT`, `WRONG_BBAN_CHECKSUM`, `CHECK_DIGITS_NOT_NUMERIC`, `WRONG_IBAN_CHECKSUM`, `QR_IBAN_NOT_ALLOWED` |
+| `BBANValidationError` | `NO_BBAN_PROVIDED`, `NO_IBAN_COUNTRY`, `WRONG_BBAN_LENGTH`, `WRONG_BBAN_FORMAT`, `WRONG_BBAN_CHECKSUM` |
+| `BICValidationError` | `NO_BIC_PROVIDED`, `NO_BIC_COUNTRY`, `WRONG_BIC_FORMAT` |
+
+### Types
+
+`IBANValidationOptions`, `BBANValidationOptions`, `BBANValidator`, `IBANValidationResult`, `BBANValidationResult`, `BICValidationResult`, `IBANExtractionResult`, `IBANParts`, `InvalidIBANParts`, `BICExtractionResult`, `BICParts`, `InvalidBICParts`, `IBANCountrySpec`, `IBANCountrySpecs`, `CountrySpec`, `CountryMap`, `IdentifierPosition`, `Ibanita`.
+
+The full reference with examples is at https://dix.consulting/ibantools.
 
 ## Contributing
 
-This project adheres to the Contributor Covenant [code of conduct](https://github.com/AleksejDix/ibantools/blob/master/.github/CODE_OF_CONDUCT.md).
-By participating, you are expected to uphold this code.
+This project adheres to the Contributor Covenant [code of conduct](.github/CODE_OF_CONDUCT.md). See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow and the release steps.
 
-For contribution details, please read [this document](https://github.com/AleksejDix/ibantools/blob/master/CONTRIBUTING.md).
+## Migrating from ibantools 4.x
+
+ibanita 5 is a rewrite with a different API surface. [MIGRATION.md](MIGRATION.md) lists every change.
 
 ## License
 
-This work is licensed under MIT.
+MIT. `SPDX-License-Identifier: MIT`
 
-`SPDX-License-Identifier: MIT`
-
-## Migrating from ibantools
-
-ibanita 5 changes some results and types compared to ibantools 4.x. See the [migration guide](MIGRATION.md).
-
-## Credits
-
-This project started as a fork of [ibantools](https://github.com/Simplify/ibantools), created and maintained by [Saša Jovanić](https://github.com/Simplify). Many thanks to Saša Jovanić and everyone who contributed to the original project.
-
+ibanita began in 2025 as a fork of [ibantools](https://github.com/Simplify/ibantools) by Saša Jovanić and has since been rewritten. The LICENSE file keeps the original attribution.
