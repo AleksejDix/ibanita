@@ -444,3 +444,20 @@ describe('iban', () => {
     });
   });
 });
+
+describe('isQRIBAN range', () => {
+  // A Swiss IBAN whose bank clearing number (the first five BBAN digits) is the given value.
+  const swiss = (clearing: string): string => iban.composeIBAN('CH', `${clearing}${'A'.repeat(12)}`) ?? '';
+  it.each<[string, boolean]>([
+    ['29999', false],
+    ['30000', true],
+    ['31999', true],
+    ['32000', false],
+  ])('clearing number %s', (clearing, expected) => {
+    expect(iban.isQRIBAN(swiss(clearing))).toBe(expected);
+  });
+  it('applies to Liechtenstein but not to other countries', () => {
+    expect(iban.isQRIBAN(iban.composeIBAN('LI', `30000${'A'.repeat(12)}`))).toBe(true);
+    expect(iban.isQRIBAN(iban.composeIBAN('DE', `30000${'0'.repeat(13)}`))).toBe(false);
+  });
+});

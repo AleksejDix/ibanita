@@ -107,3 +107,14 @@ describe('per-country modules', () => {
     expect(Object.isFrozen(CH)).toBe(true);
   });
 });
+
+describe('isSEPACountry input rule', () => {
+  it.each<[string, boolean]>([
+    ['ch', true],
+    [' CH ', true],
+    ['c-h', true],
+    ['ua', false],
+  ])('isSEPACountry(%j)', (input, expected) => {
+    expect(iban.isSEPACountry(input)).toBe(expected);
+  });
+});
