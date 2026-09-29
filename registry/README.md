@@ -19,6 +19,8 @@ Everything in `src/countries/` is generated. Never edit it by hand. CI regenerat
 
 ## Updating to a new registry release
 
+The Registry workflow (`.github/workflows/registry.yml`) tries this every quarter and opens a pull request. SWIFT only serves the download to browsers, so when the fetch is blocked the workflow opens a reminder issue and the steps below are manual:
+
 1. Download the TXT file from https://www.swift.com/swift-resource/11971/download.
 2. Save it as `registry/iban-registry-vXXX.txt`, with the release number.
 3. Run `npm run registry` to regenerate `src/countries/`. The builder picks the newest file and fails on conflicts with `overrides.mjs`.

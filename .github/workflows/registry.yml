@@ -1,0 +1,69 @@
+name: Registry
+
+# Checks quarterly whether SWIFT published a new IBAN Registry release.
+# SWIFT serves the download only to browsers, so the fetch may fail; then a reminder issue is opened instead.
+
+on:
+  schedule:
+    - cron: '0 6 1 1,4,7,10 *' # first day of each quarter
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+env:
+  REGISTRY_URL: https://www.swift.com/swift-resource/11971/download
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+      - run: npm ci
+
+      - name: Download the current registry
+        id: download
+        run: |
+          if curl -fsSL -A "Mozilla/5.0" -o /tmp/registry.txt "$REGISTRY_URL" && head -c 12 /tmp/registry.txt | grep -q "Data element"; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open a reminder when the download is blocked
+        if: steps.download.outputs.ok == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="Check for a new SWIFT IBAN Registry release"
+          if [ -z "$(gh issue list --state open --search "\"$title\" in:title" --json number -q '.[0].number')" ]; then
+            gh issue create --title "$title" --body "The Registry workflow could not download $REGISTRY_URL (SWIFT only serves browsers). Download it manually and follow registry/README.md."
+          fi
+
+      - name: Regenerate and open a pull request when the registry changed
+        if: steps.download.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          latest=$(ls registry/iban-registry-v*.txt | sort -V | tail -1)
+          if cmp -s /tmp/registry.txt "$latest"; then
+            echo "Registry unchanged ($latest)"
+            exit 0
+          fi
+          next=$(( $(basename "$latest" | grep -oE '[0-9]+') + 1 ))
+          cp /tmp/registry.txt "registry/iban-registry-v$next.txt"
+          npm run registry
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "registry-v$next"
+          git add registry src/countries
+          git commit -m "feat: update country data to SWIFT IBAN Registry release $next"
+          git push origin "registry-v$next"
+          gh pr create --title "Update to SWIFT IBAN Registry release $next" \
+            --body "Automated update. Check the release number in the file name and registry/README.md, then review the generated changes in src/countries."

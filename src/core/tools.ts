@@ -1,8 +1,8 @@
 import type { composeIBAN, extractIBAN, isValidIBAN, validateIBAN } from '../iban';
-import type { isValidBBAN, validateBBAN } from '../bban';
-import type { isSEPACountry } from '../country';
-import { type IBANCountrySpecs } from './types';
 import { composeIBANWith, extractIBANWith, isSEPACountryWith, validateIBANWith } from './iban';
+import type { isValidBBAN, validateBBAN } from '../bban';
+import { type IBANCountrySpecs } from './types';
+import type { isSEPACountry } from '../country';
 import { validateBBANWith } from './bban';
 
 /**
