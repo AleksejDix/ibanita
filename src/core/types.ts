@@ -1,6 +1,7 @@
 import { type BBANValidationError, type BICValidationError, type IBANValidationError } from './errors';
+import { type IBANCountryCode } from '../countries/iban-country-code';
 
-export type { BBANValidationError, BICValidationError, IBANValidationError };
+export type { BBANValidationError, BICValidationError, IBANCountryCode, IBANValidationError };
 
 /** Result of {@link validateBBAN}. */
 export interface BBANValidationResult {
@@ -16,7 +17,7 @@ export interface BBANValidationOptions {
    * National checksum validators by country code. A validator given here replaces the built-in one
    * for that country. Use it to plug in stricter checks, for example a German bank-code validator.
    */
-  bbanValidators?: Readonly<Record<string, BBANValidator>>;
+  bbanValidators?: Readonly<Partial<Record<IBANCountryCode, BBANValidator>>>;
 }
 
 /** Options for {@link isValidIBAN} and {@link validateIBAN}. */
@@ -40,7 +41,7 @@ export interface IBANParts {
   /** The IBAN in electronic format, without spaces or dashes. */
   readonly iban: string;
   /** ISO 3166-1 alpha-2 country code. */
-  readonly countryCode: string;
+  readonly countryCode: IBANCountryCode;
   /** The domestic account number (BBAN): everything after the first four characters. */
   readonly bban: string;
   /** Account number, for countries whose account position is known. */
@@ -125,7 +126,7 @@ export interface IBANCountrySpec {
 }
 
 /** IBAN country specifications by country code, as passed to {@link withCountries}. */
-export type IBANCountrySpecs = Readonly<Record<string, IBANCountrySpec>>;
+export type IBANCountrySpecs = Readonly<Partial<Record<IBANCountryCode, IBANCountrySpec>>>;
 
 /** Specification of one country, as stored in {@link countrySpecs}. All fields are unset for countries without IBAN. */
 export type CountrySpec = Partial<IBANCountrySpec>;

@@ -15,6 +15,7 @@ export type {
   BICValidationResult,
   CountryMap,
   CountrySpec,
+  IBANCountryCode,
   IBANCountrySpec,
   IBANCountrySpecs,
   IBANExtractionResult,

@@ -1,5 +1,5 @@
+import { type IBANCountryCode, composeIBAN, extractIBAN, isValidIBAN } from '../src/index';
 import { IBANValidationError, withCountries } from '../src/core/index';
-import { composeIBAN, extractIBAN, isValidIBAN } from '../src/index';
 import { describe, expect, it } from 'vitest';
 import { CH } from '../src/countries/CH';
 import { DE } from '../src/countries/DE';
@@ -36,5 +36,18 @@ describe('core', () => {
     expect(tools.isValidIBAN(CH_IBAN, reject)).toBe(false);
     expect(isValidIBAN(CH_IBAN, reject)).toBe(false);
     expect(tools.isValidIBAN(CH_IBAN, { allowQRIBAN: false })).toBe(isValidIBAN(CH_IBAN, { allowQRIBAN: false }));
+  });
+
+  it('only accepts IBAN country codes as keys', () => {
+    // @ts-expect-error lowercase keys are not country codes
+    expect(withCountries({ ch: CH }).isValidIBAN(CH_IBAN)).toBe(false);
+    // @ts-expect-error XX is not an IBAN country
+    expect(isValidIBAN(CH_IBAN, { bbanValidators: { XX: () => false } })).toBe(true);
+  });
+
+  it('types the extracted country code', () => {
+    const parts = tools.extractIBAN(CH_IBAN);
+    const code: IBANCountryCode | undefined = parts.valid ? parts.countryCode : undefined;
+    expect(code).toBe('CH');
   });
 });

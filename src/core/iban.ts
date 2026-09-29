@@ -1,13 +1,14 @@
 import {
   type BBANValidationOptions,
   type CountrySpec,
+  type IBANCountryCode,
   type IBANCountrySpecs,
   type IBANExtractionResult,
   type IBANValidationOptions,
   type IBANValidationResult,
   type IdentifierPosition,
 } from './types';
-import { bbanErrors, bbanValidatorFor, validateBBANWith } from './bban';
+import { bbanErrors, bbanValidatorFor, specFor, validateBBANWith } from './bban';
 import { IBANValidationError } from './errors';
 import { electronicFormat } from './format';
 import { ibanCheckDigits } from './checksum';
@@ -46,7 +47,7 @@ export function validateIBANWith(
   const countryCode = iban.slice(0, 2);
   const checkDigits = iban.slice(2, 4);
   const bban = iban.slice(4);
-  const spec = specs[countryCode];
+  const spec = specFor(specs, countryCode);
   if (spec === undefined) {
     return { errorCodes: [IBANValidationError.NoIBANCountry], valid: false };
   }
@@ -89,11 +90,12 @@ export function extractIBANWith(specs: IBANCountrySpecs, input?: string | null):
   }
   const countryCode = iban.slice(0, 2);
   const bban = iban.slice(4);
-  const spec: CountrySpec = specs[countryCode] ?? {};
+  const spec: CountrySpec = specFor(specs, countryCode) ?? {};
   return {
     valid: true,
     iban,
-    countryCode,
+    // A valid IBAN's country is in the spec map, and every key of the map is an IBANCountryCode.
+    countryCode: countryCode as IBANCountryCode,
     bban,
     ...(spec.accountPosition ? { accountNumber: slicePosition(iban, spec.accountPosition) } : {}),
     ...(spec.bankPosition ? { bankIdentifier: slicePosition(bban, spec.bankPosition) } : {}),
@@ -103,5 +105,5 @@ export function extractIBANWith(specs: IBANCountrySpecs, input?: string | null):
 
 /** `isSEPACountry` against the given country specifications. */
 export function isSEPACountryWith(specs: IBANCountrySpecs, countryCode?: string | null): boolean {
-  return specs[electronicFormat(countryCode)]?.sepa ?? false;
+  return specFor(specs, electronicFormat(countryCode))?.sepa ?? false;
 }

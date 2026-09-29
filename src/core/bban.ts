@@ -15,12 +15,18 @@ export type BBANContentError = (typeof BBANValidationError)[
   | 'WrongBBANChecksum'];
 
 /** The national validator for a country: the one passed in the options, or the built-in one. */
+/** The specification for a country code, or `undefined` when the code is not in the map. */
+export function specFor(specs: IBANCountrySpecs, countryCode: string): IBANCountrySpec | undefined {
+  return (specs as Readonly<Record<string, IBANCountrySpec | undefined>>)[countryCode];
+}
+
 export function bbanValidatorFor(
   spec: IBANCountrySpec,
   countryCode: string,
   options: Readonly<BBANValidationOptions>,
 ): BBANValidator | undefined {
-  return options.bbanValidators?.[countryCode] ?? spec.bbanValidator;
+  const validators: Readonly<Record<string, BBANValidator | undefined>> = options.bbanValidators ?? {};
+  return validators[countryCode] ?? spec.bbanValidator;
 }
 
 /**
@@ -58,7 +64,7 @@ export function validateBBANWith(
   if (electronicBban === '' || code === '') {
     return { errorCodes: [BBANValidationError.NoBBANProvided], valid: false };
   }
-  const spec = specs[code];
+  const spec = specFor(specs, code);
   if (spec === undefined) {
     return { errorCodes: [BBANValidationError.NoIBANCountry], valid: false };
   }

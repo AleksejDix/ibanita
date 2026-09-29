@@ -250,6 +250,15 @@ function generateSpecs(specs, registryFile) {
   return output;
 }
 
+/** Generate src/countries/iban-country-code.ts: the union of every IBAN country code. */
+function generateCodeType(specs, registryFile) {
+  let output = HEADER(registryFile);
+  output += '/** ISO 3166-1 alpha-2 code of a country that uses IBAN. */\n';
+  output += 'export type IBANCountryCode =\n';
+  output += specs.map((spec) => `  | '${spec.code}'`).join('\n') + ';\n';
+  return output;
+}
+
 /** Generate src/countries/codes.ts: every country code, for BIC validation. */
 function generateCodes(registryFile) {
   let output = HEADER(registryFile);
@@ -302,5 +311,6 @@ for (const file of fs.readdirSync(outputDir)) {
 for (const spec of specs) fs.writeFileSync(path.join(outputDir, `${spec.code}.ts`), generateCountry(spec, registryFile));
 fs.writeFileSync(path.join(outputDir, 'specs.ts'), generateSpecs(specs, registryFile));
 fs.writeFileSync(path.join(outputDir, 'codes.ts'), generateCodes(registryFile));
+fs.writeFileSync(path.join(outputDir, 'iban-country-code.ts'), generateCodeType(specs, registryFile));
 fs.writeFileSync(path.join(outputDir, 'all.ts'), generateAll(specs, registryFile));
-console.log(`Generated ${specs.length} country files, specs.ts, codes.ts and all.ts in ${outputDir}`);
+console.log(`Generated ${specs.length} country files, specs.ts, codes.ts, iban-country-code.ts and all.ts in ${outputDir}`);
