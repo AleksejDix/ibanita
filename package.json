@@ -64,7 +64,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
-    "lint": "oxlint --type-aware --tsconfig tsconfig.test.json src/ test/",
+    "lint": "oxlint --type-aware --deny-warnings --tsconfig tsconfig.test.json src/ test/",
     "typecheck": "tsc -p tsconfig.test.json",
     "format": "oxfmt src/ test/",
     "format:check": "oxfmt --check src/ test/",
