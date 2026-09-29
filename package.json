@@ -15,6 +15,22 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./iban": {
+      "types": "./dist/iban.d.ts",
+      "import": "./dist/iban.js"
+    },
+    "./bic": {
+      "types": "./dist/bic.d.ts",
+      "import": "./dist/bic.js"
+    },
+    "./bban": {
+      "types": "./dist/bban.d.ts",
+      "import": "./dist/bban.js"
+    },
+    "./format": {
+      "types": "./dist/format.d.ts",
+      "import": "./dist/format.js"
     }
   },
   "files": [
@@ -32,6 +48,7 @@
   "bugs": "https://github.com/AleksejDix/ibantools/issues",
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.build.json && vite build",
+    "check:package": "node scripts/check-package.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",

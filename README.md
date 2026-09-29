@@ -63,6 +63,17 @@ validateIBAN('NL91ABNA0517164300');
 isValidBIC('ABNANL2A'); // true
 ```
 
+### Subpath imports
+
+Each module is also exported on its own, so a bundle for BIC validation never includes the IBAN country data:
+
+```js
+import { isValidBIC } from '@aleksejdix/ibanita/bic';
+import { friendlyFormatIBAN } from '@aleksejdix/ibanita/format';
+```
+
+Available: `/iban`, `/bic`, `/bban` and `/format`.
+
 ### TypeScript
 
 Full TypeScript support with bundled type definitions:

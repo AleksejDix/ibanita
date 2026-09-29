@@ -12,6 +12,9 @@ ibanita is a TypeScript library (zero runtime dependencies) for validation, crea
 # Build the library (required before publishing)
 npm run build
 
+# Check the built package: export paths resolve, gzipped size under the limit (scripts/check-package.mjs)
+npm run check:package
+
 # Run all tests
 npm test
 
