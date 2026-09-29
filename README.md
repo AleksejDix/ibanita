@@ -64,7 +64,7 @@ const ibanita = withCountries({ CH, LI });
 ibanita.isValidIBAN(input);
 ```
 
-The object has the same IBAN, BBAN and country functions as the default entry, bound to those countries. An IBAN from any other country is reported as `NO_IBAN_COUNTRY`.
+The object has the same IBAN, BBAN and country functions as the default entry, bound to those countries. An IBAN from any other country is reported as `NO_IBAN_COUNTRY`. The keys are typed as `IBANCountryCode`, so a misspelled country such as `{ ch: CH }` fails to compile.
 
 ### Custom national validation
 
@@ -135,7 +135,7 @@ isValidIBAN(input, options);
 
 ### Types
 
-`IBANValidationOptions`, `BBANValidationOptions`, `BBANValidator`, `IBANValidationResult`, `BBANValidationResult`, `BICValidationResult`, `IBANExtractionResult`, `IBANParts`, `InvalidIBANParts`, `BICExtractionResult`, `BICParts`, `InvalidBICParts`, `IBANCountrySpec`, `IBANCountrySpecs`, `CountrySpec`, `CountryMap`, `IdentifierPosition`, `Ibanita`.
+`IBANValidationOptions`, `BBANValidationOptions`, `BBANValidator`, `IBANValidationResult`, `BBANValidationResult`, `BICValidationResult`, `IBANExtractionResult`, `IBANParts`, `InvalidIBANParts`, `BICExtractionResult`, `BICParts`, `InvalidBICParts`, `IBANCountryCode` (the union of the 124 IBAN country codes, generated), `IBANCountrySpec`, `IBANCountrySpecs`, `CountrySpec`, `CountryMap`, `IdentifierPosition`, `Ibanita`.
 
 The full reference with examples is at https://dix.consulting/ibantools.
 

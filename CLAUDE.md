@@ -45,8 +45,13 @@ npm run all
 One test file per source module in `test/`:
 
 - `test/iban.test.ts`, `test/bic.test.ts`, `test/bban.test.ts`, `test/format.test.ts`, `test/countries.test.ts`, `test/checksum.test.ts`: unit tests for the public API of that module
-- `test/registry.test.ts`: checks every country against the latest `registry/iban-registry-vXXX.txt` (formats, lengths, flags, example IBANs, identifier positions)
+- `test/registry.test.ts`: checks every country against the latest `registry/iban-registry-vXXX.txt` (formats, lengths, flags, example IBANs, identifier positions), rejects mutated examples and round-trips every example
+- `test/validators.test.ts`: every national validator accepts its registry example and rejects a changed control digit
+- `test/docs.test.ts`: evaluates every `// returns` example in the doc comments
+- `test/core.test.ts`: `withCountries` with a subset, and the compile-time country code keys
+- `test/registry-file.ts`: shared reader for the registry file
 - **Coverage requirement: 100%** - All pull requests must maintain 100% test coverage
+- Coverage is not enough: a new rule needs a test that fails when the rule is broken, such as a rejected input
 - Run `npm run coverage` to verify coverage before committing
 
 ## Code Architecture
@@ -81,6 +86,7 @@ src/
     ├── AD.ts ... YT.ts      # One frozen IBANCountrySpec per IBAN country, importing only its own validator
     ├── specs.ts             # Collects every country in ibanSpecs
     ├── codes.ts             # COUNTRY_CODES: all 250 country codes (used by BIC functions)
+    ├── iban-country-code.ts # IBANCountryCode: union type of the IBAN country codes
     └── all.ts               # countrySpecs: all countries, empty spec for countries without IBAN
 ```
 
