@@ -2,7 +2,6 @@
  * Validation, extraction and creation of IBAN, BBAN, BIC/SWIFT numbers plus some other helpful stuff
  * @author Aleksej Dix
  * @module ibanita
- * @version 4.5.1
  * @license MIT
  */
 // Re-export all public types
