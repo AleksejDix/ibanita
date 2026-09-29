@@ -1,5 +1,5 @@
 /**
- * Get IBAN in electronic format (no spaces)
+ * Get IBAN in electronic format: no whitespace, dashes or periods, uppercase.
  * IBAN validation is not performed.
  * When non-string value for IBAN is provided, returns null.
  * ```
@@ -11,7 +11,15 @@ export function electronicFormatIBAN(iban?: string | null): string | null {
   if (typeof iban !== 'string') {
     return null;
   }
-  return iban.replace(/[- ]/gu, '').toUpperCase();
+  return electronicFormat(iban);
+}
+
+/**
+ * The one input rule of the library: whitespace, dashes and periods are removed and letters are uppercased.
+ * Every validation and extraction function applies it to its input first.
+ */
+export function electronicFormat(value: string): string {
+  return value.replace(/[\s.-]/gu, '').toUpperCase();
 }
 
 /**

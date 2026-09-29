@@ -91,3 +91,24 @@ describe('bic', () => {
     });
   });
 });
+
+describe('BIC input rule', () => {
+  it.each<[string, boolean]>([
+    ['ABNA NL 2A', true],
+    ['abna-nl-2a', true],
+    [' NEDSZAJJXXX ', true],
+    ['ABNA NL 2', false],
+  ])('isValidBIC(%s)', (input, expected) => {
+    expect(iban.isValidBIC(input)).toBe(expected);
+  });
+  it('extractBIC normalises its input', () => {
+    expect(iban.extractBIC('abna nl 2a')).toEqual({
+      valid: true,
+      bankCode: 'ABNA',
+      countryCode: 'NL',
+      locationCode: '2A',
+      branchCode: null,
+      testBIC: false,
+    });
+  });
+});

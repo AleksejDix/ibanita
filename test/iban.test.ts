@@ -140,13 +140,7 @@ describe('iban', () => {
           errorCodes: [iban.ValidationErrorsIBAN.NoIBANProvided],
         },
       ],
-      [
-        '..',
-        {
-          valid: false,
-          errorCodes: [iban.ValidationErrorsIBAN.NoIBANCountry],
-        },
-      ],
+      ['..', { valid: false, errorCodes: [iban.ValidationErrorsIBAN.NoIBANProvided] }],
       ['NL91 ABNA 0417 1643 00', { valid: true, errorCodes: [] }],
       ['NL91-ABNA-0417-1643-00', { valid: true, errorCodes: [] }],
       [
@@ -161,7 +155,7 @@ describe('iban', () => {
         {
           valid: false,
           errorCodes: [
-            iban.ValidationErrorsIBAN.WrongIBANLength,
+            iban.ValidationErrorsIBAN.WrongBBANLength,
             iban.ValidationErrorsIBAN.WrongBBANFormat,
             iban.ValidationErrorsIBAN.WrongIBANChecksum,
           ],
@@ -193,7 +187,7 @@ describe('iban', () => {
         {
           valid: false,
           errorCodes: [
-            iban.ValidationErrorsIBAN.WrongIBANLength,
+            iban.ValidationErrorsIBAN.WrongBBANLength,
             iban.ValidationErrorsIBAN.WrongBBANFormat,
             iban.ValidationErrorsIBAN.CheckDigitsNotNumeric,
             iban.ValidationErrorsIBAN.WrongIBANChecksum,
@@ -205,7 +199,7 @@ describe('iban', () => {
         {
           valid: false,
           errorCodes: [
-            iban.ValidationErrorsIBAN.WrongIBANLength,
+            iban.ValidationErrorsIBAN.WrongBBANLength,
             iban.ValidationErrorsIBAN.WrongBBANFormat,
             iban.ValidationErrorsIBAN.CheckDigitsNotNumeric,
             iban.ValidationErrorsIBAN.WrongIBANChecksum,
@@ -251,7 +245,7 @@ describe('iban', () => {
     it('should return account checksum error', () => {
       expect(iban.validateIBAN('CZ6208000000610000000000')).toEqual({
         valid: false,
-        errorCodes: [iban.ValidationErrorsIBAN.WrongAccountBankBranchChecksum],
+        errorCodes: [iban.ValidationErrorsIBAN.WrongBBANChecksum],
       });
     });
   });
@@ -414,7 +408,7 @@ describe('iban', () => {
     it('validateIBAN reports the national checksum error', () => {
       expect(iban.validateIBAN(valid, rejectDE)).toEqual({
         valid: false,
-        errorCodes: [iban.ValidationErrorsIBAN.WrongAccountBankBranchChecksum],
+        errorCodes: [iban.ValidationErrorsIBAN.WrongBBANChecksum],
       });
     });
     it('isValidBBAN uses the validator from the options', () => {

@@ -4,8 +4,9 @@
  */
 import { type ExtractBICResult, type ValidateBICResult, ValidationErrorsBIC } from './core/types';
 import { COUNTRY_CODES } from './countries/codes';
+import { electronicFormat } from './format';
 
-const BIC_REGEX = /^[a-zA-Z]{6}[a-zA-Z0-9]{2}([a-zA-Z0-9]{3})?$/u;
+const BIC_REGEX = /^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/u;
 
 /**
  * Validate BIC/SWIFT
@@ -20,7 +21,7 @@ const BIC_REGEX = /^[a-zA-Z]{6}[a-zA-Z0-9]{2}([a-zA-Z0-9]{3})?$/u;
  * // returns false
  * ibanita.isValidBIC("ABN4NL2A");
  *
- * // returns false
+ * // returns true, spaces are removed first
  * ibanita.isValidBIC("ABNA NL 2A");
  * ```
  */
@@ -29,22 +30,20 @@ export function isValidBIC(bic: string | null | undefined): boolean {
 }
 
 /**
- * BIC validation errors
- */
-/**
  * validateBIC
  * ```
  * // returns {errorCodes: [], valid: true}
  * ibanita.validateBIC("NEDSZAJJXXX");
  * ```
  */
-export function validateBIC(bic?: string | null): ValidateBICResult {
+export function validateBIC(input?: string | null): ValidateBICResult {
   const errorCodes: ValidationErrorsBIC[] = [];
-  if (bic === undefined || bic === null || bic === '') {
+  const bic = electronicFormat(input ?? '');
+  if (bic === '') {
     errorCodes.push(ValidationErrorsBIC.NoBICProvided);
   } else if (!BIC_REGEX.test(bic)) {
     errorCodes.push(ValidationErrorsBIC.WrongBICFormat);
-  } else if (!COUNTRY_CODES.has(bic.toUpperCase().slice(4, 6))) {
+  } else if (!COUNTRY_CODES.has(bic.slice(4, 6))) {
     errorCodes.push(ValidationErrorsBIC.NoBICCountry);
   }
   return { errorCodes, valid: errorCodes.length === 0 };
@@ -58,7 +57,7 @@ export function validateBIC(bic?: string | null): ValidateBICResult {
  * ```
  */
 export function extractBIC(inputBic?: string | null): ExtractBICResult {
-  const bic = (inputBic ?? '').toUpperCase();
+  const bic = electronicFormat(inputBic ?? '');
   if (!isValidBIC(bic)) {
     return { valid: false };
   }

@@ -5,7 +5,7 @@
  * @license MIT
  */
 // Re-export all public types
-export { ValidationErrorsBIC, ValidationErrorsIBAN } from './core/types';
+export { ValidationErrorsBBAN, ValidationErrorsBIC, ValidationErrorsIBAN } from './core/types';
 export type {
   BBANValidationOptions,
   BBANValidator,
@@ -17,6 +17,7 @@ export type {
   IdentifierPosition,
   InvalidBICParts,
   InvalidIBANParts,
+  ValidateBBANResult,
   ValidateBICResult,
   ValidateIBANOptions,
   ValidateIBANResult,
@@ -25,7 +26,7 @@ export type {
 } from './core/types';
 
 // Re-export utility functions
-export { electronicFormatIBAN, friendlyFormatIBAN } from './format';
+export { electronicFormat, electronicFormatIBAN, friendlyFormatIBAN } from './format';
 
 // Re-export IBAN functions
 export { composeIBAN, extractIBAN, isQRIBAN, isValidIBAN, validateIBAN } from './iban';
@@ -34,7 +35,7 @@ export { composeIBAN, extractIBAN, isQRIBAN, isValidIBAN, validateIBAN } from '.
 export { extractBIC, isValidBIC, validateBIC } from './bic';
 
 // Re-export BBAN functions
-export { isValidBBAN } from './bban';
+export { isValidBBAN, validateBBAN } from './bban';
 
 // Re-export country utilities and specs
 export { getCountrySpecifications, isSEPACountry } from './countries/sepa';

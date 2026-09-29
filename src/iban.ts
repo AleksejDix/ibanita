@@ -11,7 +11,8 @@ import {
   type ValidateIBANResult,
   ValidationErrorsIBAN,
 } from './core/types';
-import { bbanValidatorFor, isValidBBAN } from './bban';
+import { bbanErrors } from './core/bban';
+import { isValidBBAN } from './bban';
 import { ibanCheckDigits } from './core/checksum';
 import { electronicFormatIBAN } from './format';
 import { ibanSpecs } from './countries/specs';
@@ -75,7 +76,6 @@ export function validateIBAN(
   input?: string | null,
   validationOptions: Readonly<ValidateIBANOptions> = {},
 ): ValidateIBANResult {
-  const errorCodes: ValidationErrorsIBAN[] = [];
   const iban = electronicFormatIBAN(input) ?? '';
   if (iban === '') {
     return { errorCodes: [ValidationErrorsIBAN.NoIBANProvided], valid: false };
@@ -88,22 +88,12 @@ export function validateIBAN(
     return { errorCodes: [ValidationErrorsIBAN.NoIBANCountry], valid: false };
   }
 
-  if (spec.ibanLength !== iban.length) {
-    errorCodes.push(ValidationErrorsIBAN.WrongIBANLength);
-  }
-  const wrongFormat = !spec.bbanRegExp.test(bban);
-  if (wrongFormat) {
-    errorCodes.push(ValidationErrorsIBAN.WrongBBANFormat);
-  }
-  // The national checksum is only meaningful when length and format are right.
-  const validator = bbanValidatorFor(countryCode, validationOptions);
-  if (errorCodes.length === 0 && validator !== undefined && !validator(bban)) {
-    errorCodes.push(ValidationErrorsIBAN.WrongAccountBankBranchChecksum);
-  }
+  const errorCodes: ValidationErrorsIBAN[] = bbanErrors(spec, countryCode, bban, validationOptions);
   if (!CHECK_DIGITS_REGEX.test(checkDigits)) {
     errorCodes.push(ValidationErrorsIBAN.CheckDigitsNotNumeric);
   }
-  if (wrongFormat || checkDigits !== ibanCheckDigits(countryCode, bban)) {
+  // A malformed BBAN makes the MOD 97-10 result meaningless, so the checksum counts as wrong too.
+  if (errorCodes.includes(ValidationErrorsIBAN.WrongBBANFormat) || checkDigits !== ibanCheckDigits(countryCode, bban)) {
     errorCodes.push(ValidationErrorsIBAN.WrongIBANChecksum);
   }
   if (validationOptions.allowQRIBAN === false && isQRIBAN(iban)) {

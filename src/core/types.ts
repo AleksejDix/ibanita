@@ -1,21 +1,50 @@
 /**
+ * Error codes returned by {@link validateBBAN} in {@link ValidateBBANResult.errorCodes}.
+ * {@link validateIBAN} reports the same codes for the BBAN part of an IBAN.
+ */
+export const ValidationErrorsBBAN = {
+  /** No BBAN or no country code was provided, or the BBAN was empty. */
+  NoBBANProvided: 'NO_BBAN_PROVIDED',
+  /** The country code is not the code of a country that uses IBAN. */
+  NoIBANCountry: 'NO_IBAN_COUNTRY',
+  /** The BBAN does not have the length defined for its country. */
+  WrongBBANLength: 'WRONG_BBAN_LENGTH',
+  /** The BBAN does not match the format defined for its country. */
+  WrongBBANFormat: 'WRONG_BBAN_FORMAT',
+  /** The national check digits of the bank, branch or account number are wrong. */
+  WrongBBANChecksum: 'WRONG_BBAN_CHECKSUM',
+} as const;
+
+/** One of the {@link ValidationErrorsBBAN} error codes. */
+export type ValidationErrorsBBAN = (typeof ValidationErrorsBBAN)[keyof typeof ValidationErrorsBBAN];
+
+/** Result of {@link validateBBAN}. */
+export interface ValidateBBANResult {
+  /** Every problem found, as {@link ValidationErrorsBBAN} codes. Empty when the BBAN is valid. */
+  errorCodes: ValidationErrorsBBAN[];
+  /** Whether the BBAN is valid. */
+  valid: boolean;
+}
+
+/**
  * Error codes returned by {@link validateIBAN} in {@link ValidateIBANResult.errorCodes}.
+ * The BBAN codes come from {@link ValidationErrorsBBAN}.
  */
 export const ValidationErrorsIBAN = {
   /** No IBAN was provided, or it was empty. */
   NoIBANProvided: 'NO_IBAN_PROVIDED',
   /** The first two characters are not the code of a country that uses IBAN. */
-  NoIBANCountry: 'NO_IBAN_COUNTRY',
-  /** The IBAN does not have the length defined for its country. */
-  WrongIBANLength: 'WRONG_IBAN_LENGTH',
+  NoIBANCountry: ValidationErrorsBBAN.NoIBANCountry,
+  /** The BBAN, and so the IBAN, does not have the length defined for its country. */
+  WrongBBANLength: ValidationErrorsBBAN.WrongBBANLength,
   /** The BBAN does not match the format defined for its country. */
-  WrongBBANFormat: 'WRONG_BBAN_FORMAT',
+  WrongBBANFormat: ValidationErrorsBBAN.WrongBBANFormat,
+  /** The national check digits of the bank, branch or account number are wrong. */
+  WrongBBANChecksum: ValidationErrorsBBAN.WrongBBANChecksum,
   /** The check digits (characters 3 and 4) are not two digits. */
   CheckDigitsNotNumeric: 'CHECK_DIGITS_NOT_NUMERIC',
   /** The MOD 97-10 check digits of the IBAN are wrong. */
   WrongIBANChecksum: 'WRONG_IBAN_CHECKSUM',
-  /** The national check digits of the bank, branch or account number are wrong. */
-  WrongAccountBankBranchChecksum: 'WRONG_ACCOUNT_BANK_BRANCH_CHECKSUM',
   /** The IBAN is a Swiss or Liechtenstein QR-IBAN, and QR-IBANs were not allowed. */
   QRIBANNotAllowed: 'QR_IBAN_NOT_ALLOWED',
 } as const;
@@ -23,7 +52,7 @@ export const ValidationErrorsIBAN = {
 /** One of the {@link ValidationErrorsIBAN} error codes. */
 export type ValidationErrorsIBAN = (typeof ValidationErrorsIBAN)[keyof typeof ValidationErrorsIBAN];
 
-/** Options for {@link isValidBBAN} and {@link composeIBAN}. */
+/** Options for {@link isValidBBAN}, {@link validateBBAN} and {@link composeIBAN}. */
 export interface BBANValidationOptions {
   /**
    * National checksum validators by country code. A validator given here replaces the built-in one

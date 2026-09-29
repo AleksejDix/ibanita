@@ -21,3 +21,29 @@ describe('bban', () => {
     });
   });
 });
+
+describe('validateBBAN', () => {
+  const E = iban.ValidationErrorsBBAN;
+  it.each<[string | null | undefined, string | null | undefined, iban.ValidateBBANResult]>([
+    ['ABNA0417164300', 'NL', { valid: true, errorCodes: [] }],
+    ['abna 0417.1643-00', 'nl', { valid: true, errorCodes: [] }],
+    ['', 'NL', { valid: false, errorCodes: [E.NoBBANProvided] }],
+    [null, 'NL', { valid: false, errorCodes: [E.NoBBANProvided] }],
+    ['ABNA0417164300', undefined, { valid: false, errorCodes: [E.NoBBANProvided] }],
+    ['ABNA0417164300', 'XX', { valid: false, errorCodes: [E.NoIBANCountry] }],
+    ['ABNA04171643001', 'NL', { valid: false, errorCodes: [E.WrongBBANLength, E.WrongBBANFormat] }],
+    ['A7NA0417164300', 'NL', { valid: false, errorCodes: [E.WrongBBANFormat] }],
+    ['86011117948', 'NO', { valid: false, errorCodes: [E.WrongBBANChecksum] }],
+    ['86011117947', 'NO', { valid: true, errorCodes: [] }],
+  ])('validateBBAN(%s, %s)', (bban, countryCode, expected) => {
+    expect(iban.validateBBAN(bban, countryCode)).toEqual(expected);
+  });
+
+  it('uses the validator from the options', () => {
+    const rejectNO = { bbanValidators: { NO: () => false } };
+    expect(iban.validateBBAN('86011117947', 'NO', rejectNO)).toEqual({
+      valid: false,
+      errorCodes: [E.WrongBBANChecksum],
+    });
+  });
+});
