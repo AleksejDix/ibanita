@@ -5,24 +5,24 @@
  * @license MIT
  */
 // Re-export all public types
-export { ValidationErrorsBBAN, ValidationErrorsBIC, ValidationErrorsIBAN } from './core/types';
+export { BBANValidationError, BICValidationError, IBANValidationError } from './core/types';
 export type {
   BBANValidationOptions,
+  BBANValidationResult,
   BBANValidator,
+  BICExtractionResult,
+  BICParts,
+  BICValidationResult,
   CountryMap,
   CountrySpec,
-  ExtractBICResult,
-  ExtractIBANResult,
   IBANCountrySpec,
+  IBANExtractionResult,
+  IBANParts,
+  IBANValidationOptions,
+  IBANValidationResult,
   IdentifierPosition,
   InvalidBICParts,
   InvalidIBANParts,
-  ValidateBBANResult,
-  ValidateBICResult,
-  ValidateIBANOptions,
-  ValidateIBANResult,
-  ValidBICParts,
-  ValidIBANParts,
 } from './core/types';
 
 // Re-export utility functions

@@ -5,11 +5,11 @@
 import {
   type BBANValidationOptions,
   type CountrySpec,
-  type ExtractIBANResult,
+  type IBANExtractionResult,
   type IdentifierPosition,
-  type ValidateIBANOptions,
-  type ValidateIBANResult,
-  ValidationErrorsIBAN,
+  type IBANValidationOptions,
+  type IBANValidationResult,
+  IBANValidationError,
 } from './core/types';
 import { bbanErrors } from './core/bban';
 import { isValidBBAN } from './bban';
@@ -49,7 +49,7 @@ function slicePosition(value: string, [start, end]: IdentifierPosition): string 
  */
 export function isValidIBAN(
   input: string | null | undefined,
-  validationOptions: Readonly<ValidateIBANOptions> = {},
+  validationOptions: Readonly<IBANValidationOptions> = {},
 ): boolean {
   return validateIBAN(input, validationOptions).valid;
 }
@@ -74,30 +74,30 @@ export function isValidIBAN(
  */
 export function validateIBAN(
   input?: string | null,
-  validationOptions: Readonly<ValidateIBANOptions> = {},
-): ValidateIBANResult {
+  validationOptions: Readonly<IBANValidationOptions> = {},
+): IBANValidationResult {
   const iban = electronicFormatIBAN(input) ?? '';
   if (iban === '') {
-    return { errorCodes: [ValidationErrorsIBAN.NoIBANProvided], valid: false };
+    return { errorCodes: [IBANValidationError.NoIBANProvided], valid: false };
   }
   const countryCode = iban.slice(0, 2);
   const checkDigits = iban.slice(2, 4);
   const bban = iban.slice(4);
   const spec = ibanSpecs[countryCode];
   if (spec === undefined) {
-    return { errorCodes: [ValidationErrorsIBAN.NoIBANCountry], valid: false };
+    return { errorCodes: [IBANValidationError.NoIBANCountry], valid: false };
   }
 
-  const errorCodes: ValidationErrorsIBAN[] = bbanErrors(spec, countryCode, bban, validationOptions);
+  const errorCodes: IBANValidationError[] = bbanErrors(spec, countryCode, bban, validationOptions);
   if (!CHECK_DIGITS_REGEX.test(checkDigits)) {
-    errorCodes.push(ValidationErrorsIBAN.CheckDigitsNotNumeric);
+    errorCodes.push(IBANValidationError.CheckDigitsNotNumeric);
   }
   // A malformed BBAN makes the MOD 97-10 result meaningless, so the checksum counts as wrong too.
-  if (errorCodes.includes(ValidationErrorsIBAN.WrongBBANFormat) || checkDigits !== ibanCheckDigits(countryCode, bban)) {
-    errorCodes.push(ValidationErrorsIBAN.WrongIBANChecksum);
+  if (errorCodes.includes(IBANValidationError.WrongBBANFormat) || checkDigits !== ibanCheckDigits(countryCode, bban)) {
+    errorCodes.push(IBANValidationError.WrongIBANChecksum);
   }
   if (validationOptions.allowQRIBAN === false && isQRIBAN(iban)) {
-    errorCodes.push(ValidationErrorsIBAN.QRIBANNotAllowed);
+    errorCodes.push(IBANValidationError.QRIBANNotAllowed);
   }
   return { errorCodes, valid: errorCodes.length === 0 };
 }
@@ -148,7 +148,7 @@ export function composeIBAN(
  * ibanita.extractIBAN("NL91 ABNA 0417 1643 00");
  * ```
  */
-export function extractIBAN(input?: string | null): ExtractIBANResult {
+export function extractIBAN(input?: string | null): IBANExtractionResult {
   const iban = electronicFormatIBAN(input) ?? '';
   if (!isValidIBAN(iban)) {
     return { valid: false, iban };

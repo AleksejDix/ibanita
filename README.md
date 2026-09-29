@@ -57,7 +57,7 @@ isValidIBAN(iban); // true
 
 // If you want to know reason why IBAN is invalid
 validateIBAN('NL91ABNA0517164300');
-// Returns { valid: false, errorCodes: [ValidationErrorsIBAN.WrongIBANChecksum] }
+// Returns { valid: false, errorCodes: [IBANValidationError.WrongIBANChecksum] }
 
 // Validate BIC
 isValidBIC('ABNANL2A'); // true
@@ -79,7 +79,7 @@ Available: `/iban`, `/bic`, `/bban` and `/format`.
 Full TypeScript support with bundled type definitions:
 
 ```typescript
-import { isValidIBAN, validateIBAN, ValidationErrorsIBAN } from '@aleksejdix/ibanita';
+import { isValidIBAN, validateIBAN, IBANValidationError } from '@aleksejdix/ibanita';
 
 const result = validateIBAN('NL91ABNA0417164300');
 if (!result.valid) {

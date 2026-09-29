@@ -1,8 +1,8 @@
 /**
- * Error codes returned by {@link validateBBAN} in {@link ValidateBBANResult.errorCodes}.
+ * Error codes returned by {@link validateBBAN} in {@link BBANValidationResult.errorCodes}.
  * {@link validateIBAN} reports the same codes for the BBAN part of an IBAN.
  */
-export const ValidationErrorsBBAN = {
+export const BBANValidationError = {
   /** No BBAN or no country code was provided, or the BBAN was empty. */
   NoBBANProvided: 'NO_BBAN_PROVIDED',
   /** The country code is not the code of a country that uses IBAN. */
@@ -15,32 +15,32 @@ export const ValidationErrorsBBAN = {
   WrongBBANChecksum: 'WRONG_BBAN_CHECKSUM',
 } as const;
 
-/** One of the {@link ValidationErrorsBBAN} error codes. */
-export type ValidationErrorsBBAN = (typeof ValidationErrorsBBAN)[keyof typeof ValidationErrorsBBAN];
+/** One of the {@link BBANValidationError} error codes. */
+export type BBANValidationError = (typeof BBANValidationError)[keyof typeof BBANValidationError];
 
 /** Result of {@link validateBBAN}. */
-export interface ValidateBBANResult {
-  /** Every problem found, as {@link ValidationErrorsBBAN} codes. Empty when the BBAN is valid. */
-  errorCodes: ValidationErrorsBBAN[];
+export interface BBANValidationResult {
+  /** Every problem found, as {@link BBANValidationError} codes. Empty when the BBAN is valid. */
+  errorCodes: BBANValidationError[];
   /** Whether the BBAN is valid. */
   valid: boolean;
 }
 
 /**
- * Error codes returned by {@link validateIBAN} in {@link ValidateIBANResult.errorCodes}.
- * The BBAN codes come from {@link ValidationErrorsBBAN}.
+ * Error codes returned by {@link validateIBAN} in {@link IBANValidationResult.errorCodes}.
+ * The BBAN codes come from {@link BBANValidationError}.
  */
-export const ValidationErrorsIBAN = {
+export const IBANValidationError = {
   /** No IBAN was provided, or it was empty. */
   NoIBANProvided: 'NO_IBAN_PROVIDED',
   /** The first two characters are not the code of a country that uses IBAN. */
-  NoIBANCountry: ValidationErrorsBBAN.NoIBANCountry,
+  NoIBANCountry: BBANValidationError.NoIBANCountry,
   /** The BBAN, and so the IBAN, does not have the length defined for its country. */
-  WrongBBANLength: ValidationErrorsBBAN.WrongBBANLength,
+  WrongBBANLength: BBANValidationError.WrongBBANLength,
   /** The BBAN does not match the format defined for its country. */
-  WrongBBANFormat: ValidationErrorsBBAN.WrongBBANFormat,
+  WrongBBANFormat: BBANValidationError.WrongBBANFormat,
   /** The national check digits of the bank, branch or account number are wrong. */
-  WrongBBANChecksum: ValidationErrorsBBAN.WrongBBANChecksum,
+  WrongBBANChecksum: BBANValidationError.WrongBBANChecksum,
   /** The check digits (characters 3 and 4) are not two digits. */
   CheckDigitsNotNumeric: 'CHECK_DIGITS_NOT_NUMERIC',
   /** The MOD 97-10 check digits of the IBAN are wrong. */
@@ -49,8 +49,8 @@ export const ValidationErrorsIBAN = {
   QRIBANNotAllowed: 'QR_IBAN_NOT_ALLOWED',
 } as const;
 
-/** One of the {@link ValidationErrorsIBAN} error codes. */
-export type ValidationErrorsIBAN = (typeof ValidationErrorsIBAN)[keyof typeof ValidationErrorsIBAN];
+/** One of the {@link IBANValidationError} error codes. */
+export type IBANValidationError = (typeof IBANValidationError)[keyof typeof IBANValidationError];
 
 /** Options for {@link isValidBBAN}, {@link validateBBAN} and {@link composeIBAN}. */
 export interface BBANValidationOptions {
@@ -62,21 +62,21 @@ export interface BBANValidationOptions {
 }
 
 /** Options for {@link isValidIBAN} and {@link validateIBAN}. */
-export interface ValidateIBANOptions extends BBANValidationOptions {
+export interface IBANValidationOptions extends BBANValidationOptions {
   /** Whether Swiss and Liechtenstein QR-IBANs count as valid. Defaults to `true`. */
   allowQRIBAN?: boolean;
 }
 
 /** Result of {@link validateIBAN}. */
-export interface ValidateIBANResult {
-  /** Every problem found, as {@link ValidationErrorsIBAN} codes. Empty when the IBAN is valid. */
-  errorCodes: ValidationErrorsIBAN[];
+export interface IBANValidationResult {
+  /** Every problem found, as {@link IBANValidationError} codes. Empty when the IBAN is valid. */
+  errorCodes: IBANValidationError[];
   /** Whether the IBAN is valid. */
   valid: boolean;
 }
 
 /** The parts of a valid IBAN, returned by {@link extractIBAN}. */
-export interface ValidIBANParts {
+export interface IBANParts {
   /** Always `true`. */
   readonly valid: true;
   /** The IBAN in electronic format, without spaces or dashes. */
@@ -101,13 +101,13 @@ export interface InvalidIBANParts {
   readonly iban: string;
 }
 
-/** Result of {@link extractIBAN}. Check `valid` to narrow to {@link ValidIBANParts}. */
-export type ExtractIBANResult = ValidIBANParts | InvalidIBANParts;
+/** Result of {@link extractIBAN}. Check `valid` to narrow to {@link IBANParts}. */
+export type IBANExtractionResult = IBANParts | InvalidIBANParts;
 
 /**
- * Error codes returned by {@link validateBIC} in {@link ValidateBICResult.errorCodes}.
+ * Error codes returned by {@link validateBIC} in {@link BICValidationResult.errorCodes}.
  */
-export const ValidationErrorsBIC = {
+export const BICValidationError = {
   /** No BIC was provided, or it was empty. */
   NoBICProvided: 'NO_BIC_PROVIDED',
   /** Characters 5 and 6 are not a known country code. */
@@ -116,19 +116,19 @@ export const ValidationErrorsBIC = {
   WrongBICFormat: 'WRONG_BIC_FORMAT',
 } as const;
 
-/** One of the {@link ValidationErrorsBIC} error codes. */
-export type ValidationErrorsBIC = (typeof ValidationErrorsBIC)[keyof typeof ValidationErrorsBIC];
+/** One of the {@link BICValidationError} error codes. */
+export type BICValidationError = (typeof BICValidationError)[keyof typeof BICValidationError];
 
 /** Result of {@link validateBIC}. */
-export interface ValidateBICResult {
-  /** Every problem found, as {@link ValidationErrorsBIC} codes. Empty when the BIC is valid. */
-  errorCodes: ValidationErrorsBIC[];
+export interface BICValidationResult {
+  /** Every problem found, as {@link BICValidationError} codes. Empty when the BIC is valid. */
+  errorCodes: BICValidationError[];
   /** Whether the BIC is valid. */
   valid: boolean;
 }
 
 /** The parts of a valid BIC, returned by {@link extractBIC}. */
-export interface ValidBICParts {
+export interface BICParts {
   /** Always `true`. */
   readonly valid: true;
   /** Bank code: characters 1 to 4. */
@@ -149,8 +149,8 @@ export interface InvalidBICParts {
   readonly valid: false;
 }
 
-/** Result of {@link extractBIC}. Check `valid` to narrow to {@link ValidBICParts}. */
-export type ExtractBICResult = ValidBICParts | InvalidBICParts;
+/** Result of {@link extractBIC}. Check `valid` to narrow to {@link BICParts}. */
+export type BICExtractionResult = BICParts | InvalidBICParts;
 
 /** Position of an identifier as `[start, end]` character indexes, 0-based and inclusive. */
 export type IdentifierPosition = readonly [start: number, end: number];

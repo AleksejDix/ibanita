@@ -92,7 +92,7 @@ All public functions are re-exported from `src/index.ts`:
 
 ### Options
 
-- `ValidateIBANOptions` for `isValidIBAN` and `validateIBAN`: `allowQRIBAN` (default true) and `bbanValidators`.
+- `IBANValidationOptions` for `isValidIBAN` and `validateIBAN`: `allowQRIBAN` (default true) and `bbanValidators`.
 - `BBANValidationOptions` for `isValidBBAN` and `composeIBAN`: `bbanValidators`.
 - `bbanValidators` maps a country code to a `BBANValidator` that replaces the built-in national checksum for that country. `bbanValidatorFor` in `src/bban.ts` resolves the validator. This is the only extension point; the data is frozen.
 

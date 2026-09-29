@@ -22,47 +22,47 @@ describe('bic', () => {
   });
 
   describe('When calling validateBIC()', () => {
-    it.each<[string | null | undefined, iban.ValidateBICResult]>([
+    it.each<[string | null | undefined, iban.BICValidationResult]>([
       [
         null,
         {
           valid: false,
-          errorCodes: [iban.ValidationErrorsBIC.NoBICProvided],
+          errorCodes: [iban.BICValidationError.NoBICProvided],
         },
       ],
       [
         '',
         {
           valid: false,
-          errorCodes: [iban.ValidationErrorsBIC.NoBICProvided],
+          errorCodes: [iban.BICValidationError.NoBICProvided],
         },
       ],
       [
         undefined,
         {
           valid: false,
-          errorCodes: [iban.ValidationErrorsBIC.NoBICProvided],
+          errorCodes: [iban.BICValidationError.NoBICProvided],
         },
       ],
       [
         'ABN4NL2A',
         {
           valid: false,
-          errorCodes: [iban.ValidationErrorsBIC.WrongBICFormat],
+          errorCodes: [iban.BICValidationError.WrongBICFormat],
         },
       ],
       [
         'ABNAXX2A',
         {
           valid: false,
-          errorCodes: [iban.ValidationErrorsBIC.NoBICCountry],
+          errorCodes: [iban.BICValidationError.NoBICCountry],
         },
       ],
       [
         'AB',
         {
           valid: false,
-          errorCodes: [iban.ValidationErrorsBIC.WrongBICFormat],
+          errorCodes: [iban.BICValidationError.WrongBICFormat],
         },
       ],
       ['ABNANL2A', { valid: true, errorCodes: [] }],
@@ -72,7 +72,7 @@ describe('bic', () => {
   });
 
   describe('extractBIC()', () => {
-    it.each<[string, iban.ExtractBICResult]>([
+    it.each<[string, iban.BICExtractionResult]>([
       [
         'ABNANL2A',
         { bankCode: 'ABNA', countryCode: 'NL', locationCode: '2A', testBIC: false, branchCode: null, valid: true },

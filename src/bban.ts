@@ -3,7 +3,7 @@
  * @module bban
  */
 
-import { type BBANValidationOptions, type ValidateBBANResult, ValidationErrorsBBAN } from './core/types';
+import { type BBANValidationOptions, type BBANValidationResult, BBANValidationError } from './core/types';
 import { bbanErrors } from './core/bban';
 import { electronicFormat } from './format';
 import { ibanSpecs } from './countries/specs';
@@ -25,15 +25,15 @@ export function validateBBAN(
   bban?: string | null,
   countryCode?: string | null,
   options: Readonly<BBANValidationOptions> = {},
-): ValidateBBANResult {
+): BBANValidationResult {
   const electronicBban = electronicFormat(bban ?? '');
   const code = electronicFormat(countryCode ?? '');
   if (electronicBban === '' || code === '') {
-    return { errorCodes: [ValidationErrorsBBAN.NoBBANProvided], valid: false };
+    return { errorCodes: [BBANValidationError.NoBBANProvided], valid: false };
   }
   const spec = ibanSpecs[code];
   if (spec === undefined) {
-    return { errorCodes: [ValidationErrorsBBAN.NoIBANCountry], valid: false };
+    return { errorCodes: [BBANValidationError.NoIBANCountry], valid: false };
   }
   const errorCodes = bbanErrors(spec, code, electronicBban, options);
   return { errorCodes, valid: errorCodes.length === 0 };

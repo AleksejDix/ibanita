@@ -109,7 +109,7 @@ describe('iban', () => {
     ])('isValidIBAN(%s)', (input, expected) => {
       expect(iban.isValidIBAN(input)).toBe(expected);
     });
-    it.each<[string, Readonly<iban.ValidateIBANOptions>, boolean]>([
+    it.each<[string, Readonly<iban.IBANValidationOptions>, boolean]>([
       ['CH4431999123000889012', { allowQRIBAN: false }, false],
       ['CH4431999123000889012', {}, true],
     ])('isValidIBAN(%s, %j)', (input, options, expected) => {
@@ -125,22 +125,22 @@ describe('iban', () => {
   });
 
   describe('When calling validateIBAN()', () => {
-    it.each<[string | null | undefined, iban.ValidateIBANResult]>([
+    it.each<[string | null | undefined, iban.IBANValidationResult]>([
       [
         null,
         {
           valid: false,
-          errorCodes: [iban.ValidationErrorsIBAN.NoIBANProvided],
+          errorCodes: [iban.IBANValidationError.NoIBANProvided],
         },
       ],
       [
         '',
         {
           valid: false,
-          errorCodes: [iban.ValidationErrorsIBAN.NoIBANProvided],
+          errorCodes: [iban.IBANValidationError.NoIBANProvided],
         },
       ],
-      ['..', { valid: false, errorCodes: [iban.ValidationErrorsIBAN.NoIBANProvided] }],
+      ['..', { valid: false, errorCodes: [iban.IBANValidationError.NoIBANProvided] }],
       ['NL91 ABNA 0417 1643 00', { valid: true, errorCodes: [] }],
       ['NL91-ABNA-0417-1643-00', { valid: true, errorCodes: [] }],
       [
@@ -155,9 +155,9 @@ describe('iban', () => {
         {
           valid: false,
           errorCodes: [
-            iban.ValidationErrorsIBAN.WrongBBANLength,
-            iban.ValidationErrorsIBAN.WrongBBANFormat,
-            iban.ValidationErrorsIBAN.WrongIBANChecksum,
+            iban.IBANValidationError.WrongBBANLength,
+            iban.IBANValidationError.WrongBBANFormat,
+            iban.IBANValidationError.WrongIBANChecksum,
           ],
         },
       ],
@@ -165,21 +165,21 @@ describe('iban', () => {
         undefined,
         {
           valid: false,
-          errorCodes: [iban.ValidationErrorsIBAN.NoIBANProvided],
+          errorCodes: [iban.IBANValidationError.NoIBANProvided],
         },
       ],
       [
         'NL91ABNA0517164300',
         {
           valid: false,
-          errorCodes: [iban.ValidationErrorsIBAN.WrongIBANChecksum],
+          errorCodes: [iban.IBANValidationError.WrongIBANChecksum],
         },
       ],
       [
         'XX91ABNA0517164300',
         {
           valid: false,
-          errorCodes: [iban.ValidationErrorsIBAN.NoIBANCountry],
+          errorCodes: [iban.IBANValidationError.NoIBANCountry],
         },
       ],
       [
@@ -187,10 +187,10 @@ describe('iban', () => {
         {
           valid: false,
           errorCodes: [
-            iban.ValidationErrorsIBAN.WrongBBANLength,
-            iban.ValidationErrorsIBAN.WrongBBANFormat,
-            iban.ValidationErrorsIBAN.CheckDigitsNotNumeric,
-            iban.ValidationErrorsIBAN.WrongIBANChecksum,
+            iban.IBANValidationError.WrongBBANLength,
+            iban.IBANValidationError.WrongBBANFormat,
+            iban.IBANValidationError.CheckDigitsNotNumeric,
+            iban.IBANValidationError.WrongIBANChecksum,
           ],
         },
       ],
@@ -199,10 +199,10 @@ describe('iban', () => {
         {
           valid: false,
           errorCodes: [
-            iban.ValidationErrorsIBAN.WrongBBANLength,
-            iban.ValidationErrorsIBAN.WrongBBANFormat,
-            iban.ValidationErrorsIBAN.CheckDigitsNotNumeric,
-            iban.ValidationErrorsIBAN.WrongIBANChecksum,
+            iban.IBANValidationError.WrongBBANLength,
+            iban.IBANValidationError.WrongBBANFormat,
+            iban.IBANValidationError.CheckDigitsNotNumeric,
+            iban.IBANValidationError.WrongIBANChecksum,
           ],
         },
       ],
@@ -217,13 +217,13 @@ describe('iban', () => {
       expect(iban.validateIBAN(input)).toEqual(expected);
     });
 
-    it.each<[string, Readonly<iban.ValidateIBANOptions>, iban.ValidateIBANResult]>([
+    it.each<[string, Readonly<iban.IBANValidationOptions>, iban.IBANValidationResult]>([
       [
         'CH4431999123000889012',
         { allowQRIBAN: false },
         {
           valid: false,
-          errorCodes: [iban.ValidationErrorsIBAN.QRIBANNotAllowed],
+          errorCodes: [iban.IBANValidationError.QRIBANNotAllowed],
         },
       ],
       ['CH4431999123000889012', {}, { valid: true, errorCodes: [] }],
@@ -231,7 +231,7 @@ describe('iban', () => {
       expect(iban.validateIBAN(input, options)).toEqual(expected);
     });
 
-    it.each<[string | null | undefined, iban.ValidateIBANResult]>([
+    it.each<[string | null | undefined, iban.IBANValidationResult]>([
       ['LY83002048000020100120361', { valid: true, errorCodes: [] }],
       ['RU0204452560040702810412345678901', { valid: true, errorCodes: [] }],
       ['SD8811123456789012', { valid: true, errorCodes: [] }],
@@ -245,7 +245,7 @@ describe('iban', () => {
     it('should return account checksum error', () => {
       expect(iban.validateIBAN('CZ6208000000610000000000')).toEqual({
         valid: false,
-        errorCodes: [iban.ValidationErrorsIBAN.WrongBBANChecksum],
+        errorCodes: [iban.IBANValidationError.WrongBBANChecksum],
       });
     });
   });
@@ -275,7 +275,7 @@ describe('iban', () => {
   });
 
   describe('extractIBAN()', () => {
-    it.each<[string, iban.ExtractIBANResult]>([
+    it.each<[string, iban.IBANExtractionResult]>([
       [
         'BR9700360305000010009795493P1',
         {
@@ -408,7 +408,7 @@ describe('iban', () => {
     it('validateIBAN reports the national checksum error', () => {
       expect(iban.validateIBAN(valid, rejectDE)).toEqual({
         valid: false,
-        errorCodes: [iban.ValidationErrorsIBAN.WrongBBANChecksum],
+        errorCodes: [iban.IBANValidationError.WrongBBANChecksum],
       });
     });
     it('isValidBBAN uses the validator from the options', () => {

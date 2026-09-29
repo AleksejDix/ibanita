@@ -23,8 +23,8 @@ describe('bban', () => {
 });
 
 describe('validateBBAN', () => {
-  const E = iban.ValidationErrorsBBAN;
-  it.each<[string | null | undefined, string | null | undefined, iban.ValidateBBANResult]>([
+  const E = iban.BBANValidationError;
+  it.each<[string | null | undefined, string | null | undefined, iban.BBANValidationResult]>([
     ['ABNA0417164300', 'NL', { valid: true, errorCodes: [] }],
     ['abna 0417.1643-00', 'nl', { valid: true, errorCodes: [] }],
     ['', 'NL', { valid: false, errorCodes: [E.NoBBANProvided] }],

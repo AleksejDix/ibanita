@@ -3,7 +3,7 @@ import * as iban from '../src/index';
 import { describe, expect, it } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { type ValidIBANParts } from '../src/index';
+import { type IBANParts } from '../src/index';
 
 const REGISTRY_DIR = join(__dirname, '..', 'registry');
 
@@ -28,7 +28,7 @@ function slicePosition(electronicIban: string, position: string): string | undef
   return match ? electronicIban.slice(3 + Number(match[1]), 4 + Number(match[2])) : undefined;
 }
 
-function parts(example: string): ValidIBANParts {
+function parts(example: string): IBANParts {
   const result = iban.extractIBAN(example);
   if (!result.valid) {
     throw new Error(`${example} is not a valid IBAN`);

@@ -2,7 +2,7 @@
  * BIC/SWIFT validation and extraction functions
  * @module bic
  */
-import { type ExtractBICResult, type ValidateBICResult, ValidationErrorsBIC } from './core/types';
+import { type BICExtractionResult, type BICValidationResult, BICValidationError } from './core/types';
 import { COUNTRY_CODES } from './countries/codes';
 import { electronicFormat } from './format';
 
@@ -36,15 +36,15 @@ export function isValidBIC(bic: string | null | undefined): boolean {
  * ibanita.validateBIC("NEDSZAJJXXX");
  * ```
  */
-export function validateBIC(input?: string | null): ValidateBICResult {
-  const errorCodes: ValidationErrorsBIC[] = [];
+export function validateBIC(input?: string | null): BICValidationResult {
+  const errorCodes: BICValidationError[] = [];
   const bic = electronicFormat(input ?? '');
   if (bic === '') {
-    errorCodes.push(ValidationErrorsBIC.NoBICProvided);
+    errorCodes.push(BICValidationError.NoBICProvided);
   } else if (!BIC_REGEX.test(bic)) {
-    errorCodes.push(ValidationErrorsBIC.WrongBICFormat);
+    errorCodes.push(BICValidationError.WrongBICFormat);
   } else if (!COUNTRY_CODES.has(bic.slice(4, 6))) {
-    errorCodes.push(ValidationErrorsBIC.NoBICCountry);
+    errorCodes.push(BICValidationError.NoBICCountry);
   }
   return { errorCodes, valid: errorCodes.length === 0 };
 }
@@ -56,7 +56,7 @@ export function validateBIC(input?: string | null): ValidateBICResult {
  * ibanita.extractBIC("ABNANL2A");
  * ```
  */
-export function extractBIC(inputBic?: string | null): ExtractBICResult {
+export function extractBIC(inputBic?: string | null): BICExtractionResult {
   const bic = electronicFormat(inputBic ?? '');
   if (!isValidBIC(bic)) {
     return { valid: false };
