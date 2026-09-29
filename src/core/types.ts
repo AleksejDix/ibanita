@@ -124,6 +124,9 @@ export interface IBANCountrySpec {
   readonly accountPosition?: IdentifierPosition;
 }
 
+/** IBAN country specifications by country code, as passed to {@link createIBANTools}. */
+export type IBANCountrySpecs = Readonly<Record<string, IBANCountrySpec>>;
+
 /** Specification of one country, as stored in {@link countrySpecs}. All fields are unset for countries without IBAN. */
 export type CountrySpec = Partial<IBANCountrySpec>;
 

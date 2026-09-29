@@ -16,6 +16,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js"
+    },
     "./iban": {
       "types": "./dist/iban.d.ts",
       "import": "./dist/iban.js"
@@ -66,8 +70,8 @@
     "format:check": "oxfmt --check src/ test/",
     "prepare": "npm run build",
     "registry": "node registry/builder.mjs && oxfmt src/countries",
-    "docs": "deno doc --html --name=ibanita --output=docs --sloppy-imports src/index.ts",
-    "docs:lint": "deno doc --lint --sloppy-imports src/index.ts",
+    "docs": "deno doc --html --name=ibanita --output=docs --sloppy-imports src/index.ts src/core/index.ts",
+    "docs:lint": "deno doc --lint --sloppy-imports src/index.ts src/core/index.ts",
     "all": "npm run typecheck && npm run test && npm run lint && npm run format:check && npm run docs:lint && npm run docs"
   },
   "author": {

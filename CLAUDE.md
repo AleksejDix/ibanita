@@ -55,6 +55,8 @@ One test file per source module in `test/`:
 
 One module per concern. Functions take their input and options and return a result; nothing is mutated.
 
+The rules live in `core/` and take the country specifications as their first argument (`validateIBANWith(specs, ...)`). The top-level modules `iban.ts`, `bban.ts`, `bic.ts`, `format.ts` and `country.ts` are the default entry: thin wrappers bound to all countries in `countries/specs.ts`. `createIBANTools(specs)` binds the same rules to any subset, for consumers that import single countries from `countries/<CC>.ts`.
+
 ```
 src/
 ├── index.ts                 # Main barrel (re-exports all public API)
@@ -63,17 +65,21 @@ src/
 ├── bban.ts                  # BBAN functions (isValidBBAN, bbanValidatorFor)
 ├── format.ts                # Format utilities (electronicFormat, electronicFormatIBAN, friendlyFormatIBAN)
 ├── country.ts               # Country functions (isSEPACountry) and the countrySpecs export
-├── core/
-│   ├── types.ts             # All public types: options, results, specs
+├── core/                    # The rules without the data. Entry `@aleksejdix/ibanita/core` (core/index.ts)
+│   ├── index.ts             # createIBANTools, isQRIBAN, electronicFormat, error codes, types
+│   ├── tools.ts             # createIBANTools(specs): the IBAN, BBAN and country functions bound to a spec map
+│   ├── iban.ts              # validateIBANWith, extractIBANWith, composeIBANWith, isSEPACountryWith, isQRIBAN
+│   ├── bban.ts              # validateBBANWith and the shared BBAN checks
+│   ├── format.ts            # electronicFormat: the one input rule
+│   ├── checksum.ts          # Shared arithmetic (mod9710, ibanCheckDigits, weightedSum, mod11CheckDigit, checkMod1110)
 │   ├── errors.ts            # Error code constants (IBANValidationError, BBANValidationError, BICValidationError)
-│   ├── bban.ts              # Shared BBAN checks used by validateBBAN and validateIBAN
-│   └── checksum.ts          # Shared arithmetic (mod9710, weightedSum, mod11CheckDigit, checkMod1110)
+│   └── types.ts             # All public types: options, results, specs
 ├── validators/              # One national BBAN checksum per file, named by country code
 │   ├── be.ts, no.ts, pl.ts, es.ts, hr.ts, ee.ts, hu.ts, fr.ts (FR and MC), cz-sk.ts (CZ and SK)
 │   └── mod97-10.ts          # BA, ME, MK, PT, RS, SI
 └── countries/               # GENERATED from registry/ by `npm run registry`, never edited by hand
     ├── AD.ts ... YT.ts      # One frozen IBANCountrySpec per IBAN country, importing only its own validator
-    ├── specs.ts             # Re-exports every country and collects them in ibanSpecs
+    ├── specs.ts             # Collects every country in ibanSpecs
     ├── codes.ts             # COUNTRY_CODES: all 250 country codes (used by BIC functions)
     └── all.ts               # countrySpecs: all countries, empty spec for countries without IBAN
 ```
@@ -89,6 +95,7 @@ All public functions are re-exported from `src/index.ts`:
 5. **Formatting**: `electronicFormatIBAN()`, `friendlyFormatIBAN()`
 6. **Utilities**: `isSEPACountry()`, `isQRIBAN()`
 7. **Data**: `countrySpecs` - frozen country specification object
+8. **Core**: `createIBANTools(specs)` - the IBAN, BBAN and country functions bound to a subset of countries
 
 `isValidIBAN` and `validateIBAN` normalise their input first (spaces and dashes removed, uppercased), like `extractIBAN`.
 

@@ -63,6 +63,20 @@ validateIBAN('NL91ABNA0517164300');
 isValidBIC('ABNANL2A'); // true
 ```
 
+### Only the countries you need
+
+The rules and the data are separate. Pair the core with the countries you validate, and nothing else is bundled:
+
+```js
+import { createIBANTools } from '@aleksejdix/ibanita/core';
+import { CH } from '@aleksejdix/ibanita/countries/CH';
+import { LI } from '@aleksejdix/ibanita/countries/LI';
+
+const { isValidIBAN, validateIBAN, extractIBAN } = createIBANTools({ CH, LI });
+```
+
+The functions are the same as in the default entry, bound to those countries. An IBAN from any other country is reported as `NO_IBAN_COUNTRY`. The core with one country is about 1.5 kB gzipped; the default entry with all countries about 6 kB.
+
 ### Subpath imports
 
 Each module is also exported on its own, so a bundle for BIC validation never includes the IBAN country data:

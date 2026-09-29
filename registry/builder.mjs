@@ -223,13 +223,12 @@ function generateCountry(spec, registryFile) {
   return output;
 }
 
-/** Generate src/countries/specs.ts: every IBAN country, re-exported and collected in ibanSpecs. */
+/** Generate src/countries/specs.ts: every IBAN country collected in ibanSpecs. */
 function generateSpecs(specs, registryFile) {
   let output = HEADER(registryFile);
   output += "import type * as Types from '../core/types';\n";
   for (const spec of specs) output += `import { ${spec.code} } from './${spec.code}';\n`;
   output += '\n';
-  output += `export { ${specs.map((spec) => spec.code).join(', ')} };\n\n`;
   output += '/**\n';
   output += ' * IBAN format rules, national BBAN validation, identifier positions and SEPA membership\n';
   output += ' * for every country that uses IBAN. Positions are 0-based and inclusive: bank and branch\n';
@@ -261,7 +260,7 @@ function generateAll(specs, registryFile) {
   const ibanCodes = new Set(specs.map((spec) => spec.code));
   let output = HEADER(registryFile);
   output += "import type * as Types from '../core/types';\n";
-  output += `import { ${specs.map((spec) => spec.code).join(', ')} } from './specs';\n\n`;
+  output += "import { ibanSpecs } from './specs';\n\n";
   output += 'const NO_IBAN: Types.CountrySpec = Object.freeze({});\n\n';
   output += '/**\n';
   output += ' * Country specifications for all countries. Countries without IBAN have an empty specification.\n';
@@ -269,8 +268,9 @@ function generateAll(specs, registryFile) {
   output += ' */\n';
   output += 'export const countrySpecs: Types.CountryMap = Object.freeze({\n';
   for (const code of [...countryCodes].sort()) {
-    output += ibanCodes.has(code) ? `  ${code},\n` : `  ${code}: NO_IBAN,\n`;
+    if (!ibanCodes.has(code)) output += `  ${code}: NO_IBAN,\n`;
   }
+  output += '  ...ibanSpecs,\n';
   output += '});\n';
   return output;
 }

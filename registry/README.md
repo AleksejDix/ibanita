@@ -13,7 +13,7 @@ This folder holds the SWIFT IBAN Registry, the hand-maintained overrides and cou
 - `iban-registry-vXXX.txt`: the registry release, as downloaded from SWIFT. The builder uses the newest one.
 - `overrides.mjs`: what the registry does not define. National checksum validators (by export name in `src/validators`), account positions, countries and territories outside the registry with their names, and two deliberate deviations (FR branch, SI bank and branch).
 - `country-codes.mjs`: every ISO 3166-1 alpha-2 code, with or without IBAN.
-- `builder.mjs`: parses the TXT file, merges the overrides over it and writes `src/countries/`: one file per IBAN country (`CH.ts` exports the frozen `CH` spec and imports only its own validator), `specs.ts` (re-exports them and collects `ibanSpecs`), `codes.ts` (`COUNTRY_CODES`) and `all.ts` (`countrySpecs`). An override that changes a registry value is an error unless it is listed as a deliberate deviation.
+- `builder.mjs`: parses the TXT file, merges the overrides over it and writes `src/countries/`: one file per IBAN country (`CH.ts` exports the frozen `CH` spec and imports only its own validator), `specs.ts` (collects them in `ibanSpecs`), `codes.ts` (`COUNTRY_CODES`) and `all.ts` (`countrySpecs`). An override that changes a registry value is an error unless it is listed as a deliberate deviation.
 
 Everything in `src/countries/` is generated. Never edit it by hand. CI regenerates the folder and fails if it differs from the committed files. `test/registry.test.ts` checks every country against the newest registry file.
 

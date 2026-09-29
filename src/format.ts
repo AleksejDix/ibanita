@@ -1,3 +1,7 @@
+import { electronicFormat } from './core/format';
+
+export { electronicFormat };
+
 /**
  * Get IBAN in electronic format: no whitespace, dashes or periods, uppercase.
  * IBAN validation is not performed.
@@ -12,14 +16,6 @@ export function electronicFormatIBAN(iban?: string | null): string | null {
     return null;
   }
   return electronicFormat(iban);
-}
-
-/**
- * The one input rule of the library: whitespace, dashes and periods are removed and letters are uppercased.
- * Every validation and extraction function applies it to its input first.
- */
-export function electronicFormat(value: string): string {
-  return value.replace(/[\s.-]/gu, '').toUpperCase();
 }
 
 /**

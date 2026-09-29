@@ -1,5 +1,12 @@
-import { type BBANValidationOptions, type BBANValidator, type IBANCountrySpec } from './types';
+import {
+  type BBANValidationOptions,
+  type BBANValidationResult,
+  type BBANValidator,
+  type IBANCountrySpec,
+  type IBANCountrySpecs,
+} from './types';
 import { BBANValidationError } from './errors';
+import { electronicFormat } from './format';
 
 /** The BBAN codes that describe the content of a BBAN, as opposed to missing input or an unknown country. */
 export type BBANContentError = (typeof BBANValidationError)[
@@ -37,4 +44,24 @@ export function bbanErrors(
     errorCodes.push(BBANValidationError.WrongBBANChecksum);
   }
   return errorCodes;
+}
+
+/** `validateBBAN` against the given country specifications. */
+export function validateBBANWith(
+  specs: IBANCountrySpecs,
+  bban: string | null | undefined,
+  countryCode: string | null | undefined,
+  options: Readonly<BBANValidationOptions> = {},
+): BBANValidationResult {
+  const electronicBban = electronicFormat(bban ?? '');
+  const code = electronicFormat(countryCode ?? '');
+  if (electronicBban === '' || code === '') {
+    return { errorCodes: [BBANValidationError.NoBBANProvided], valid: false };
+  }
+  const spec = specs[code];
+  if (spec === undefined) {
+    return { errorCodes: [BBANValidationError.NoIBANCountry], valid: false };
+  }
+  const errorCodes = bbanErrors(spec, electronicBban, bbanValidatorFor(spec, code, options));
+  return { errorCodes, valid: errorCodes.length === 0 };
 }

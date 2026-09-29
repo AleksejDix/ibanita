@@ -7,7 +7,9 @@
     "perf": "warn",
     "style": "warn"
   },
-  "plugins": ["typescript"],
+  "plugins": [
+    "typescript"
+  ],
   "rules": {
     "no-magic-numbers": "off",
     "sort-keys": "off",
@@ -19,6 +21,15 @@
     "max-lines": "off",
     "max-statements": "off",
     "capitalized-comments": "off",
-    "@typescript-eslint/dot-notation": ["warn", { "allowIndexSignaturePropertyAccess": true }]
+    "@typescript-eslint/dot-notation": [
+      "warn",
+      {
+        "allowIndexSignaturePropertyAccess": true
+      }
+    ],
+    "max-params": [
+      "warn",
+      4
+    ]
   }
 }

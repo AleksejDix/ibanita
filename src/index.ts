@@ -16,6 +16,7 @@ export type {
   CountryMap,
   CountrySpec,
   IBANCountrySpec,
+  IBANCountrySpecs,
   IBANExtractionResult,
   IBANParts,
   IBANValidationOptions,
@@ -24,6 +25,8 @@ export type {
   InvalidBICParts,
   InvalidIBANParts,
 } from './core/types';
+
+export { createIBANTools, type IBANTools } from './core/tools';
 
 // Re-export utility functions
 export { electronicFormat, electronicFormatIBAN, friendlyFormatIBAN } from './format';

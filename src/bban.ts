@@ -4,10 +4,8 @@
  */
 
 import { type BBANValidationOptions, type BBANValidationResult } from './core/types';
-import { bbanErrors, bbanValidatorFor } from './core/bban';
-import { BBANValidationError } from './core/errors';
-import { electronicFormat } from './format';
 import { ibanSpecs } from './countries/specs';
+import { validateBBANWith } from './core/bban';
 
 /**
  * validateBBAN
@@ -27,17 +25,7 @@ export function validateBBAN(
   countryCode?: string | null,
   options: Readonly<BBANValidationOptions> = {},
 ): BBANValidationResult {
-  const electronicBban = electronicFormat(bban ?? '');
-  const code = electronicFormat(countryCode ?? '');
-  if (electronicBban === '' || code === '') {
-    return { errorCodes: [BBANValidationError.NoBBANProvided], valid: false };
-  }
-  const spec = ibanSpecs[code];
-  if (spec === undefined) {
-    return { errorCodes: [BBANValidationError.NoIBANCountry], valid: false };
-  }
-  const errorCodes = bbanErrors(spec, electronicBban, bbanValidatorFor(spec, code, options));
-  return { errorCodes, valid: errorCodes.length === 0 };
+  return validateBBANWith(ibanSpecs, bban, countryCode, options);
 }
 
 /**
@@ -57,5 +45,5 @@ export function isValidBBAN(
   countryCode?: string | null,
   options: Readonly<BBANValidationOptions> = {},
 ): boolean {
-  return validateBBAN(bban, countryCode, options).valid;
+  return validateBBANWith(ibanSpecs, bban, countryCode, options).valid;
 }

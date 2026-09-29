@@ -2,8 +2,8 @@
  * Country functions
  * @module country
  */
-import { electronicFormat } from './format';
 import { ibanSpecs } from './countries/specs';
+import { isSEPACountryWith } from './core/iban';
 
 /**
  * Validate if country code is from a SEPA country
@@ -17,7 +17,7 @@ import { ibanSpecs } from './countries/specs';
  * ```
  */
 export function isSEPACountry(countryCode?: string | null): boolean {
-  return ibanSpecs[electronicFormat(countryCode ?? '')]?.sepa ?? false;
+  return isSEPACountryWith(ibanSpecs, countryCode);
 }
 
 export { countrySpecs } from './countries/all';
