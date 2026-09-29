@@ -18,7 +18,7 @@ export const overrides = {
   BH: { accountPosition: [8, 22] },
   BI: { accountPosition: [14, 27] },
   BJ: { ibanLength: 28, bbanPattern: '^[A-Z0-9]{2}[0-9]{22}$', ibanRegistry: false },
-  BL: { ibanLength: 27, bbanPattern: '^[0-9]{10}[A-Z0-9]{11}[0-9]{2}$', ibanRegistry: false, sepa: true },
+  BL: { ibanLength: 27, bbanPattern: '^[0-9]{10}[A-Z0-9]{11}[0-9]{2}$', ibanRegistry: true, sepa: true },
   BR: { accountPosition: [17, 29] },
   CF: { ibanLength: 27, bbanPattern: '^[0-9]{23}$', ibanRegistry: false },
   CG: { ibanLength: 27, bbanPattern: '^[0-9]{23}$', ibanRegistry: false },

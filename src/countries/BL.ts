@@ -6,6 +6,6 @@ import { type IBANCountrySpec } from '../core/types';
 export const BL: IBANCountrySpec = Object.freeze<IBANCountrySpec>({
   ibanLength: 27,
   bbanRegExp: /^[0-9]{10}[A-Z0-9]{11}[0-9]{2}$/u,
-  ibanRegistry: false,
+  ibanRegistry: true,
   sepa: true,
 });
