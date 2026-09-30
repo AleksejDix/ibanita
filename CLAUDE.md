@@ -52,7 +52,8 @@ One test file per source module in `test/`:
 - `test/validators.test.ts`: every national validator accepts its registry example and rejects a changed control digit
 - `test/docs.test.ts`: evaluates every `// returns` example in the doc comments
 - `test/core.test.ts`: `withCountries` with a subset, and the compile-time country code keys
-- `test/registry-file.ts`: shared reader for the registry file
+- `test/sources.ts`: the official documents: reads the newest registry file and holds the EPC SEPA list
+- `test/readme.test.ts`: generates the country table in README.md from those documents and fails when it is out of date (`npm run readme` rewrites it)
 - **No coverage target.** Coverage is a hint for finding untested code, not a goal. Do not add tests only to raise the number.
 - **Every rule needs a test that fails when the rule is broken**, typically a rejected input next to an accepted one. A quick check: make the rule return a constant and see whether a test fails.
 

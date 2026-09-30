@@ -123,6 +123,154 @@ isValidIBAN(input, options);
 | `bankPosition`, `branchPosition` | `[start, end]` within the BBAN, 0-based and inclusive |
 | `accountPosition` | `[start, end]` within the IBAN |
 
+### Countries
+
+<!-- country-table:start -->
+
+124 countries and territories. 89 have their own entry in SWIFT IBAN Registry release 103, 13 are territories the registry lists under the `FI` and `FR` entries, and 22 use IBAN outside the registry. SEPA membership is checked against the EPC list of SEPA scheme countries (EPC409-09 v8.0, 24 December 2025).
+
+The first six columns are the library data. The last five are checked by `test/readme.test.ts` against the official documents on every CI run, so this table cannot drift from them:
+
+- **Length**, **Structure**: the IBAN length and BBAN structure match the registry entry.
+- **Example**: the registry example IBAN validates. For a territory, the parent entry example BBAN composes into a valid IBAN for the territory.
+- **Bank / branch**: the bank and branch identifiers extracted from the example are the ones at the registry positions.
+- **SEPA**: the library flag matches the EPC list.
+
+✓ checked and matching, – no official source for this check.
+
+| Country | Code | Length | BBAN | SEPA | Registry | Length ✓ | Structure ✓ | Example ✓ | Bank / branch ✓ | SEPA ✓ |
+|---|---|--:|---|---|---|:-:|:-:|:-:|:-:|:-:|
+| Åland Islands | `AX` | 18 | `14!n` | yes | in FI | ✓ | ✓ | ✓ | – | ✓ |
+| Albania | `AL` | 28 | `8!n16!c` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ ² |
+| Algeria | `DZ` | 26 | `22!n` | no | no ³ | – | – | – | – | ✓ |
+| Andorra | `AD` | 24 | `8!n12!c` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Angola | `AO` | 25 | `21!n` | no | no ³ | – | – | – | – | ✓ |
+| Austria | `AT` | 20 | `16!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Azerbaijan | `AZ` | 28 | `4!a20!c` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Bahrain | `BH` | 22 | `4!a14!c` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Belarus | `BY` | 28 | `4!c4!n16!c` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Belgium | `BE` | 16 | `12!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Benin | `BJ` | 28 | `2!c22!n` | no | no ³ | – | – | – | – | ✓ |
+| Bosnia & Herzegovina | `BA` | 20 | `16!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Brazil | `BR` | 29 | `8!c15!n2!c` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| British Virgin Islands | `VG` | 24 | `4!a16!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Bulgaria | `BG` | 22 | `4!a6!n8!c` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Burkina Faso | `BF` | 28 | `2!c22!n` | no | no ³ | – | – | – | – | ✓ |
+| Burundi | `BI` | 27 | `23!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Cameroon | `CM` | 27 | `23!n` | no | no ³ | – | – | – | – | ✓ |
+| Cape Verde | `CV` | 25 | `21!n` | no | no ³ | – | – | – | – | ✓ |
+| Central African Republic | `CF` | 27 | `23!n` | no | no ³ | – | – | – | – | ✓ |
+| Chad | `TD` | 27 | `23!n` | no | no ³ | – | – | – | – | ✓ |
+| Comoros | `KM` | 27 | `23!n` | no | no ³ | – | – | – | – | ✓ |
+| Congo - Brazzaville | `CG` | 27 | `23!n` | no | no ³ | – | – | – | – | ✓ |
+| Costa Rica | `CR` | 22 | `18!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Côte d’Ivoire | `CI` | 28 | `1!a23!n` | no | no ³ | – | – | – | – | ✓ |
+| Croatia | `HR` | 21 | `17!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Cyprus | `CY` | 28 | `8!n16!c` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Czechia | `CZ` | 24 | `20!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Denmark | `DK` | 18 | `14!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Djibouti | `DJ` | 27 | `23!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Dominican Republic | `DO` | 28 | `4!c20!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Egypt | `EG` | 29 | `25!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| El Salvador | `SV` | 28 | `4!a20!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Equatorial Guinea | `GQ` | 27 | `23!n` | no | no ³ | – | – | – | – | ✓ |
+| Estonia | `EE` | 20 | `16!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Falkland Islands | `FK` | 18 | `2!a12!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Faroe Islands | `FO` | 18 | `14!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Finland | `FI` | 18 | `14!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| France | `FR` | 27 | `10!n11!c2!n` | yes | yes | ✓ | ✓ | ✓ | ✓ ¹ | ✓ |
+| French Guiana | `GF` | 27 | `10!n11!c2!n` | yes | in FR | ✓ | ✓ | ✓ | – | ✓ |
+| French Polynesia | `PF` | 27 | `10!n11!c2!n` | no | in FR | ✓ | ✓ | ✓ | – | ✓ |
+| French Southern Territories | `TF` | 27 | `10!n11!c2!n` | no | in FR | ✓ | ✓ | ✓ | – | ✓ |
+| Gabon | `GA` | 27 | `23!n` | no | no ³ | – | – | – | – | ✓ |
+| Georgia | `GE` | 22 | `2!a16!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Germany | `DE` | 22 | `18!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Gibraltar | `GI` | 23 | `4!a15!c` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Greece | `GR` | 27 | `7!n16!c` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Greenland | `GL` | 18 | `14!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Guadeloupe | `GP` | 27 | `10!n11!c2!n` | yes | in FR | ✓ | ✓ | ✓ | – | ✓ |
+| Guatemala | `GT` | 28 | `24!c` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Guinea-Bissau | `GW` | 25 | `2!a19!n` | no | no ³ | – | – | – | – | ✓ |
+| Honduras | `HN` | 28 | `4!a20!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Hungary | `HU` | 28 | `24!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Iceland | `IS` | 26 | `22!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Iran | `IR` | 26 | `22!n` | no | no ³ | – | – | – | – | ✓ |
+| Iraq | `IQ` | 23 | `4!a15!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Ireland | `IE` | 22 | `4!a14!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Israel | `IL` | 23 | `19!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Italy | `IT` | 27 | `1!a10!n12!c` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Jordan | `JO` | 30 | `4!a4!n18!c` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Kazakhstan | `KZ` | 20 | `3!n13!c` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Kosovo | `XK` | 20 | `16!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Kuwait | `KW` | 30 | `4!a22!c` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Latvia | `LV` | 21 | `4!a13!c` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Lebanon | `LB` | 28 | `4!n20!c` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Libya | `LY` | 25 | `21!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Liechtenstein | `LI` | 21 | `5!n12!c` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Lithuania | `LT` | 20 | `16!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Luxembourg | `LU` | 20 | `3!n13!c` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Madagascar | `MG` | 27 | `23!n` | no | no ³ | – | – | – | – | ✓ |
+| Mali | `ML` | 28 | `2!c22!n` | no | no ³ | – | – | – | – | ✓ |
+| Malta | `MT` | 31 | `4!a5!n18!c` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Martinique | `MQ` | 27 | `10!n11!c2!n` | yes | in FR | ✓ | ✓ | ✓ | – | ✓ |
+| Mauritania | `MR` | 27 | `23!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Mauritius | `MU` | 30 | `4!a19!n3!a` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Mayotte | `YT` | 27 | `10!n11!c2!n` | yes | in FR | ✓ | ✓ | ✓ | – | ✓ |
+| Moldova | `MD` | 24 | `20!c` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ ² |
+| Monaco | `MC` | 27 | `10!n11!c2!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Mongolia | `MN` | 20 | `16!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Montenegro | `ME` | 22 | `18!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ ² |
+| Morocco | `MA` | 28 | `24!n` | no | no ³ | – | – | – | – | ✓ |
+| Mozambique | `MZ` | 25 | `21!n` | no | no ³ | – | – | – | – | ✓ |
+| Netherlands | `NL` | 18 | `4!a10!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| New Caledonia | `NC` | 27 | `10!n11!c2!n` | no | in FR | ✓ | ✓ | ✓ | – | ✓ |
+| Nicaragua | `NI` | 28 | `4!a20!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Niger | `NE` | 28 | `2!a22!n` | no | no ³ | – | – | – | – | ✓ |
+| North Macedonia | `MK` | 19 | `3!n10!c2!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ ² |
+| Norway | `NO` | 15 | `11!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Oman | `OM` | 23 | `3!n16!c` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Pakistan | `PK` | 24 | `4!a16!c` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Palestinian Territories | `PS` | 29 | `4!a21!c` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Poland | `PL` | 28 | `24!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Portugal | `PT` | 25 | `21!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Qatar | `QA` | 29 | `4!a21!c` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Réunion | `RE` | 27 | `10!n11!c2!n` | yes | in FR | ✓ | ✓ | ✓ | – | ✓ |
+| Romania | `RO` | 24 | `4!a16!c` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Russia | `RU` | 33 | `14!n15!c` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| San Marino | `SM` | 27 | `1!a10!n12!c` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| São Tomé & Príncipe | `ST` | 25 | `21!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Saudi Arabia | `SA` | 24 | `2!n18!c` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Senegal | `SN` | 28 | `2!a22!n` | no | no ³ | – | – | – | – | ✓ |
+| Serbia | `RS` | 22 | `18!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ ² |
+| Seychelles | `SC` | 31 | `4!a20!n3!a` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Slovakia | `SK` | 24 | `20!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Slovenia | `SI` | 19 | `15!n` | yes | yes | ✓ | ✓ | ✓ | ✓ ¹ | ✓ |
+| Somalia | `SO` | 23 | `19!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Spain | `ES` | 24 | `20!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| St. Barthélemy | `BL` | 27 | `10!n11!c2!n` | yes | in FR | ✓ | ✓ | ✓ | – | ✓ |
+| St. Lucia | `LC` | 32 | `4!a24!c` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| St. Martin | `MF` | 27 | `10!n11!c2!n` | yes | in FR | ✓ | ✓ | ✓ | – | ✓ |
+| St. Pierre & Miquelon | `PM` | 27 | `10!n11!c2!n` | yes | in FR | ✓ | ✓ | ✓ | – | ✓ |
+| Sudan | `SD` | 18 | `14!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Sweden | `SE` | 24 | `20!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Switzerland | `CH` | 21 | `5!n12!c` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Timor-Leste | `TL` | 23 | `19!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Togo | `TG` | 28 | `2!a22!n` | no | no ³ | – | – | – | – | ✓ |
+| Tunisia | `TN` | 24 | `20!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Türkiye | `TR` | 26 | `6!n16!c` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Ukraine | `UA` | 29 | `6!n19!c` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| United Arab Emirates | `AE` | 23 | `19!n` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| United Kingdom | `GB` | 22 | `4!a14!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Vatican City | `VA` | 22 | `18!n` | yes | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Wallis & Futuna | `WF` | 27 | `10!n11!c2!n` | no | in FR | ✓ | ✓ | ✓ | – | ✓ |
+| Yemen | `YE` | 30 | `4!a4!n18!c` | no | yes | ✓ | ✓ | ✓ | ✓ | ✓ |
+
+¹ Deliberate deviation: France also has a branch identifier, and Slovenia splits its five-digit bank code into bank and branch. Both identifiers are checked against the national layout instead.
+² In the SEPA scope per the EPC list of SEPA scheme countries (EPC409-09 v8.0, 24 December 2025), while SWIFT IBAN Registry release 103 still lists the country as not SEPA.
+³ Not in the SWIFT IBAN Registry. The format follows the national IBAN standard and is not checked against an official document.
+
+<!-- country-table:end -->
+
 ### Error codes
 
 `IBANValidationError`, `BBANValidationError` and `BICValidationError` are constant objects whose values are the strings found in `errorCodes`.

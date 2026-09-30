@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ibanSpecs } from '../src/countries/specs';
-import { registryExamples } from './registry-file';
+import { registryExamples } from './sources';
 
 /** BBAN indexes of the control digits each validator checks. */
 const CONTROL_DIGITS: Readonly<Record<string, (bban: string) => readonly number[]>> = {

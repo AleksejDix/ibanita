@@ -1,15 +1,17 @@
 /// <reference types="node" />
 import * as iban from '../src/index';
+import {
+  BANK_DEVIATIONS,
+  BRANCH_DEVIATIONS,
+  expandPattern,
+  registryExamples,
+  registryRow,
+  slicePosition,
+  structureToPattern,
+} from './sources';
 import { describe, expect, it } from 'vitest';
-import { registryExamples, registryRow } from './registry-file';
 import { type IBANParts } from '../src/index';
 import { ibanSpecs } from '../src/countries/specs';
-
-// Registry positions are 1-based and inclusive, counted within the BBAN.
-function slicePosition(electronicIban: string, position: string): string | undefined {
-  const match = /^(\d+)-(\d+)$/u.exec(position);
-  return match ? electronicIban.slice(3 + Number(match[1]), 4 + Number(match[2])) : undefined;
-}
 
 function parts(example: string): IBANParts {
   const result = iban.extractIBAN(example);
@@ -26,28 +28,6 @@ const branchPositions = registryRow('Branch identifier position within the BBAN'
 const bbanStructures = registryRow('BBAN structure');
 const ibanLengths = registryRow('IBAN length');
 const sepaFlags = registryRow('SEPA country');
-
-// Registry field types, following the library convention of upper case letters only.
-const FIELD_CLASSES = new Map([
-  ['n', '[0-9]'],
-  ['a', '[A-Z]'],
-  ['c', '[A-Z0-9]'],
-]);
-
-// Converts registry notation such as 4!n12!c into an anchored pattern with one character class per position.
-function structureToPattern(structure: string): string {
-  const classes = structure.replace(/(\d+)!([nac])/gu, (_match, count: string, type: string) =>
-    (FIELD_CLASSES.get(type) ?? '?').repeat(Number(count)),
-  );
-  return `^${classes}$`;
-}
-
-// Expands a library pattern such as ^[0-9]{16}$ into one character class per position, for comparison.
-function expandPattern(pattern: string): string {
-  return pattern.replace(/(\[[^\]]+\])\{(\d+)\}/gu, (_match, charClass: string, count: string) =>
-    charClass.repeat(Number(count)),
-  );
-}
 
 // Each row: country code, BBAN pattern, IBAN length and SEPA membership from the registry.
 const formats = codes.map((code, index): readonly [string, string, number, boolean] => [
@@ -69,10 +49,6 @@ const examples = codes.map((code, index): readonly [string, string, string | und
   ];
 });
 
-// Deliberate deviations from the registry: SI splits its 5-digit bank code into bank and branch,
-// and FR has a branch identifier the registry does not define.
-const BANK_DEVIATIONS = new Set(['SI']);
-const BRANCH_DEVIATIONS = new Set(['FR', 'SI']);
 // In the SEPA scope per the EPC list (EPC409-09 v8.0) before the SWIFT registry recorded it.
 const SEPA_DEVIATIONS = new Set(['AL', 'MD', 'ME', 'MK', 'RS']);
 

@@ -1,6 +1,7 @@
 import * as iban from '../src/index';
 import { describe, expect, it } from 'vitest';
 import { COUNTRY_CODES } from '../src/countries/codes';
+import { EPC_SEPA } from './sources';
 import { ibanSpecs } from '../src/countries/specs';
 
 const specs = iban.countrySpecs;
@@ -67,14 +68,8 @@ describe('account positions', () => {
 });
 
 describe('SEPA membership', () => {
-  // The EPC list of SEPA scheme countries, EPC409-09 v8.0 (December 2025): EU and EEA members, the eleven non-EEA
-  // countries (Albania, Andorra, Moldova, Monaco, Montenegro, North Macedonia, San Marino, Serbia, Switzerland,
-  // the United Kingdom, Vatican), Gibraltar, Åland and the French territories. Guernsey, Jersey and the Isle of Man
-  // use GB IBANs, and the Canary Islands, Azores and Madeira use ES and PT.
-  const SEPA = `AD AL AT AX BE BG BL CH CY CZ DE DK EE ES FI FR GB GF GI GP GR HR HU IE IS IT LI LT LU LV MC MD ME MF MK MQ MT NL NO PL PM PT RE RO RS SE SI SK SM VA YT`;
-
   it('matches the EPC list', () => {
-    expect(Object.keys(specs).filter((code) => specs[code]?.sepa === true)).toEqual(SEPA.split(' '));
+    expect(Object.keys(specs).filter((code) => specs[code]?.sepa === true)).toEqual([...EPC_SEPA]);
   });
 
   it.each<[string | null | undefined, boolean]>([
