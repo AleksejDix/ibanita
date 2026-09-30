@@ -377,6 +377,6 @@ To report a vulnerability, follow the [security policy](SECURITY.md).
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) © 2025 Aleksej Dix
 
 ibanita started in 2025 as a fork of [ibantools](https://github.com/Simplify/ibantools). It has since been rewritten from the ground up, and no code or test data from the original remains.
