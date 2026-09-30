@@ -18,8 +18,8 @@
     --bad: #b42318;
     --bad-bg: #f8e1de;
     --focus: #2e5f8f;
-    --mono: ui-monospace, 'SF Mono', 'SFMono-Regular', 'Cascadia Mono', 'Segoe UI Mono', Menlo, Consolas, 'Liberation Mono', monospace;
-    --sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+    --sans: system-ui, sans-serif;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme='light']) {
@@ -83,6 +83,7 @@
     color: var(--muted);
   }
   .mono { font-family: var(--mono); font-size: 0.9em; }
+  .mono, .iban, input, .strip, table, .part span, .block, .pill { font-variant-numeric: slashed-zero tabular-nums; }
   header { display: grid; gap: 12px; }
 
   .document {
