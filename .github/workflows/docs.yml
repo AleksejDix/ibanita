@@ -26,9 +26,11 @@ jobs:
           registry-url: https://registry.npmjs.org
       - run: npm ci
       - run: npm run docs
+      - run: npm run site
+      - run: cp -r docs dist-site/docs
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: docs
+          path: dist-site
 
   deploy:
     needs: build

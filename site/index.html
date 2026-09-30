@@ -85,6 +85,12 @@
   .mono { font-family: var(--mono); font-size: 0.9em; }
   .mono, .iban, input, .strip, table, .part span, .block, .pill { font-variant-numeric: slashed-zero tabular-nums; }
   header { display: grid; gap: 12px; }
+  nav { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 24px; }
+  nav .brand { font: 700 1rem/1 var(--mono); }
+  nav ul { display: flex; gap: 20px; list-style: none; margin: 0; padding: 0; font-weight: 600; }
+  nav a { color: var(--ink); text-decoration-color: var(--rule); text-underline-offset: 4px; }
+  nav a:hover { text-decoration-color: currentColor; }
+  nav a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
   .document {
     background-color: var(--sheet);
@@ -194,6 +200,14 @@
 </style>
 
 <main>
+  <nav aria-label="Site">
+    <span class="brand">ibanita</span>
+    <ul>
+      <li><a href="docs/">API docs</a></li>
+      <li><a href="https://github.com/AleksejDix/ibanita">GitHub</a></li>
+    </ul>
+  </nav>
+
   <header>
     <span class="eyebrow">ISO 13616 · International Bank Account Number</span>
     <h1>Anatomy of an IBAN</h1>

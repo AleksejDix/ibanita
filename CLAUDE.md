@@ -165,7 +165,7 @@ Each file in `src/validators/` holds one algorithm with a doc comment that descr
 
 ## Documentation
 
-`npm run docs` generates the API documentation with `deno doc` (Deno is a dev dependency) into `docs/`. The Docs workflow deploys it to https://dix.consulting/ibanita on every push to master.
+`npm run docs` generates the API documentation with `deno doc` (Deno is a dev dependency) into `docs/`. The Docs workflow deploys it with the explainer page to GitHub Pages on every push to master: the page at https://dix.consulting/ibanita, the docs at https://dix.consulting/ibanita/docs/.
 
 ## Node Version
 
