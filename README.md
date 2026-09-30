@@ -1,45 +1,73 @@
+<div align="center">
+
 # ibanita
 
-[![CI](https://github.com/AleksejDix/ibantools/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/AleksejDix/ibantools/actions/workflows/ci.yml)
-![License](https://img.shields.io/badge/License-MIT-blue)
-![No deps](https://img.shields.io/badge/dependencies-0-brightgreen)
+**Validate, parse and compose IBAN, BBAN and BIC/SWIFT numbers.**
 
-Validation, extraction and creation of IBAN, BBAN and BIC/SWIFT numbers. TypeScript, ES modules, zero runtime dependencies, frozen data generated from the [SWIFT IBAN Registry](https://www.swift.com/resource/iban-registry-pdf).
+Typed, tree-shakeable and dependency-free, with country data generated from the official SWIFT IBAN Registry.
 
-- Every function normalises its input first: whitespace, dashes and periods are removed and letters uppercased.
-- Results tell you why: string error codes such as `WRONG_IBAN_CHECKSUM`, and extraction results narrowed on `valid`.
-- Ship only what you use: about 6 kB gzipped for all 124 countries, 1.5 kB for the rules plus one country.
+[![CI](https://github.com/AleksejDix/ibanita/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/AleksejDix/ibanita/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+![TypeScript](https://img.shields.io/badge/types-TypeScript-3178c6)
+![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)
+![Size](https://img.shields.io/badge/gzipped-6%20kB-informational)
+
+[Documentation](https://dix.consulting/ibanita) · [Installation](#installation) · [Usage](#usage) · [API](#api-reference) · [Countries](#supported-countries) · [Migration](MIGRATION.md)
+
+</div>
+
+---
+
+## Features
+
+- **Complete coverage.** 124 countries and territories, including every entry of the SWIFT IBAN Registry and the national checksums of 17 countries.
+- **Verified against the source.** Country data is generated from the SWIFT IBAN Registry and checked against it and the EPC list of SEPA countries on every CI run. A scheduled workflow picks up new registry releases.
+- **Actionable results.** Validation returns string error codes such as `WRONG_IBAN_CHECKSUM` rather than a bare `false`, and extraction results are narrowed on `valid`.
+- **Forgiving input.** Every function normalises its input first: whitespace, dashes and periods are removed and letters are uppercased.
+- **Pay only for what you use.** About 6 kB gzipped for all countries, 1.5 kB for the rules plus a single country.
+- **Strictly typed.** Written in TypeScript with the strictest compiler settings. Country codes are a literal union type, so typos fail at compile time.
+- **Zero runtime dependencies.** ES modules only, `sideEffects: false`, frozen data.
 
 ## Installation
 
-The package is published to GitHub Packages. Add the scope to your `.npmrc` and install:
+The package is published to GitHub Packages. Add the scope to your `.npmrc`:
 
 ```ini
 @aleksejdix:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
 ```
 
+Then install:
+
 ```bash
 npm install @aleksejdix/ibanita
 ```
 
-GitHub Packages requires a token with the `read:packages` scope even for public packages.
-See [Working with the npm registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry).
+> [!NOTE]
+> GitHub Packages requires a token with the `read:packages` scope, even for public packages. See [Working with the npm registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry).
 
-Requires Node.js `^20.19.0 || >=22.12.0`.
+**Requirements:** Node.js `^20.19.0 || >=22.12.0`, or any bundler or runtime that supports ES modules.
 
 ## Usage
 
-```ts
-import { isValidIBAN, validateIBAN, extractIBAN, isValidBIC, IBANValidationError } from '@aleksejdix/ibanita';
+### Validate an IBAN
 
-isValidIBAN(input); // true or false, input may contain spaces, dashes and lowercase letters
+```ts
+import { isValidIBAN, validateIBAN, IBANValidationError } from '@aleksejdix/ibanita';
+
+isValidIBAN(input); // true or false; spaces, dashes and lowercase letters are accepted
 
 const result = validateIBAN(input);
 if (!result.valid) {
   result.errorCodes; // for example ['WRONG_IBAN_CHECKSUM']
   result.errorCodes.includes(IBANValidationError.WrongIBANChecksum);
 }
+```
+
+### Extract its components
+
+```ts
+import { extractIBAN } from '@aleksejdix/ibanita';
 
 const parts = extractIBAN(input);
 if (parts.valid) {
@@ -47,13 +75,30 @@ if (parts.valid) {
   parts.bban; // the domestic account number
   parts.bankIdentifier; // when the country defines one
 }
-
-isValidBIC('ABNA NL 2A'); // true
 ```
 
-### Only the countries you need
+### Compose and format
 
-The rules and the data are separate. Pair the core with the countries you validate, and nothing else is bundled:
+```ts
+import { composeIBAN, friendlyFormatIBAN, electronicFormat } from '@aleksejdix/ibanita';
+
+const iban = composeIBAN('NL', bban); // check digits computed, or null when the BBAN is invalid
+friendlyFormatIBAN(iban); // groups of four characters, separated by spaces
+electronicFormat(userInput); // whitespace, dashes and periods removed, uppercased
+```
+
+### Validate a BIC
+
+```ts
+import { isValidBIC, extractBIC } from '@aleksejdix/ibanita';
+
+isValidBIC('ABNA NL 2A'); // true
+extractBIC('ABNANL2A'); // bank code, country code, location code and branch code
+```
+
+### Bundle only the countries you need
+
+Rules and data are separate. Pair the core with the countries you accept, and nothing else ends up in your bundle:
 
 ```ts
 import { withCountries } from '@aleksejdix/ibanita/core';
@@ -64,11 +109,11 @@ const ibanita = withCountries({ CH, LI });
 ibanita.isValidIBAN(input);
 ```
 
-The object has the same IBAN, BBAN and country functions as the default entry, bound to those countries. An IBAN from any other country is reported as `NO_IBAN_COUNTRY`. The keys are typed as `IBANCountryCode`, so a misspelled country such as `{ ch: CH }` fails to compile.
+The returned object has the same IBAN, BBAN and country functions as the default entry, bound to those countries. An IBAN from any other country is reported as `NO_IBAN_COUNTRY`. Keys are typed as `IBANCountryCode`, so a misspelled country such as `{ ch: CH }` fails to compile.
 
 ### Custom national validation
 
-`bbanValidators` replaces the built-in national checksum for a country, per call. The country data itself is frozen.
+`bbanValidators` replaces the built-in national checksum for a country, per call. The country data itself stays frozen.
 
 ```ts
 import { isValidIBAN } from '@aleksejdix/ibanita';
@@ -77,7 +122,20 @@ const options = { bbanValidators: { DE: (bban) => myGermanBankCodeCheck(bban) } 
 isValidIBAN(input, options);
 ```
 
-## Public API
+### Swiss QR-IBANs
+
+QR-IBANs are accepted by default. Pass `allowQRIBAN: false` where a QR-IBAN is not permitted, such as for a regular credit transfer:
+
+```ts
+import { isQRIBAN, validateIBAN } from '@aleksejdix/ibanita';
+
+isQRIBAN(input); // true for CH and LI IBANs with a bank clearing number from 30000 to 31999
+validateIBAN(input, { allowQRIBAN: false }); // reports QR_IBAN_NOT_ALLOWED for a QR-IBAN
+```
+
+## API reference
+
+The complete reference with examples is at **[dix.consulting/ibanita](https://dix.consulting/ibanita)**.
 
 ### Entry points
 
@@ -107,9 +165,26 @@ isValidIBAN(input, options);
 | `isSEPACountry(countryCode)` | `boolean` |
 | `withCountries(specs)` | `Ibanita`: the IBAN, BBAN and country functions bound to `specs` |
 
-`options` is `IBANValidationOptions` for the IBAN functions (`allowQRIBAN`, default `true`, and `bbanValidators`) and `BBANValidationOptions` for the BBAN functions and `composeIBAN` (`bbanValidators`).
+### Options
 
-### Data
+| Option | Accepted by | Default | Description |
+|---|---|---|---|
+| `allowQRIBAN` | `isValidIBAN`, `validateIBAN` | `true` | Accept Swiss and Liechtenstein QR-IBANs |
+| `bbanValidators` | IBAN and BBAN functions, `composeIBAN` | none | Map of country code to a `BBANValidator` that replaces the built-in national checksum |
+
+The IBAN functions take `IBANValidationOptions`; the BBAN functions and `composeIBAN` take `BBANValidationOptions`.
+
+### Error codes
+
+`IBANValidationError`, `BBANValidationError` and `BICValidationError` are constant objects whose values are the strings found in `errorCodes`.
+
+| Object | Codes |
+|---|---|
+| `IBANValidationError` | `NO_IBAN_PROVIDED`, `NO_IBAN_COUNTRY`, `WRONG_BBAN_LENGTH`, `WRONG_BBAN_FORMAT`, `WRONG_BBAN_CHECKSUM`, `CHECK_DIGITS_NOT_NUMERIC`, `WRONG_IBAN_CHECKSUM`, `QR_IBAN_NOT_ALLOWED` |
+| `BBANValidationError` | `NO_BBAN_PROVIDED`, `NO_IBAN_COUNTRY`, `WRONG_BBAN_LENGTH`, `WRONG_BBAN_FORMAT`, `WRONG_BBAN_CHECKSUM` |
+| `BICValidationError` | `NO_BIC_PROVIDED`, `NO_BIC_COUNTRY`, `WRONG_BIC_FORMAT` |
+
+### Country data
 
 `countrySpecs` maps every ISO 3166-1 alpha-2 code to a frozen `CountrySpec`. Countries without IBAN have an empty specification. An IBAN country has:
 
@@ -123,7 +198,14 @@ isValidIBAN(input, options);
 | `bankPosition`, `branchPosition` | `[start, end]` within the BBAN, 0-based and inclusive |
 | `accountPosition` | `[start, end]` within the IBAN |
 
-### Countries
+### Types
+
+`IBANValidationOptions`, `BBANValidationOptions`, `BBANValidator`, `IBANValidationResult`, `BBANValidationResult`, `BICValidationResult`, `IBANExtractionResult`, `IBANParts`, `InvalidIBANParts`, `BICExtractionResult`, `BICParts`, `InvalidBICParts`, `IBANCountryCode` (the union of the 124 IBAN country codes, generated), `IBANCountrySpec`, `IBANCountrySpecs`, `CountrySpec`, `CountryMap`, `IdentifierPosition`, `Ibanita`.
+
+## Supported countries
+
+<details>
+<summary><strong>124 countries and territories</strong>, each checked against the SWIFT IBAN Registry and the EPC list of SEPA countries</summary>
 
 <!-- country-table:start -->
 
@@ -271,32 +353,30 @@ The first six columns are the library data. The last five are checked by `test/r
 
 <!-- country-table:end -->
 
-### Error codes
+</details>
 
-`IBANValidationError`, `BBANValidationError` and `BICValidationError` are constant objects whose values are the strings found in `errorCodes`.
+## Data sources
 
-| Object | Codes |
+| Source | Used for |
 |---|---|
-| `IBANValidationError` | `NO_IBAN_PROVIDED`, `NO_IBAN_COUNTRY`, `WRONG_BBAN_LENGTH`, `WRONG_BBAN_FORMAT`, `WRONG_BBAN_CHECKSUM`, `CHECK_DIGITS_NOT_NUMERIC`, `WRONG_IBAN_CHECKSUM`, `QR_IBAN_NOT_ALLOWED` |
-| `BBANValidationError` | `NO_BBAN_PROVIDED`, `NO_IBAN_COUNTRY`, `WRONG_BBAN_LENGTH`, `WRONG_BBAN_FORMAT`, `WRONG_BBAN_CHECKSUM` |
-| `BICValidationError` | `NO_BIC_PROVIDED`, `NO_BIC_COUNTRY`, `WRONG_BIC_FORMAT` |
+| [SWIFT IBAN Registry](https://www.swift.com/resource/iban-registry-pdf) | IBAN lengths, BBAN structures, bank and branch positions, example IBANs |
+| [EPC list of SEPA scheme countries](https://www.europeanpaymentscouncil.eu/document-library/other/epc-list-sepa-scheme-countries) (EPC409-09) | SEPA membership |
+| National standards | National BBAN checksums and countries outside the registry |
 
-### Types
-
-`IBANValidationOptions`, `BBANValidationOptions`, `BBANValidator`, `IBANValidationResult`, `BBANValidationResult`, `BICValidationResult`, `IBANExtractionResult`, `IBANParts`, `InvalidIBANParts`, `BICExtractionResult`, `BICParts`, `InvalidBICParts`, `IBANCountryCode` (the union of the 124 IBAN country codes, generated), `IBANCountrySpec`, `IBANCountrySpecs`, `CountrySpec`, `CountryMap`, `IdentifierPosition`, `Ibanita`.
-
-The full reference with examples is at https://dix.consulting/ibantools.
-
-## Contributing
-
-This project adheres to the Contributor Covenant [code of conduct](.github/CODE_OF_CONDUCT.md). See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow and the release steps.
+The country modules in `src/countries/` are generated from the newest registry file in `registry/` and never edited by hand. A scheduled workflow checks for a new registry release every quarter and opens a pull request. See [registry/README.md](registry/README.md).
 
 ## Migrating from ibantools 4.x
 
-ibanita 5 is a rewrite with a different API surface. [MIGRATION.md](MIGRATION.md) lists every change.
+ibanita 5 is a rewrite with a different API surface. [MIGRATION.md](MIGRATION.md) lists every change that can affect existing code.
+
+## Contributing
+
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow and release steps. This project follows the Contributor Covenant [code of conduct](.github/CODE_OF_CONDUCT.md).
+
+To report a vulnerability, follow the [security policy](SECURITY.md).
 
 ## License
 
-MIT. `SPDX-License-Identifier: MIT`
+[MIT](LICENSE)
 
 ibanita started in 2025 as a fork of [ibantools](https://github.com/Simplify/ibantools). It has since been rewritten from the ground up, and no code or test data from the original remains.
