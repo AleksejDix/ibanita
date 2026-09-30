@@ -12,7 +12,7 @@ Typed, tree-shakeable and dependency-free, with country data generated from the 
 ![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)
 ![Size](https://img.shields.io/badge/gzipped-6%20kB-informational)
 
-[Documentation](https://dix.consulting/ibanita) · [Installation](#installation) · [Usage](#usage) · [API](#api-reference) · [Countries](#supported-countries) · [Migration](MIGRATION.md)
+[Website](https://dix.consulting/ibanita) · [API docs](https://dix.consulting/ibanita/docs/) · [Installation](#installation) · [Usage](#usage) · [API](#api-reference) · [Countries](#supported-countries) · [Migration](MIGRATION.md)
 
 </div>
 
@@ -133,9 +133,58 @@ isQRIBAN(input); // true for CH and LI IBANs with a bank clearing number from 30
 validateIBAN(input, { allowQRIBAN: false }); // reports QR_IBAN_NOT_ALLOWED for a QR-IBAN
 ```
 
+### With Zod
+
+Use `isValidIBAN` in a refinement for a single error message:
+
+```ts
+import { z } from 'zod';
+import { isValidIBAN } from '@aleksejdix/ibanita';
+
+const iban = z.string().refine((value) => isValidIBAN(value), 'Invalid IBAN');
+```
+
+Use `validateIBAN` to turn error codes into specific messages, and `electronicFormat` to store the normalised value:
+
+```ts
+import { z } from 'zod';
+import { electronicFormat, validateIBAN, IBANValidationError } from '@aleksejdix/ibanita';
+
+const messages: Partial<Record<IBANValidationError, string>> = {
+  [IBANValidationError.NoIBANCountry]: 'Unsupported country',
+  [IBANValidationError.WrongIBANChecksum]: 'Check the IBAN for typos',
+};
+
+const iban = z
+  .string()
+  .superRefine((value, ctx) => {
+    const result = validateIBAN(value);
+    if (!result.valid) {
+      const code = result.errorCodes[0];
+      ctx.addIssue({ code: 'custom', message: (code && messages[code]) ?? 'Invalid IBAN' });
+    }
+  })
+  .transform(electronicFormat); // 'ch93 0076 ...' is parsed to 'CH930076...'
+```
+
+Combine with `withCountries` to accept only some countries, with the bundle limited to them:
+
+```ts
+import { z } from 'zod';
+import { withCountries } from '@aleksejdix/ibanita/core';
+import { CH } from '@aleksejdix/ibanita/countries/CH';
+import { LI } from '@aleksejdix/ibanita/countries/LI';
+
+const swiss = withCountries({ CH, LI });
+
+const accountNumber = z
+  .string()
+  .refine((value) => swiss.isValidIBAN(value, { allowQRIBAN: false }), 'Enter a Swiss or Liechtenstein IBAN');
+```
+
 ## API reference
 
-The complete reference with examples is at **[dix.consulting/ibanita](https://dix.consulting/ibanita)**.
+The complete reference with examples is at **[dix.consulting/ibanita/docs](https://dix.consulting/ibanita/docs/)**.
 
 ### Entry points
 
